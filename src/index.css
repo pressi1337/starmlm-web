@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Brand Design System - All in HSL */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 15% 15%; /* dark bluish-gray text */
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 15%;
+
+    /* BRAND COLORS (Blue + Purple) */
+    --primary: 221 83% 53%;            /* #2563eb (blue-600) */
+    --primary-foreground: 0 0% 100%;
+    --primary-dark: 221 71% 40%;       /* #1d4ed8 (blue-700) */
+
+    --secondary: 262 83% 58%;          /* #7c3aed (purple-600) */
+    --secondary-foreground: 0 0% 100%;
+    --secondary-dark: 262 71% 45%;     /* #6d28d9 (purple-700) */
+
+    /* Neutral palette shifted to bluish-gray */
+    --neutral: 220 15% 20%;            /* #2a2e37 */
+    --neutral-foreground: 220 15% 95%; /* near white */
+
+    --muted: 220 16% 96%;              /* #f3f4f6 (cool gray-100) */
+    --muted-foreground: 220 10% 45%;   /* #6b7280 (cool gray-500) */
+
+    --accent: 262 83% 58%;             /* purple */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 45%;          /* red for destructive */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 90%;             /* light bluish border */
+    --input: 220 14% 90%;
+    --ring: 221 83% 53%;               /* blue ring */
+
+    --radius: 0.5rem;
+
+    /* Sidebar theming */
+    --sidebar-background: 220 16% 97%; /* bluish background */
+    --sidebar-foreground: 220 15% 20%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 262 83% 58%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 14% 90%;
+    --sidebar-ring: 221 83% 53%;
+  }
+
+  .dark {
+    --background: 220 15% 12%;         /* dark bluish-gray */
+    --foreground: 220 15% 95%;
+
+    --card: 220 15% 14%;
+    --card-foreground: 220 15% 95%;
+
+    --popover: 220 15% 14%;
+    --popover-foreground: 220 15% 95%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --primary-dark: 221 71% 40%;
+
+    --secondary: 262 83% 58%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-dark: 262 71% 45%;
+
+    --neutral: 220 15% 15%;            /* dark bluish-neutral */
+    --neutral-foreground: 220 15% 95%;
+
+    --muted: 220 10% 20%;              /* muted cool gray */
+    --muted-foreground: 220 10% 70%;
+
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 10% 25%;
+    --input: 220 10% 25%;
+    --ring: 221 83% 53%;
+
+    --sidebar-background: 220 15% 12%;
+    --sidebar-foreground: 220 15% 95%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 262 83% 58%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 10% 25%;
+    --sidebar-ring: 221 83% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
