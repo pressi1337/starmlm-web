@@ -422,7 +422,7 @@ const Sidebar = ({
         </nav>
       </div>
       {/* Settings button (collapsed + expanded with tooltip) */}
-      {user?.role === 0 && (
+      {/* {user?.role === 0 && (
         <div className="p-4 border-t border-gray-200 dark:border-gray-700">
           {collapsed ? (
             <Tooltip>
@@ -456,7 +456,7 @@ const Sidebar = ({
             </Link>
           )}
         </div>
-      )}
+      )} */}
 
       {/* Logout button (collapsed + expanded with tooltip) */}
       <div className="p-4 border-t border-gray-200 dark:border-gray-700">

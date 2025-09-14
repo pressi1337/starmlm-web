@@ -39,7 +39,7 @@ const useActionCall = (url: string): ActionCallResponse => {
         ): Promise<any> => {
             recoilInitialState();
             try {
-                const authToken = Lib.getCookies("session-token");
+                const authToken = localStorage.getItem("accessToken");
                 setLoading(true);
 
                 const response = await fetch(`${BASE_URL}${SERVICE[url] ?? url}`, {
@@ -55,19 +55,25 @@ const useActionCall = (url: string): ActionCallResponse => {
                 if (!response.ok) {
                     if (response.status === 401) {
                         setLoading(false);
-                        Lib.removeCookies("session-token")
+                        localStorage.removeItem("accessToken")
 
                         const jData = await response.json();
                         toast.error(jData.message)
+                        
+                        // For login endpoint, don't redirect, just return the error
+                        if (url === 'LOGIN') {
+                            return { error: true, message: jData.message };
+                        }
+                        
                         navigate.replace("/login");
-                        return;
+                        return { error: true, message: jData.message };
                     } else if (response.status === 500) {
                         throw new Error("Server Error, Please Try Later");
                     } else if (response.status === 400) {
                         setLoading(false);
                         const jData = await response.json();
                         toast.error(jData.message)
-                        return;
+                        return { error: true, message: jData.message };
                     } else if (response.status === 422) {
                         setLoading(false);
                         const jData = await response.json();
@@ -82,7 +88,7 @@ const useActionCall = (url: string): ActionCallResponse => {
                         }
                         setError(err)
                         // toast.error(jData.message)
-                        return;
+                        return { error: true, message: jData.message, errors: err };
                     } else {
                         throw new Error("Network Error");
                     }
@@ -97,9 +103,9 @@ const useActionCall = (url: string): ActionCallResponse => {
             } catch (error: any) {
                 setLoading(false);
 
-
                 toast.error(error.message)
                 setError(error.message);
+                return { error: true, message: error.message };
             }
         },
         [navigate, url]
@@ -113,7 +119,7 @@ const useActionCall = (url: string): ActionCallResponse => {
         ): Promise<any> => {
             recoilInitialState();
             try {
-                const authToken = Lib.getCookies("session-token");
+                const authToken = localStorage.getItem("accessToken");
                 setLoading(true);
 
                 const response = await fetch(`${BASE_URL}${SERVICE[url] ?? url}${recordId ? `/${recordId}` : ""}`, {
@@ -128,7 +134,7 @@ const useActionCall = (url: string): ActionCallResponse => {
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        Lib.removeCookies("session-token")
+                        localStorage.removeItem("accessToken")
                         navigate.replace("/login");
                         // throw new Error("Auth Error"); // Temporarily
                     } else if (response.status === 500) {
@@ -180,7 +186,7 @@ const useActionCall = (url: string): ActionCallResponse => {
         ): Promise<any> => {
             recoilInitialState();
             try {
-                const authToken = Lib.getCookies("session-token");
+                const authToken = localStorage.getItem("accessToken");
                 setLoading(true);
 
                 const response = await fetch(`${BASE_URL}${SERVICE[url] ?? url}${recordId ? `/${recordId}` : ""}`, {
@@ -195,7 +201,7 @@ const useActionCall = (url: string): ActionCallResponse => {
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        Lib.removeCookies("session-token")
+                        localStorage.removeItem("accessToken")
                         navigate.replace("/login");
                         // throw new Error("Auth Error"); // Temporarily
                     } else if (response.status === 500) {
@@ -240,7 +246,7 @@ const useActionCall = (url: string): ActionCallResponse => {
 
         try {
 
-            const authToken = Lib.getCookies("session-token");
+            const authToken = localStorage.getItem("accessToken");
             setLoading(true);
             const formData = new FormData();
             formData.append("image", rawFile);
@@ -254,7 +260,7 @@ const useActionCall = (url: string): ActionCallResponse => {
             });
             if (!response.ok) {
                 if (response.status === 401) {
-                    Lib.removeCookies("session-token")
+                    localStorage.removeItem("accessToken")
                     navigate.replace("/login");
                     //throw new Error("Auth Error"); // Temporarily
                 } else if (response.status === 500) {

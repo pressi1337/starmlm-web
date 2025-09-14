@@ -44,22 +44,19 @@ export default function Login() {
     try {
       const res = await Post(data, "");
   
-      // Handle undefined response
-      if (!res) {
+      // Handle undefined response or error response
+      if (!res || res.error) {
         toast({
           title: "❌ Login Failed",
-          description: "No response from server. Please try again.",
+          description: res?.message || "Invalid credentials. Please try again.",
           variant: "destructive",
         });
-        console.error("Post returned undefined. Check useActionCall error handling.");
         setLoading(false);
         return;
       }
   
       // Since backend response is { user, access_token }, no need for res.data
       const { user, access_token } = res;
-      console.log("User:", user);
-      console.log("Access Token:", access_token);
   
       if (!user || !access_token) {
         toast({
