@@ -181,7 +181,7 @@ export default function UserDashboard() {
               <div className="flex items-center space-x-4">
                 <button className="p-2 text-gray-400 hover:text-gray-500">
                   <Bell className="h-6 w-6" />
-                </button>
+                </button> */}
                 <div className="flex items-center space-x-3">
                   <div className="text-right">
                     <p className="text-sm font-medium text-gray-900">{user?.username}</p>

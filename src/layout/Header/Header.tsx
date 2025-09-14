@@ -1,10 +1,17 @@
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Menu, Bell, LogOut, Search } from "lucide-react";
+
 const Header = () => {
-    const { user } = useAuth();
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const handleLogout = () => {
+        logout();
+        navigate("/", { replace: true });
+    };
   return (
     <div className="bg-white shadow-sm border-b border-gray-200">
       <div className="px-4 sm:px-6 lg:px-8">
@@ -44,7 +51,7 @@ const Header = () => {
                 <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
               </div>
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                 title="Logout"
               >

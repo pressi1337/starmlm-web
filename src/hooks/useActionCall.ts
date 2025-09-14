@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import toast from 'react-hot-toast';
-import { SERVICE } from "@/constants/services";
+import { BASE_URL,SERVICE } from "@/constants/services";
 import useQueryParams from "./useQueryParams";
 import Lib from "@/utils/Lib";
 import Swal from 'sweetalert2';

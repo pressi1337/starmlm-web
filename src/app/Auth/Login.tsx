@@ -1,13 +1,12 @@
-//@ts-nocheck
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { TrendingUp, User, Smartphone, Lock, Eye, EyeOff } from "lucide-react";
-import { NormalAxiosInstance } from "@/utils/CustomAxios";
-import { API_AUTH_LOGIN } from "@/utils/http/apiPaths";
 import { useToast } from "@/hooks/use-toast";
+import { useActionCall } from "@/hooks";
 
 export default function Login() {
+  const { Post } = useActionCall(`LOGIN`); 
   const [loginMethod, setLoginMethod] = useState<"username" | "mobile">(
     "username"
   );
@@ -37,13 +36,41 @@ export default function Login() {
       setLoading(false);
       return;
     }
-
-    const data = { identifier: formData.username, password: formData.password };
-
+  
+    const data = {
+      identifier: loginMethod === "username" ? formData.username : formData.mobile,
+      password: formData.password,
+    };  
     try {
-      const res = await NormalAxiosInstance.post(API_AUTH_LOGIN, data);
-      const { user, access_token } = await res.data;
-
+      const res = await Post(data, "");
+  
+      // Handle undefined response
+      if (!res) {
+        toast({
+          title: "❌ Login Failed",
+          description: "No response from server. Please try again.",
+          variant: "destructive",
+        });
+        console.error("Post returned undefined. Check useActionCall error handling.");
+        setLoading(false);
+        return;
+      }
+  
+      // Since backend response is { user, access_token }, no need for res.data
+      const { user, access_token } = res;
+      console.log("User:", user);
+      console.log("Access Token:", access_token);
+  
+      if (!user || !access_token) {
+        toast({
+          title: "❌ Login Failed",
+          description: res.message || "Missing user or token in response.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+  
       login(user, access_token);
 
       toast({
@@ -54,18 +81,12 @@ export default function Login() {
         user.role === 0 ? "/portal/admin/dashboard" : "/portal/user/dashboard"
       );
     } catch (error: any) {
-      if (error.response) {
-        toast({
-          title: "❌ Login Failed",
-          description: error.response?.data?.message || "Something went wrong.",
-          variant: "destructive",
-        });
-        console.error("Login Error:", error.response.data.message);
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-      } else {
-        console.error("Error during request setup:", error.message);
-      }
+      toast({
+        title: "❌ Login Failed",
+        description: error.message || "Something went wrong.",
+        variant: "destructive",
+      });
+      console.error("Login Error:", error.message);
     } finally {
       setLoading(false);
     }
