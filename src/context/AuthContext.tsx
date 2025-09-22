@@ -47,6 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let token: string | null | undefined = Lib.getCookies("session-token");
     let decordToken: JwtPayload = token ? Lib.DecodeJwt(token) : null;
+    console.log(decordToken);
     if (token && decordToken?.role !== undefined) {
       setRole(decordToken?.role);
       setIsLoading(false);
@@ -65,6 +66,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let TokenDecoder: JwtPayload = Lib.DecodeJwt(token);
     let decordToken: JwtPayload = token ? Lib.DecodeJwt(token) : null;
     if (token && decordToken?.role !== undefined) {
+      Lib.setCookies({
+        name: "session-token",
+        value: token,
+        exp: decordToken?.exp ? Lib.expiredSec(decordToken?.exp ?? 1) : 1,
+      });
       setRole(decordToken?.role);
       setIsLoading(false);
       navigate.push(
