@@ -59,6 +59,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Function to handle logout
   const logout = (redirect: boolean = false) => {
     setIsLoading(false);
+    setRole(null);
     Lib.removeCookies("session-token");
   };
 
