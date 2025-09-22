@@ -16,6 +16,7 @@ import {
   Trophy,
   Youtube,
 } from "lucide-react";
+import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -56,15 +57,15 @@ const Sidebar = ({
         label: "Dashboard",
         icon: LayoutDashboard,
         path:
-          user.role === 0
+          user.role === ROLE.ADMIN || user.role === ROLE.SUPER_ADMIN
             ? "/portal/admin/dashboard"
-            : user.role === 2
+            : user.role === ROLE.USER
             ? "/portal/user/dashboard"
             : "/",
         color: "from-indigo-500 to-indigo-600",
       },
     ];
-    if (user?.role === 0) {
+    if (user.role === ROLE.ADMIN || user.role === ROLE.SUPER_ADMIN) {
       baseItems.push({
         id: "daily-videos",
         label: "Daily Videos",
@@ -157,18 +158,20 @@ const Sidebar = ({
           path: "/portal/user/pin-requests",
           icon: Settings,
           color: "from-teal-500 to-cyan-600",
-        },{ 
-          id:"earnings-history",
-          label:"Earnings History",
-          path:"/portal/user/earnings-history",
-          icon:Settings,
-          color:"from-sky-500 to-blue-600",
-        },{
-          id:"withdraw-requests",
-          label:"Withdraw Requests",
-          path:"/portal/user/withdraw-requests",
-          icon:Settings,
-          color:"from-sky-500 to-blue-600",
+        },
+        {
+          id: "earnings-history",
+          label: "Earnings History",
+          path: "/portal/user/earnings-history",
+          icon: Settings,
+          color: "from-sky-500 to-blue-600",
+        },
+        {
+          id: "withdraw-requests",
+          label: "Withdraw Requests",
+          path: "/portal/user/withdraw-requests",
+          icon: Settings,
+          color: "from-sky-500 to-blue-600",
         }
       );
     }

@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import axiosInstance from "@/utils/CustomAxios";
 import { API_AUTH_USER } from "@/utils/http/apiPaths";
+import Lib from "@/utils/Lib";
+import { useQueryParams } from "@/hooks";
 
 interface User {
   id: string;
@@ -10,12 +12,15 @@ interface User {
   [key: string]: unknown;
 }
 
+export type JwtPayload = {
+  [key: string]: any;
+};
 interface AuthContextType {
   user: User | null;
-  accessToken: string | null;
   isLoading: boolean;
-  login: (userData: User, access_token: string) => void;
+  role?: number | null;
   logout: () => void;
+  login: (token: string | undefined | null) => void;
 }
 
 // Create context with initial undefined (will throw if used outside provider)
@@ -31,73 +36,53 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [accessToken, setAccessToken] = useState<string | null>(() =>
-    localStorage.getItem("accessToken")
-  );
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { navigate } = useQueryParams();
+  const [role, setRole] = useState<number | null>(null);
 
   const [user, setUser] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
+    return null;
   });
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  // Load user session on component mount
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axiosInstance.get(API_AUTH_USER);
-        const userData = response.data.user;
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-        // Only logout if it's an authentication error (401/403)
-        // For network errors or server errors, keep the user logged in with cached data
-        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-          console.log("Authentication failed, logging out user");
-          logout();
-        } else {
-          console.log("Network/server error, keeping user logged in with cached data");
-          // Keep the user data from localStorage, don't logout for network issues
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    const storedToken = localStorage.getItem("accessToken");
-    if (storedToken) {
-      setAccessToken(storedToken);
-      fetchUserData();
-    } else {
+    let token: string | null | undefined = Lib.getCookies("session-token");
+    let decordToken: JwtPayload = token ? Lib.DecodeJwt(token) : null;
+    if (token && decordToken?.role !== undefined) {
+      setRole(decordToken?.role);
       setIsLoading(false);
+    } else {
+      logout();
     }
   }, []);
-  const login = (userData: User, access_token: string) => {
-    setUser(userData);
-    setAccessToken(access_token);
-    setIsLoading(false);
-
-    localStorage.setItem("user", JSON.stringify(userData)); // Store user data as a string
-    localStorage.setItem("accessToken", access_token); // Store access token
-  };
 
   // Function to handle logout
-  const logout = () => {
-    setUser(null);
-    setAccessToken(null);
+  const logout = (redirect: boolean = false) => {
     setIsLoading(false);
-    // Clear user data and tokens from local storage
-    localStorage.removeItem("user");
-    localStorage.removeItem("accessToken");
+    Lib.removeCookies("session-token");
   };
-  // Value object to provide to the context
+
+  const login = (token: string | undefined | null) => {
+    let TokenDecoder: JwtPayload = Lib.DecodeJwt(token);
+    let decordToken: JwtPayload = token ? Lib.DecodeJwt(token) : null;
+    if (token && decordToken?.role !== undefined) {
+      setRole(decordToken?.role);
+      setIsLoading(false);
+      navigate.push(
+        TokenDecoder?.role == 2
+          ? "/portal/user/dashboard"
+          : "/portal/admin/dashboard"
+      );
+    } else {
+      logout();
+    }
+  };
+
   const value: AuthContextType = {
     user,
-    accessToken,
     isLoading,
     login,
     logout,
+    role,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

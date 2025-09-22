@@ -35,7 +35,7 @@ const roleLabels: Record<number, string> = {
 };
 
 const PortalLayout = () => {
-  const { user, logout } = useAuth();
+  const { user, role, logout } = useAuth();
   const userObj = typeof user === "string" ? JSON.parse(user) : user;
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
@@ -67,7 +67,10 @@ const PortalLayout = () => {
       <Sidebar
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-        user={userObj}
+        user={{
+          role,
+          ...user,
+        }}
         navigate={navigate}
         currentPath={location.pathname}
         onLogout={handleLogout}
@@ -101,7 +104,6 @@ const PortalLayout = () => {
                 </h1>
               </div>
             </div>
-
 
             <div className="flex items-center space-x-4">
               {/* Notifications */}

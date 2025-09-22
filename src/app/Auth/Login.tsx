@@ -1,93 +1,36 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { TrendingUp, User, Smartphone, Lock, Eye, EyeOff } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useActionCall } from "@/hooks";
+import { useActionCall, useQueryParams } from "@/hooks";
+import { useFormik } from "formik";
+import { SERVICE } from "@/constants/services";
 
 export default function Login() {
-  const { Post } = useActionCall(`LOGIN`); 
+  const { login } = useAuth();
+  const { loading, Post, error } = useActionCall(SERVICE.LOGIN);
   const [loginMethod, setLoginMethod] = useState<"username" | "mobile">(
     "username"
   );
+
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    username: "admin",
-    mobile: "",
-    password: "",
+
+  const { values, handleChange, errors, handleSubmit } = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+    onSubmit: async (values) => {
+      console.log({ values });
+      let response: any = await Post(values, "Login successfull");
+      if (response) {
+        login(response.data.access_token);
+      }
+    },
+    validateOnChange: false,
+    validateOnBlur: true,
   });
 
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const { login } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    if (!formData.username || !formData.password) {
-      toast({
-        title: "❌ Error",
-        description: "Please enter your username and password.",
-        variant: "destructive",
-      });
-      setLoading(false);
-      return;
-    }
-  
-    const data = {
-      identifier: loginMethod === "username" ? formData.username : formData.mobile,
-      password: formData.password,
-    };  
-    try {
-      const res = await Post(data, "");
-  
-      // Handle undefined response or error response
-      if (!res || res.error) {
-        toast({
-          title: "❌ Login Failed",
-          description: res?.message || "Invalid credentials. Please try again.",
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
-      }
-  
-      // Since backend response is { user, access_token }, no need for res.data
-      const { user, access_token } = res;
-  
-      if (!user || !access_token) {
-        toast({
-          title: "❌ Login Failed",
-          description: res.message || "Missing user or token in response.",
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
-      }
-  
-      login(user, access_token);
-
-      toast({
-        title: "🎉 Welcome Back!",
-        description: "Login successful. Redirecting to dashboard...",
-      });
-      navigate(
-        user.role === 0 ? "/portal/admin/dashboard" : "/portal/user/dashboard"
-      );
-    } catch (error: any) {
-      toast({
-        title: "❌ Login Failed",
-        description: error.message || "Something went wrong.",
-        variant: "destructive",
-      });
-      console.error("Login Error:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -154,7 +97,7 @@ export default function Login() {
               <div className="mt-1 relative">
                 <input
                   id={loginMethod}
-                  name={loginMethod}
+                  name={"username"}
                   type={loginMethod === "mobile" ? "tel" : "text"}
                   required
                   className="appearance-none block w-full px-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -163,18 +106,11 @@ export default function Login() {
                       ? "Enter your username"
                       : "Enter your mobile number"
                   }
-                  value={
-                    loginMethod === "username"
-                      ? formData.username
-                      : formData.mobile
-                  }
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      [loginMethod]: e.target.value,
-                    }))
-                  }
+                  value={values.username}
+                  onChange={handleChange}
                 />
+                {error && <p style={{ color: "red" }}>{error?.["username"]}</p>}
+
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                   {loginMethod === "username" ? (
                     <User className="w-5 h-5 text-gray-400" />
@@ -201,13 +137,8 @@ export default function Login() {
                   required
                   className="appearance-none block w-full px-3 py-3 pr-10 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      password: e.target.value,
-                    }))
-                  }
+                  value={values.password}
+                  onChange={handleChange}
                 />
                 <button
                   type="button"
@@ -221,13 +152,14 @@ export default function Login() {
                   )}
                 </button>
               </div>
+              {error && <p style={{ color: "red" }}>{error?.["password"]}</p>}
             </div>
 
-            {error && (
+            {/* {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                 <p className="text-sm text-red-600">{error}</p>
               </div>
-            )}
+            )} */}
 
             <div>
               <button
@@ -254,28 +186,6 @@ export default function Login() {
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  Demo Credentials
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-4 space-y-2 text-sm text-gray-600">
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="font-medium text-gray-700 mb-2">Test Accounts:</p>
-                <div className="space-y-1">
-                  <p>
-                    <strong>Admin:</strong> username: admin, password: 123456
-                  </p>
-                  <p>
-                    <strong>User:</strong> username: john_doe, password: 123456
-                  </p>
-                  <p>
-                    <strong>Mobile:</strong> 9876543211, password: 123456
-                  </p>
-                </div>
               </div>
             </div>
           </div>

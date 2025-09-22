@@ -4,16 +4,13 @@ import AdminRoutes from "./ROUTE-PATHS/AdminRoutes";
 import NormalUserRoutes from "./ROUTE-PATHS/NormalUserRoutes";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { useAuth } from "@/context/AuthContext";
-
+import { ROLE } from "@/constants/others";
 export default function AllRoutes(): React.ReactElement | null {
-  const { isLoading } = useAuth();
-  const is_admin: boolean = useAuthRole(0);
-  const is_normal_user: boolean = useAuthRole(2);
-
+  const { isLoading, role } = useAuth();
   const routes = [];
-  if (is_admin) {
+  if (role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN) {
     routes.push(AdminRoutes);
-  } else if (is_normal_user) {
+  } else if (role === ROLE.USER) {
     routes.push(NormalUserRoutes);
   } else {
     routes.push(AuthRoutes);
@@ -24,9 +21,9 @@ export default function AllRoutes(): React.ReactElement | null {
     element: (
       <Navigate
         to={
-          is_admin
+          role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN
             ? "/portal/admin/dashboard"
-            : is_normal_user
+            : role === ROLE.USER
             ? "/portal/user/dashboard"
             : "/"
         }
