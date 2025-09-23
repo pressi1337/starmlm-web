@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import toast from 'react-hot-toast';
-import { BASE_URL,SERVICE } from "@/constants/services";
+import { BASE_URL, SERVICE } from "@/constants/services";
 import useQueryParams from "./useQueryParams";
 import Lib from "@/utils/Lib";
 import Swal from 'sweetalert2';
@@ -39,7 +39,7 @@ const useActionCall = (url: string): ActionCallResponse => {
         ): Promise<any> => {
             recoilInitialState();
             try {
-                const authToken = localStorage.getItem("accessToken");
+                const authToken = Lib.getCookies("session-token");
                 setLoading(true);
 
                 const response = await fetch(`${BASE_URL}${SERVICE[url] ?? url}`, {
@@ -55,25 +55,19 @@ const useActionCall = (url: string): ActionCallResponse => {
                 if (!response.ok) {
                     if (response.status === 401) {
                         setLoading(false);
-                        localStorage.removeItem("accessToken")
+                        Lib.removeCookies("session-token")
 
                         const jData = await response.json();
                         toast.error(jData.message)
-                        
-                        // For login endpoint, don't redirect, just return the error
-                        if (url === 'LOGIN') {
-                            return { error: true, message: jData.message };
-                        }
-                        
                         navigate.replace("/login");
-                        return { error: true, message: jData.message };
+                        return;
                     } else if (response.status === 500) {
                         throw new Error("Server Error, Please Try Later");
                     } else if (response.status === 400) {
                         setLoading(false);
                         const jData = await response.json();
                         toast.error(jData.message)
-                        return { error: true, message: jData.message };
+                        return;
                     } else if (response.status === 422) {
                         setLoading(false);
                         const jData = await response.json();
@@ -81,14 +75,17 @@ const useActionCall = (url: string): ActionCallResponse => {
 
                         const err: any = {};
 
+
                         for (const key in jData.errors) {
                             if (jData.errors[key] && jData.errors[key].length > 0) {
                                 err[key] = jData.errors[key][0];
                             }
                         }
+
+                        console.log({ err })
                         setError(err)
                         // toast.error(jData.message)
-                        return { error: true, message: jData.message, errors: err };
+                        return;
                     } else {
                         throw new Error("Network Error");
                     }
@@ -103,9 +100,9 @@ const useActionCall = (url: string): ActionCallResponse => {
             } catch (error: any) {
                 setLoading(false);
 
+
                 toast.error(error.message)
                 setError(error.message);
-                return { error: true, message: error.message };
             }
         },
         [navigate, url]
@@ -119,7 +116,7 @@ const useActionCall = (url: string): ActionCallResponse => {
         ): Promise<any> => {
             recoilInitialState();
             try {
-                const authToken = localStorage.getItem("accessToken");
+                const authToken = Lib.getCookies("session-token");
                 setLoading(true);
 
                 const response = await fetch(`${BASE_URL}${SERVICE[url] ?? url}${recordId ? `/${recordId}` : ""}`, {
@@ -134,7 +131,7 @@ const useActionCall = (url: string): ActionCallResponse => {
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        localStorage.removeItem("accessToken")
+                        Lib.removeCookies("session-token")
                         navigate.replace("/login");
                         // throw new Error("Auth Error"); // Temporarily
                     } else if (response.status === 500) {
@@ -186,7 +183,7 @@ const useActionCall = (url: string): ActionCallResponse => {
         ): Promise<any> => {
             recoilInitialState();
             try {
-                const authToken = localStorage.getItem("accessToken");
+                const authToken = Lib.getCookies("session-token");
                 setLoading(true);
 
                 const response = await fetch(`${BASE_URL}${SERVICE[url] ?? url}${recordId ? `/${recordId}` : ""}`, {
@@ -201,7 +198,7 @@ const useActionCall = (url: string): ActionCallResponse => {
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        localStorage.removeItem("accessToken")
+                        Lib.removeCookies("session-token")
                         navigate.replace("/login");
                         // throw new Error("Auth Error"); // Temporarily
                     } else if (response.status === 500) {
@@ -246,7 +243,7 @@ const useActionCall = (url: string): ActionCallResponse => {
 
         try {
 
-            const authToken = localStorage.getItem("accessToken");
+            const authToken = Lib.getCookies("session-token");
             setLoading(true);
             const formData = new FormData();
             formData.append("image", rawFile);
@@ -260,7 +257,7 @@ const useActionCall = (url: string): ActionCallResponse => {
             });
             if (!response.ok) {
                 if (response.status === 401) {
-                    localStorage.removeItem("accessToken")
+                    Lib.removeCookies("session-token")
                     navigate.replace("/login");
                     //throw new Error("Auth Error"); // Temporarily
                 } else if (response.status === 500) {
@@ -286,11 +283,7 @@ const useActionCall = (url: string): ActionCallResponse => {
             setLoading(false);
 
             setError(error.message);
-            toast({
-                title: "Error",
-                description: error.message,
-                variant: "destructive"
-            });
+            toast.error(message);
         }
     });
 

@@ -319,3 +319,9 @@ export const URL_QUERY: any = {
     }
 
 }
+
+export const ROLE: any = {
+    ADMIN: 0,
+    SUPER_ADMIN: 1,
+    USER: 2
+}
