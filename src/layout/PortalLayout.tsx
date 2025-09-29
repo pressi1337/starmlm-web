@@ -14,7 +14,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/InputText";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -28,6 +28,7 @@ import Sidebar from "./SideBar/SideBar";
 import Header from "./Header/Header";
 import { useAuth } from "@/context/AuthContext";
 import { Outlet } from "react-router-dom";
+import DailyVideoFormModal from "@/components/FormModals/DailyVideoModal/DailyVideoFormModal";
 
 const roleLabels: Record<number, string> = {
   0: "Admin",
