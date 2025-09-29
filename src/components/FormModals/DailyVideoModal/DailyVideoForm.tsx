@@ -1,0 +1,94 @@
+import * as Yup from "yup";
+import { useFormik } from "formik";
+import { useMemo } from "react";
+import InputText from "@/components/ui/InputText";
+import InputTextArea from "@/components/ui/InputTextArea";
+import YouTubeInputText from "@/components/ui/YouTubeInput";
+import moment from "moment";
+import Btn from "@/components/ui/Btn";
+
+export const BLOG_SCHEMA = Yup.object().shape({
+  title: Yup.string().required("Required Title*"),
+  description: Yup.string().required("Required description*"),
+  youtube_link: Yup.string(),
+  showing_date: Yup.string().required("Required Date"),
+});
+
+const DailyVideoForm = ({
+  data = {},
+  onAction = (values: any) => {},
+  onCloseModal = () => {},
+  loading = false,
+  RequestError = {},
+}: any) => {
+  const { values, handleChange, errors, handleSubmit, setErrors } = useFormik({
+    initialValues: {
+      title: data?.title ?? "",
+      description: data?.description ?? "",
+      youtube_link: data?.youtube_link ?? "",
+      showing_date: data?.showing_date
+        ? moment(new Date(data?.showing_date)).format("YYYY-MM-DD")
+        : "",
+      type: "1",
+      is_active: "1",
+    },
+    onSubmit: async (values: any) => {
+      onAction(values);
+    },
+
+    validateOnChange: false,
+    validateOnBlur: true,
+    validationSchema: BLOG_SCHEMA,
+  });
+
+  useMemo(() => {
+    if (RequestError && Object.keys(RequestError).length) {
+      setErrors(RequestError);
+    }
+  }, [RequestError]);
+
+  return (
+    <div>
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <InputText
+          name="title"
+          label="Title *"
+          placeholder="Enter video title"
+          onChange={handleChange}
+          error={errors}
+          value={values}
+        />
+        <InputTextArea
+          name="description"
+          label="Description *"
+          placeholder="Enter Video Description"
+          onChange={handleChange}
+          error={errors}
+          value={values}
+        />
+        <YouTubeInputText
+          name="youtube_link"
+          onChange={handleChange}
+          error={errors}
+          value={values}
+        />
+
+        <InputText
+          type="Date"
+          name="showing_date"
+          label="Showing Date *"
+          placeholder="Enter Show Date"
+          onChange={handleChange}
+          error={errors}
+          value={values}
+        />
+        <div className="flex justify-end space-x-3 pt-4">
+          <Btn title="Cancel" onClick={onCloseModal} uiType="secondary" />
+          <Btn title={"Submit"} isLoading={loading} onClick={handleSubmit} />
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default DailyVideoForm;
