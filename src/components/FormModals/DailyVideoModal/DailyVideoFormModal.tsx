@@ -10,14 +10,15 @@ import DailyVideoForm from "./DailyVideoForm";
 const DailyVideoFormModal = ({ recoilApi = () => {} }) => {
   const { searchParams, updateSearchParam } = useQueryParams();
   const Edit = searchParams.get("Edit") || undefined;
+  const Duplicate = searchParams.get("Duplicate") || undefined;
   const { Post, Put, error: RequestError } = useActionCall(SERVICE.DAILYVIDEOS);
   const { data, loading, error } = useGetCall(SERVICE.DAILYVIDEOS, {
-    avoidFetch: !Boolean(Edit),
-    key: Edit,
+    avoidFetch: !Boolean(Edit ?? Duplicate),
+    key: Edit ?? Duplicate,
   });
 
   const closeModal = () => {
-    updateSearchParam({ deleteParams: ["Modal", "Edit"] });
+    updateSearchParam({ deleteParams: ["Modal", "Edit", "Duplicate"] });
   };
 
   useEffect(() => {
