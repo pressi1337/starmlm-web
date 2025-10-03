@@ -24,7 +24,7 @@ const InputText = ({
         disabled={readOnly}
         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       />
-      <p className="text-sm text-red-800" role="alert">
+      <p className="text-sm text-red-800 pt-1" role="alert">
         {error[name]}
       </p>
     </div>

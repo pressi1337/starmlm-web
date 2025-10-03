@@ -6,7 +6,7 @@ interface VideoModalProps {
   onClose: () => void;
   onSave: (videoData: any) => void;
   video?: any;
-  type: "daily" | "training" | "promotion";
+  type: "daily" | "training" | "promotion" | "youtube";
 }
 
 export default function VideoModal({
@@ -58,7 +58,7 @@ export default function VideoModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-50">
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div
           className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
