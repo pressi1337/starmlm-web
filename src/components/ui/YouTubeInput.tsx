@@ -2,7 +2,7 @@ import { Youtube } from "lucide-react";
 
 const YouTubeInputText = ({
   label = "YouTube URL",
-  placeholder = "placeholder",
+  placeholder = "Youtube Video Link",
   onChange = () => {},
   name = "name",
   error = {},
@@ -10,8 +10,7 @@ const YouTubeInputText = ({
   readOnly = false,
 }: any) => {
   return (
-    <div className="flex items-center space-x-3 p-3 border border-gray-300 rounded-lg">
-      <Youtube className="w-5 h-5 text-red-500" />
+    <div className="flex items-center space-x-3">
       <div className="flex-1">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           {label}
@@ -27,7 +26,7 @@ const YouTubeInputText = ({
           disabled={readOnly}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
-        <p className="text-sm text-red-800" role="alert">
+        <p className="text-sm text-red-800 pt-1" role="alert">
           {error[name]}
         </p>
       </div>

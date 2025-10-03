@@ -3,10 +3,25 @@ import { useData } from '@/context/DataContext';
 import { Plus, Edit, Trash2, Eye, Calendar, Trophy, HelpCircle, Clock } from 'lucide-react';
 import VideoModal from '@/components/VideoModal';
 import QuizModal from '@/components/QuizModal';
+import { useQueryParams } from '@/hooks';
+import { MODAL_OPEN } from "@/constants/others";
+import PromotionVideoFormModal from '@/components/FormModals/PromotionVideoModal/PromotionVideoFormModal';
 
 export default function PromotionVideos() {
+  const { extractFilterOnQuery, updateSearchParam, searchParams } =
+    useQueryParams();
+  const Modal = searchParams.get("Modal") || undefined;
+
+  const [filter, setFilter] = useState({
+    filter: extractFilterOnQuery([]),
+    pageNo: 1,
+    pageSize: 10,
+    sortDir: "",
+    sortBy: "",
+    search: "",
+  });
   const { promotionVideos, addVideo, updateVideo, deleteVideo, quizzes } = useData();
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState(null);
   const [selectedVideoForQuiz, setSelectedVideoForQuiz] = useState(null);
@@ -32,12 +47,12 @@ export default function PromotionVideos() {
 
   const handleAddVideo = () => {
     setEditingVideo(null);
-    setIsVideoModalOpen(true);
+    setIsModalOpen(true);
   };
 
   const handleEditVideo = (video) => {
     setEditingVideo(video);
-    setIsVideoModalOpen(true);
+    setIsModalOpen(true);
   };
 
   const handleDeleteVideo = (videoId) => {
@@ -52,7 +67,7 @@ export default function PromotionVideos() {
     } else {
       addVideo({ ...videoData, type: 'promotion' }, 'promotion');
     }
-    setIsVideoModalOpen(false);
+    setIsModalOpen(false);
     setEditingVideo(null);
   };
 
@@ -82,7 +97,11 @@ export default function PromotionVideos() {
             <p className="mt-2 text-gray-600">Manage session-based promotional content with quizzes</p>
           </div>
           <button
-            onClick={handleAddVideo}
+            onClick={() =>
+              updateSearchParam({
+                options: { Modal: MODAL_OPEN.PROMOTION_VIDEO_MODAL },
+              })
+            }
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -307,10 +326,10 @@ export default function PromotionVideos() {
         )}
       </div>
 
-      {/* Modals */}
+      {Modal == MODAL_OPEN.PROMOTION_VIDEO_MODAL && <PromotionVideoFormModal />}
       <VideoModal
-        isOpen={isVideoModalOpen}
-        onClose={() => setIsVideoModalOpen(false)}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onSave={handleSaveVideo}
         video={editingVideo}
         type="promotion"
