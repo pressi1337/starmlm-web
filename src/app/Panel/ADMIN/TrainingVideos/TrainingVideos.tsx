@@ -13,6 +13,7 @@ import VideoModal from "@/components/VideoModal";
 import QuizModal from "@/components/QuizModal";
 import { useQueryParams } from "@/hooks";
 import { MODAL_OPEN } from "@/constants/others";
+import TrainingVideoFormModal from "@/components/FormModals/TrainingVideoModal/TrainingVideoFormModal";
 import TraningQuizFormModal from "@/components/FormModals/TraningQuizModal/TraningQuizFormModal";
 
 export default function TrainingVideos() {
@@ -20,9 +21,17 @@ export default function TrainingVideos() {
     useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
 
+  const [filter, setFilter] = useState({
+    filter: extractFilterOnQuery([]),
+    pageNo: 1,
+    pageSize: 10,
+    sortDir: "",
+    sortBy: "",
+    search: "",
+  });
   const { trainingVideos, addVideo, updateVideo, deleteVideo, quizzes } =
     useData();
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState(null);
   const [selectedVideoForQuiz, setSelectedVideoForQuiz] = useState(null);
@@ -53,12 +62,12 @@ export default function TrainingVideos() {
 
   const handleAddVideo = () => {
     setEditingVideo(null);
-    setIsVideoModalOpen(true);
+    setIsModalOpen(true);
   };
 
   const handleEditVideo = (video) => {
     setEditingVideo(video);
-    setIsVideoModalOpen(true);
+    setIsModalOpen(true);
   };
 
   const handleDeleteVideo = (videoId) => {
@@ -75,7 +84,7 @@ export default function TrainingVideos() {
     } else {
       addVideo({ ...videoData, type: "training" }, "training");
     }
-    setIsVideoModalOpen(false);
+    setIsModalOpen(false);
     setEditingVideo(null);
   };
 
@@ -114,7 +123,11 @@ export default function TrainingVideos() {
             </p>
           </div>
           <button
-            onClick={handleAddVideo}
+            onClick={() =>
+              updateSearchParam({
+                options: { Modal: MODAL_OPEN.TRAINING_VIDEO_MODAL },
+              })
+            }
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -372,9 +385,10 @@ export default function TrainingVideos() {
       </div>
 
       {/* Modals */}
+      {Modal == MODAL_OPEN.TRAINING_VIDEO_MODAL && <TrainingVideoFormModal />}
       <VideoModal
-        isOpen={isVideoModalOpen}
-        onClose={() => setIsVideoModalOpen(false)}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onSave={handleSaveVideo}
         video={editingVideo}
         type="training"
