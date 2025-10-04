@@ -299,6 +299,7 @@ export const CURRENCY: any = {
 
 export const MODAL_OPEN: any = {
     DAILY_VIDEO_MODAL: 'DAILY_VIDEO_MODAL',
+    QUIZ: 'QUIZ',
     BLOG_MODAL: 'Blog',
     COMBO_MODAL: 'ComboProduct',
     CATEGORY_MODAL: 'Category',

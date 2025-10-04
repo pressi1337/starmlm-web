@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useData } from '@/context/DataContext';
-import { X, Plus, Trash2, Clock, DollarSign } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useData } from "@/context/DataContext";
+import { X, Plus, Trash2, Clock, DollarSign } from "lucide-react";
 
 interface QuizModalProps {
   isOpen: boolean;
@@ -10,141 +10,175 @@ interface QuizModalProps {
 
 export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
   const { addQuiz, updateQuiz, quizzes } = useData();
-  const [questions, setQuestions] = useState([{
-    id: Date.now().toString(),
-    questionEn: '',
-    questionTa: '',
-    choices: [
-      { id: '1', textEn: '', textTa: '', isCorrect: false },
-      { id: '2', textEn: '', textTa: '', isCorrect: false }
-    ],
-    timeLimit: 30
-  }]);
+  const [questions, setQuestions] = useState([
+    {
+      id: Date.now().toString(),
+      questionEn: "",
+      questionTa: "",
+      choices: [
+        { id: "1", textEn: "", textTa: "", isCorrect: false },
+        { id: "2", textEn: "", textTa: "", isCorrect: false },
+      ],
+      timeLimit: 30,
+    },
+  ]);
   const [earnings, setEarnings] = useState({
     promotor: 10,
     promotor1: 15,
     promotor2: 20,
     promotor3: 25,
-    promotor4: 30
+    promotor4: 30,
   });
 
-  const existingQuiz = quizzes.find(q => q.videoId === video?.id);
+  const existingQuiz = quizzes.find((q) => q.videoId === video?.id);
 
   useEffect(() => {
     if (existingQuiz) {
       setQuestions(existingQuiz.questions);
       setEarnings(existingQuiz.earnings);
     } else {
-      setQuestions([{
-        id: Date.now().toString(),
-        questionEn: '',
-        questionTa: '',
-        choices: [
-          { id: '1', textEn: '', textTa: '', isCorrect: false },
-          { id: '2', textEn: '', textTa: '', isCorrect: false }
-        ],
-        timeLimit: 30
-      }]);
+      setQuestions([
+        {
+          id: Date.now().toString(),
+          questionEn: "",
+          questionTa: "",
+          choices: [
+            { id: "1", textEn: "", textTa: "", isCorrect: false },
+            { id: "2", textEn: "", textTa: "", isCorrect: false },
+          ],
+          timeLimit: 30,
+        },
+      ]);
       setEarnings({
         promotor: 10,
         promotor1: 15,
         promotor2: 20,
         promotor3: 25,
-        promotor4: 30
+        promotor4: 30,
       });
     }
   }, [existingQuiz, isOpen]);
 
   const addQuestion = () => {
-    setQuestions(prev => [...prev, {
-      id: Date.now().toString(),
-      questionEn: '',
-      questionTa: '',
-      choices: [
-        { id: '1', textEn: '', textTa: '', isCorrect: false },
-        { id: '2', textEn: '', textTa: '', isCorrect: false }
-      ],
-      timeLimit: 30
-    }]);
+    setQuestions((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        questionEn: "",
+        questionTa: "",
+        choices: [
+          { id: "1", textEn: "", textTa: "", isCorrect: false },
+          { id: "2", textEn: "", textTa: "", isCorrect: false },
+        ],
+        timeLimit: 30,
+      },
+    ]);
   };
 
   const removeQuestion = (questionId: string) => {
-    setQuestions(prev => prev.filter(q => q.id !== questionId));
+    setQuestions((prev) => prev.filter((q) => q.id !== questionId));
   };
 
   const updateQuestion = (questionId: string, field: string, value: any) => {
-    setQuestions(prev => prev.map(q => 
-      q.id === questionId ? { ...q, [field]: value } : q
-    ));
+    setQuestions((prev) =>
+      prev.map((q) => (q.id === questionId ? { ...q, [field]: value } : q))
+    );
   };
 
   const addChoice = (questionId: string) => {
-    setQuestions(prev => prev.map(q => 
-      q.id === questionId ? {
-        ...q,
-        choices: [...q.choices, {
-          id: Date.now().toString(),
-          textEn: '',
-          textTa: '',
-          isCorrect: false
-        }]
-      } : q
-    ));
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              choices: [
+                ...q.choices,
+                {
+                  id: Date.now().toString(),
+                  textEn: "",
+                  textTa: "",
+                  isCorrect: false,
+                },
+              ],
+            }
+          : q
+      )
+    );
   };
 
   const removeChoice = (questionId: string, choiceId: string) => {
-    setQuestions(prev => prev.map(q => 
-      q.id === questionId ? {
-        ...q,
-        choices: q.choices.filter(c => c.id !== choiceId)
-      } : q
-    ));
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              choices: q.choices.filter((c) => c.id !== choiceId),
+            }
+          : q
+      )
+    );
   };
 
-  const updateChoice = (questionId: string, choiceId: string, field: string, value: any) => {
-    setQuestions(prev => prev.map(q => 
-      q.id === questionId ? {
-        ...q,
-        choices: q.choices.map(c => 
-          c.id === choiceId ? { ...c, [field]: value } : c
-        )
-      } : q
-    ));
+  const updateChoice = (
+    questionId: string,
+    choiceId: string,
+    field: string,
+    value: any
+  ) => {
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              choices: q.choices.map((c) =>
+                c.id === choiceId ? { ...c, [field]: value } : c
+              ),
+            }
+          : q
+      )
+    );
   };
 
   const setCorrectAnswer = (questionId: string, choiceId: string) => {
-    setQuestions(prev => prev.map(q => 
-      q.id === questionId ? {
-        ...q,
-        choices: q.choices.map(c => ({
-          ...c,
-          isCorrect: c.id === choiceId
-        }))
-      } : q
-    ));
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              choices: q.choices.map((c) => ({
+                ...c,
+                isCorrect: c.id === choiceId,
+              })),
+            }
+          : q
+      )
+    );
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate that each question has at least one correct answer
-    const isValid = questions.every(q => 
-      q.questionEn.trim() && 
-      q.questionTa.trim() && 
-      q.choices.length >= 2 &&
-      q.choices.some(c => c.isCorrect) &&
-      q.choices.every(c => c.textEn.trim() && c.textTa.trim())
+    const isValid = questions.every(
+      (q) =>
+        q.questionEn.trim() &&
+        q.questionTa.trim() &&
+        q.choices.length >= 2 &&
+        q.choices.some((c) => c.isCorrect) &&
+        q.choices.every((c) => c.textEn.trim() && c.textTa.trim())
     );
 
     if (!isValid) {
-      alert('Please fill all fields and ensure each question has at least one correct answer.');
+      alert(
+        "Please fill all fields and ensure each question has at least one correct answer."
+      );
       return;
     }
 
     const quizData = {
       videoId: video.id,
       questions,
-      earnings
+      earnings,
     };
 
     if (existingQuiz) {
@@ -161,14 +195,18 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose}></div>
+        <div
+          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+          onClick={onClose}
+        ></div>
 
         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-lg font-medium text-gray-900">
-                  {existingQuiz ? 'Edit Quiz' : 'Create Quiz'} for "{video.title}"
+                  {existingQuiz ? "Edit Quiz" : "Create Quiz"} for "
+                  {video.title}"
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">
                   Create questions in both English and Tamil
@@ -193,13 +231,18 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
                   {Object.entries(earnings).map(([level, amount]) => (
                     <div key={level}>
                       <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
-                        {level.replace('promotor', 'Promotor ')}
+                        {level.replace("promotor", "Promotor ")}
                       </label>
                       <input
                         type="number"
                         min="0"
                         value={amount}
-                        onChange={(e) => setEarnings(prev => ({ ...prev, [level]: parseInt(e.target.value) || 0 }))}
+                        onChange={(e) =>
+                          setEarnings((prev) => ({
+                            ...prev,
+                            [level]: parseInt(e.target.value) || 0,
+                          }))
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
                     </div>
@@ -210,7 +253,10 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
               {/* Questions */}
               <div className="space-y-6">
                 {questions.map((question, questionIndex) => (
-                  <div key={question.id} className="border border-gray-200 rounded-lg p-6">
+                  <div
+                    key={question.id}
+                    className="border border-gray-200 rounded-lg p-6"
+                  >
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="text-md font-medium text-gray-900">
                         Question {questionIndex + 1}
@@ -223,7 +269,13 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
                             min="10"
                             max="300"
                             value={question.timeLimit}
-                            onChange={(e) => updateQuestion(question.id, 'timeLimit', parseInt(e.target.value) || 30)}
+                            onChange={(e) =>
+                              updateQuestion(
+                                question.id,
+                                "timeLimit",
+                                parseInt(e.target.value) || 30
+                              )
+                            }
                             className="w-16 px-2 py-1 border border-gray-300 rounded text-sm"
                           />
                           <span className="text-sm text-gray-500">sec</span>
@@ -249,7 +301,13 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
                           required
                           rows={3}
                           value={question.questionEn}
-                          onChange={(e) => updateQuestion(question.id, 'questionEn', e.target.value)}
+                          onChange={(e) =>
+                            updateQuestion(
+                              question.id,
+                              "questionEn",
+                              e.target.value
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           placeholder="Enter question in English"
                         />
@@ -262,7 +320,13 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
                           required
                           rows={3}
                           value={question.questionTa}
-                          onChange={(e) => updateQuestion(question.id, 'questionTa', e.target.value)}
+                          onChange={(e) =>
+                            updateQuestion(
+                              question.id,
+                              "questionTa",
+                              e.target.value
+                            )
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           placeholder="தமிழில் கேள்வியை உள்ளிடவும்"
                         />
@@ -272,7 +336,9 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
                     {/* Choices */}
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-gray-700">Answer Choices</label>
+                        <label className="text-sm font-medium text-gray-700">
+                          Answer Choices
+                        </label>
                         <button
                           type="button"
                           onClick={() => addChoice(question.id)}
@@ -281,14 +347,19 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
                           + Add Choice
                         </button>
                       </div>
-                      
+
                       {question.choices.map((choice, choiceIndex) => (
-                        <div key={choice.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div
+                          key={choice.id}
+                          className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
+                        >
                           <input
                             type="radio"
                             name={`correct-${question.id}`}
                             checked={choice.isCorrect}
-                            onChange={() => setCorrectAnswer(question.id, choice.id)}
+                            onChange={() =>
+                              setCorrectAnswer(question.id, choice.id)
+                            }
                             className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                           />
                           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -296,23 +367,43 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
                               type="text"
                               required
                               value={choice.textEn}
-                              onChange={(e) => updateChoice(question.id, choice.id, 'textEn', e.target.value)}
+                              onChange={(e) =>
+                                updateChoice(
+                                  question.id,
+                                  choice.id,
+                                  "textEn",
+                                  e.target.value
+                                )
+                              }
                               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                              placeholder={`Choice ${choiceIndex + 1} (English)`}
+                              placeholder={`Choice ${
+                                choiceIndex + 1
+                              } (English)`}
                             />
                             <input
                               type="text"
                               required
                               value={choice.textTa}
-                              onChange={(e) => updateChoice(question.id, choice.id, 'textTa', e.target.value)}
+                              onChange={(e) =>
+                                updateChoice(
+                                  question.id,
+                                  choice.id,
+                                  "textTa",
+                                  e.target.value
+                                )
+                              }
                               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                              placeholder={`விருப்பம் ${choiceIndex + 1} (தமிழ்)`}
+                              placeholder={`விருப்பம் ${
+                                choiceIndex + 1
+                              } (தமிழ்)`}
                             />
                           </div>
                           {question.choices.length > 2 && (
                             <button
                               type="button"
-                              onClick={() => removeChoice(question.id, choice.id)}
+                              onClick={() =>
+                                removeChoice(question.id, choice.id)
+                              }
                               className="text-red-600 hover:text-red-800"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -346,7 +437,7 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
                   type="submit"
                   className="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  {existingQuiz ? 'Update Quiz' : 'Create Quiz'}
+                  {existingQuiz ? "Update Quiz" : "Create Quiz"}
                 </button>
               </div>
             </form>
