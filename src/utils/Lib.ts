@@ -1,5 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import { ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 const Lib = {
 
@@ -25,6 +27,9 @@ const Lib = {
         } catch (e) {
             return null;
         }
+    },
+    cn(...inputs: ClassValue[]) {
+        return twMerge(clsx(inputs));
     },
     expiredSec(millionSec: number) {
         const expiresInSeconds = millionSec - Date.now() / 1000;
