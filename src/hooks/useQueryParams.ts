@@ -18,6 +18,7 @@ const useQueryParams = (): {
     updateSearchParam: (params: QueryParams) => void;
     extractFilterOnQuery: (TABLE_FILTER?: any[]) => { [key: string]: any };
     notFound: any;
+    defaultFilter: any
 } => {
     const location = useLocation();
     const router = useNavigate();
@@ -101,6 +102,14 @@ const useQueryParams = (): {
         return filter;
     };
 
+    const defaultFilter = {
+        filter: {},
+        pageNo: 1,
+        pageSize: 10,
+        sortDir: "",
+        sortBy: "",
+        search: "",
+    }
     return {
         searchParams,
         navigate,
@@ -108,6 +117,7 @@ const useQueryParams = (): {
         updateSearchParam,
         extractFilterOnQuery,
         notFound: () => { throw new Error("Page not found"); },
+        defaultFilter,
     };
 };
 

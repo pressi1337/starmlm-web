@@ -1,30 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { useData } from "@/context/DataContext";
 import {
   Plus,
   Edit,
   Trash2,
-  Eye,
   Calendar,
   CopyPlus,
   Video as VideoIcon,
 } from "lucide-react";
-import VideoModal from "@/components/VideoModal";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { MODAL_OPEN } from "@/constants/others";
 import DailyVideoFormModal from "@/components/FormModals/DailyVideoModal/DailyVideoFormModal";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import UIHelpers from "@/utils/UIhelper";
-import { render } from "react-dom";
-import Lib from "@/utils/Lib";
 import Swal from "sweetalert2";
+import FilterTab from "@/components/FilterTab";
 
 export default function DailyVideos() {
   const Columns: any = [
     {
       title: "Video",
-      key: "#",
+      key: "id",
+      sortable: true,
       render: (index: any, row: any) => (
         <div className="flex items-center">
           <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -56,6 +53,8 @@ export default function DailyVideos() {
     {
       title: "Showing Date",
       key: "showing_date",
+      dataIndex: "showing_date",
+      sortable: true,
       render: (index: any, row: any) => (
         <div className="flex items-center text-sm text-gray-900">
           <Calendar className="w-4 h-4 mr-2 text-gray-400" />
@@ -119,44 +118,26 @@ export default function DailyVideos() {
       ),
     },
   ];
-  const { extractFilterOnQuery, updateSearchParam, searchParams } =
-    useQueryParams();
+  const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
 
-  const [filter, setFilter] = useState({
-    filter: extractFilterOnQuery([]),
-    pageNo: 1,
-    pageSize: 10,
-    sortDir: "",
-    sortBy: "",
-    search: "",
-  });
+  const [filter, setFilter] = useState(defaultFilter);
 
   const [open, setOpen] = useState(false);
 
   const { loading, setQuery, data } = useGetCall(SERVICE.DAILYVIDEOS, {
-    avoidFetch: false,
+    avoidFetch: true,
   });
 
   const { loading: deleteLoading, Delete: DeleteDailyVideo } = useActionCall(
     SERVICE.DAILYVIDEOS
   );
-  const BlogAPI = () => {
+  const DailyVideoAPI = () => {
     setQuery(filter);
   };
   useEffect(() => {
-    BlogAPI();
+    DailyVideoAPI();
   }, [filter]);
-
-  const ApplyFilter = (query: any = undefined) => {
-    let filter = query ? query : extractFilterOnQuery([]);
-    setFilter((prv) => ({
-      ...prv,
-      filter: filter,
-      search: prv.search,
-      pageNo: 1,
-    }));
-  };
 
   const ConfirmDeleteModal = async (value: string) => {
     const swalWithTailwind = Swal.mixin({
@@ -189,7 +170,7 @@ export default function DailyVideos() {
         if (result.isConfirmed) {
           const resp = await DeleteDailyVideo(value);
           if (resp) {
-            BlogAPI();
+            DailyVideoAPI();
             Swal.fire({
               icon: "success",
               title: "Deleted!",
@@ -232,51 +213,11 @@ export default function DailyVideos() {
       </div>
 
       {/* Filters and Search */}
-      {/* <div className="bg-white shadow-sm rounded-xl border border-gray-200 mb-6">
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Search
-              </label>
-              <input
-                type="text"
-                placeholder="Search videos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Sort By
-              </label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="showingDate">Date</option>
-                <option value="title">Title</option>
-                <option value="type">Type</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Order
-              </label>
-              <select
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="desc">Newest First</option>
-                <option value="asc">Oldest First</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div> */}
+      <FilterTab
+        filter={filter}
+        setFilter={setFilter}
+        TABLE_FILTER={["SEARCH"]}
+      />
 
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <DataTable
