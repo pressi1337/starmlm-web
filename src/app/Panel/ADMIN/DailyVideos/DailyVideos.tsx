@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useData } from "@/context/DataContext";
 import {
   Plus,
@@ -6,14 +6,119 @@ import {
   Trash2,
   Eye,
   Calendar,
+  CopyPlus,
   Video as VideoIcon,
 } from "lucide-react";
 import VideoModal from "@/components/VideoModal";
-import { useQueryParams } from "@/hooks";
+import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { MODAL_OPEN } from "@/constants/others";
 import DailyVideoFormModal from "@/components/FormModals/DailyVideoModal/DailyVideoFormModal";
+import { SERVICE } from "@/constants/services";
+import DataTable from "@/components/DataTable";
+import UIHelpers from "@/utils/UIhelper";
+import { render } from "react-dom";
+import Lib from "@/utils/Lib";
+import Swal from "sweetalert2";
 
 export default function DailyVideos() {
+  const Columns: any = [
+    {
+      title: "Video",
+      key: "#",
+      render: (index: any, row: any) => (
+        <div className="flex items-center">
+          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <a
+              href={row?.video_path ?? row?.youtube_link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <VideoIcon className="w-6 h-6 text-white" />
+            </a>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Title & Description",
+      key: "title",
+      render: (index: any, row: any) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">
+            {UIHelpers.truncateText(row.title, 100)}
+          </div>
+          <div className="text-sm text-gray-500 max-w-xs truncate">
+            {UIHelpers.truncateText(row.description, 100)}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Showing Date",
+      key: "showing_date",
+      render: (index: any, row: any) => (
+        <div className="flex items-center text-sm text-gray-900">
+          <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+          {UIHelpers.DateFormat(row.showing_date)}
+        </div>
+      ),
+    },
+    {
+      title: "Source",
+      key: "video_path",
+      render: (index: any, row: any) => (
+        <span
+          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+            row.video_path
+              ? "bg-blue-100 text-blue-800"
+              : "bg-red-100 text-red-800"
+          }`}
+        >
+          {row.video_path ? "Direct Upload" : "YouTube"}
+        </span>
+      ),
+    },
+    {
+      title: "Action",
+      key: "video_path",
+      render: (index: any, row: any) => (
+        <div className="flex items-center justify-start space-x-2">
+          <button
+            onClick={() =>
+              updateSearchParam({
+                options: {
+                  Modal: MODAL_OPEN.DAILY_VIDEO_MODAL,
+                  Duplicate: row.id,
+                },
+              })
+            }
+            className="text-blue-600 hover:text-blue-900 p-1"
+            title="View Video"
+          >
+            <CopyPlus className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() =>
+              updateSearchParam({
+                options: { Modal: MODAL_OPEN.DAILY_VIDEO_MODAL, Edit: row.id },
+              })
+            }
+            className="text-indigo-600 hover:text-indigo-900 p-1"
+            title="Edit Video"
+          >
+            <Edit className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => ConfirmDeleteModal(row.id)}
+            className="text-red-600 hover:text-red-900 p-1"
+            title="Delete Video"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      ),
+    },
+  ];
   const { extractFilterOnQuery, updateSearchParam, searchParams } =
     useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
@@ -27,63 +132,77 @@ export default function DailyVideos() {
     search: "",
   });
 
-  const { dailyVideos, addVideo, updateVideo, deleteVideo } = useData();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingVideo, setEditingVideo] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("showingDate");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [open, setOpen] = useState(false);
 
-  const itemsPerPage = 10;
+  const { loading, setQuery, data } = useGetCall(SERVICE.DAILYVIDEOS, {
+    avoidFetch: false,
+  });
 
-  // Filter and sort videos
-  const filteredVideos = dailyVideos
-    .filter(
-      (video) =>
-        video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        video.description.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      const aValue = a[sortBy];
-      const bValue = b[sortBy];
-      if (sortOrder === "asc") {
-        return aValue > bValue ? 1 : -1;
-      }
-      return aValue < bValue ? 1 : -1;
+  const { loading: deleteLoading, Delete: DeleteDailyVideo } = useActionCall(
+    SERVICE.DAILYVIDEOS
+  );
+  const BlogAPI = () => {
+    setQuery(filter);
+  };
+  useEffect(() => {
+    BlogAPI();
+  }, [filter]);
+
+  const ApplyFilter = (query: any = undefined) => {
+    let filter = query ? query : extractFilterOnQuery([]);
+    setFilter((prv) => ({
+      ...prv,
+      filter: filter,
+      search: prv.search,
+      pageNo: 1,
+    }));
+  };
+
+  const ConfirmDeleteModal = async (value: string) => {
+    const swalWithTailwind = Swal.mixin({
+      customClass: {
+        confirmButton:
+          "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md shadow-sm transition-all duration-200 ml-3",
+        cancelButton:
+          "bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-md shadow-sm transition-all duration-200",
+        popup:
+          "rounded-xl shadow-2xl border border-gray-200 bg-white p-6 dark:bg-gray-800 dark:border-gray-700",
+        title: "text-lg font-semibold text-gray-800 dark:text-gray-100",
+        htmlContainer: "text-gray-600 dark:text-gray-300",
+      },
+      buttonsStyling: false,
     });
 
-  const totalPages = Math.ceil(filteredVideos.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedVideos = filteredVideos.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
-
-  const handleAddVideo = () => {
-    setEditingVideo(null);
-    setIsModalOpen(true);
-  };
-
-  const handleEditVideo = (video) => {
-    setEditingVideo(video);
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteVideo = (videoId) => {
-    if (window.confirm("Are you sure you want to delete this video?")) {
-      deleteVideo(videoId, "daily");
-    }
-  };
-
-  const handleSaveVideo = (videoData) => {
-    if (editingVideo) {
-      updateVideo(editingVideo.id, videoData, "daily");
-    } else {
-      addVideo({ ...videoData, type: "daily" }, "daily");
-    }
-    setIsModalOpen(false);
-    setEditingVideo(null);
+    swalWithTailwind
+      .fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel!",
+        reverseButtons: true,
+        padding: "2em",
+        backdrop: true,
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          const resp = await DeleteDailyVideo(value);
+          if (resp) {
+            BlogAPI();
+            Swal.fire({
+              icon: "success",
+              title: "Deleted!",
+              text: "Your record has been deleted successfully.",
+              confirmButtonText: "OK",
+              customClass: {
+                confirmButton:
+                  "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
+              },
+            });
+          }
+        }
+      });
   };
 
   return (
@@ -113,7 +232,7 @@ export default function DailyVideos() {
       </div>
 
       {/* Filters and Search */}
-      <div className="bg-white shadow-sm rounded-xl border border-gray-200 mb-6">
+      {/* <div className="bg-white shadow-sm rounded-xl border border-gray-200 mb-6">
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-2">
@@ -157,170 +276,41 @@ export default function DailyVideos() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      {/* Videos Table */}
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Video
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Title & Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Showing Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Source
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedVideos.map((video) => (
-                <tr key={video.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                        <VideoIcon className="w-6 h-6 text-white" />
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">
-                      {video.title}
-                    </div>
-                    <div className="text-sm text-gray-500 max-w-xs truncate">
-                      {video.description}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center text-sm text-gray-900">
-                      <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                      {new Date(video.showingDate).toLocaleDateString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        video.youtubeLink
-                          ? "bg-red-100 text-red-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {video.youtubeLink ? "YouTube" : "Direct Upload"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
-                      <button
-                        onClick={() =>
-                          window.open(video.youtubeLink || "#", "_blank")
-                        }
-                        className="text-blue-600 hover:text-blue-900 p-1"
-                        title="View Video"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleEditVideo(video)}
-                        className="text-indigo-600 hover:text-indigo-900 p-1"
-                        title="Edit Video"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteVideo(video.id)}
-                        className="text-red-600 hover:text-red-900 p-1"
-                        title="Delete Video"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() =>
-                  setCurrentPage(Math.min(totalPages, currentPage + 1))
-                }
-                disabled={currentPage === totalPages}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{startIndex + 1}</span>{" "}
-                  to{" "}
-                  <span className="font-medium">
-                    {Math.min(startIndex + itemsPerPage, filteredVideos.length)}
-                  </span>{" "}
-                  of{" "}
-                  <span className="font-medium">{filteredVideos.length}</span>{" "}
-                  results
-                </p>
-              </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                          page === currentPage
-                            ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                            : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                        } ${page === 1 ? "rounded-l-md" : ""} ${
-                          page === totalPages ? "rounded-r-md" : ""
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    )
-                  )}
-                </nav>
-              </div>
-            </div>
-          </div>
-        )}
+        <DataTable
+          columns={Columns}
+          data={data?.data ?? []}
+          pageSize={filter.pageSize}
+          currentPage={filter.pageNo}
+          totalRecords={data?.pageInfo?.total_records ?? 0}
+          onPageChange={(page: any) =>
+            setFilter((prv) => ({ ...prv, pageNo: page }))
+          }
+          sortBy={filter.sortBy}
+          sortDir={filter.sortDir}
+          setSort={(sortData: any) => {
+            setFilter((prv) => ({
+              ...prv,
+              sortBy: sortData.key ?? "",
+              sortDir: sortData.sort ?? "",
+            }));
+          }}
+          enableSerial={true}
+          isLoading={loading}
+          setPageSize={(pageSize: number) => {
+            setFilter((prv) => ({ ...prv, pageNo: 1, pageSize: pageSize }));
+          }}
+        />
       </div>
+
+      {/* Tabel Format */}
 
       {/* Video Modal */}
 
       {/* Form Modals */}
       {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal />}
-      <VideoModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveVideo}
-        video={editingVideo}
-        type="daily"
-      />
     </div>
   );
 }
