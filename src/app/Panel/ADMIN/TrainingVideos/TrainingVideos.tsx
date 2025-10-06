@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Calendar,
-  HelpCircle,
-  Eye,
-} from "lucide-react";
+import { Plus, Edit, Trash2, Calendar, HelpCircle, Eye } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { MODAL_OPEN } from "@/constants/others";
 import TrainingVideoFormModal from "@/components/FormModals/TrainingVideoModal/TrainingVideoFormModal";
+import TraningQuizFormModal from "@/components/FormModals/TraningQuizModal/TraningQuizFormModal";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import UIHelpers from "@/utils/UIhelper";
@@ -25,11 +19,9 @@ export default function TrainingVideos() {
       render: (index: any, row: any) => {
         console.log(row);
         return (
-        <div className="flex items-center">
+          <div className="flex items-center">
             <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">
-                {row.day}
-              </span>
+              <span className="text-white font-bold">{row.day}</span>
             </div>
             <div className="ml-3">
               <div className="text-sm font-medium text-gray-900">
@@ -38,7 +30,7 @@ export default function TrainingVideos() {
             </div>
           </div>
         );
-      }
+      },
     },
     {
       title: "Title & Description",
@@ -48,7 +40,10 @@ export default function TrainingVideos() {
           <div className="text-sm font-medium text-gray-900" title={row.title}>
             {UIHelpers.truncateText(row.title, 100)}
           </div>
-          <div className="text-sm text-gray-500 max-w-xs truncate" title={row.description}>
+          <div
+            className="text-sm text-gray-500 max-w-xs truncate"
+            title={row.description}
+          >
             {UIHelpers.truncateText(row.description, 100)}
           </div>
         </div>
@@ -60,13 +55,13 @@ export default function TrainingVideos() {
       sortable: true,
       render: (index: any, row: any) => {
         const dayMap: { [key: string]: string } = {
-          '1': 'Monday',
-          '2': 'Tuesday',
-          '3': 'Wednesday',
-          '4': 'Thursday',
-          '5': 'Friday',
-          '6': 'Saturday',
-          '7': 'Sunday'
+          "1": "Monday",
+          "2": "Tuesday",
+          "3": "Wednesday",
+          "4": "Thursday",
+          "5": "Friday",
+          "6": "Saturday",
+          "7": "Sunday",
         };
         return (
           <div className="flex items-center text-sm text-gray-900">
@@ -81,26 +76,22 @@ export default function TrainingVideos() {
       key: "quiz",
       render: (index: any, row: any) => (
         <div className="flex items-center">
-          {row.quiz ? (
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              <span className="text-sm text-green-600 font-medium">
-                {row.quiz.questions?.length || 0} Question{row.quiz.questions?.length !== 1 ? 's' : ''}
-              </span>
-            </div>
-          ) : (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                // TODO: Implement handleAddQuiz function
-                // handleAddQuiz(row);
-              }}
-              className="inline-flex items-center px-2 py-1 border border-orange-300 rounded text-xs font-medium text-orange-700 bg-orange-50 hover:bg-orange-100"
-            >
-              <HelpCircle className="w-3 h-3 mr-1" />
-              Add Quiz
-            </button>
-          )}
+          <button
+            onClick={() =>
+              updateSearchParam({
+                options: {
+                  Modal: MODAL_OPEN.TRAINING_VIDEO_QUIZ_MODAL,
+                  TrainingVideoId: row.id,
+                  Title: row?.title,
+                  ...(row?.quiz?.id ? { Edit: row.quiz.id } : {}),
+                },
+              })
+            }
+            className="inline-flex items-center px-2 py-1 border border-orange-300 rounded text-xs font-medium text-orange-700 bg-orange-50 hover:bg-orange-100"
+          >
+            <HelpCircle className="w-3 h-3 mr-1" />
+            {row?.quiz?.id ? "Edit" : "Add"} Quiz
+          </button>
         </div>
       ),
     },
@@ -124,10 +115,8 @@ export default function TrainingVideos() {
       key: "video_path",
       render: (index: any, row: any) => (
         <div className="flex items-center justify-start space-x-2">
-           <button
-            onClick={() =>
-              window.open(row.youtube_link || "#", "_blank")
-            }
+          <button
+            onClick={() => window.open(row.youtube_link || "#", "_blank")}
             className="text-blue-600 hover:text-blue-900 p-1"
             title="View Video"
           >
@@ -136,7 +125,10 @@ export default function TrainingVideos() {
           <button
             onClick={() =>
               updateSearchParam({
-                options: { Modal: MODAL_OPEN.TRAINING_VIDEO_MODAL, Edit: row.id },
+                options: {
+                  Modal: MODAL_OPEN.TRAINING_VIDEO_MODAL,
+                  Edit: row.id,
+                },
               })
             }
             className="text-indigo-600 hover:text-indigo-900 p-1"
@@ -158,6 +150,7 @@ export default function TrainingVideos() {
 
   const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
+  const TrainingVideoId = searchParams.get("TrainingVideoId") || undefined;
   const [filter, setFilter] = useState(defaultFilter);
 
   const { loading, setQuery, data } = useGetCall(SERVICE.TRAININGVIDEOS, {
@@ -273,7 +266,7 @@ export default function TrainingVideos() {
           </div>
         </div>
       </div>
-        {/* Filters and Search */}
+      {/* Filters and Search */}
       <FilterTab
         filter={filter}
         setFilter={setFilter}
@@ -294,7 +287,12 @@ export default function TrainingVideos() {
       </div>
 
       {/* Training Video Form Modal */}
+
       {Modal == MODAL_OPEN.TRAINING_VIDEO_MODAL && <TrainingVideoFormModal  recoilApi={TrainingVideoAPI}/>}
+      {Modal == MODAL_OPEN.TRAINING_VIDEO_QUIZ_MODAL && TrainingVideoId && (
+        <TraningQuizFormModal recoilApi={TrainingVideoAPI}/>
+      )}
+
     </div>
   );
 }

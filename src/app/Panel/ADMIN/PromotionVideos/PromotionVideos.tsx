@@ -16,6 +16,7 @@ import UIHelpers from "@/utils/UIhelper";
 import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
 import PromotionVideoFormModal from "@/components/FormModals/PromotionVideoModal/PromotionVideoFormModal";
+import PromotionQuizFormModal from "@/components/FormModals/PromotionQuizModal/PromotionQuizFormModal";
 
 export default function PROMOTIONVIDEOS() {
   const getSessionIcon = (session) => {
@@ -36,12 +37,12 @@ export default function PROMOTIONVIDEOS() {
         console.log(row);
         return (
           <div className="flex items-center">
-          <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-            <Trophy className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+              <Trophy className="w-6 h-6 text-white" />
+            </div>
           </div>
-        </div>
         );
-      }
+      },
     },
     {
       title: "Title & Description",
@@ -51,7 +52,10 @@ export default function PROMOTIONVIDEOS() {
           <div className="text-sm font-medium text-gray-900" title={row.title}>
             {UIHelpers.truncateText(row.title, 100)}
           </div>
-          <div className="text-sm text-gray-500 max-w-xs truncate" title={row.description}>
+          <div
+            className="text-sm text-gray-500 max-w-xs truncate"
+            title={row.description}
+          >
             {UIHelpers.truncateText(row.description, 100)}
           </div>
         </div>
@@ -67,9 +71,7 @@ export default function PROMOTIONVIDEOS() {
               row.session_type
             )}`}
           >
-            <span className="mr-1">
-              {getSessionIcon(row.session_type)}
-            </span>
+            <span className="mr-1">{getSessionIcon(row.session_type)}</span>
             {row.session_type === 1 ? "Morning" : "Evening"}
           </span>
         </div>
@@ -93,26 +95,22 @@ export default function PROMOTIONVIDEOS() {
       key: "quiz",
       render: (index: any, row: any) => (
         <div className="flex items-center">
-          {row.quiz ? (
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              <span className="text-sm text-green-600 font-medium">
-                {row.quiz.questions?.length || 0} Question{row.quiz.questions?.length !== 1 ? 's' : ''}
-              </span>
-            </div>
-          ) : (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                // TODO: Implement handleAddQuiz function
-                // handleAddQuiz(row);
-              }}
-              className="inline-flex items-center px-2 py-1 border border-orange-300 rounded text-xs font-medium text-orange-700 bg-orange-50 hover:bg-orange-100"
-            >
-              <HelpCircle className="w-3 h-3 mr-1" />
-              Add Quiz
-            </button>
-          )}
+          <button
+            onClick={() =>
+              updateSearchParam({
+                options: {
+                  Modal: MODAL_OPEN.PROMOTION_VIDEO_QUIZ_MODAL,
+                  PromotionVideoId: row.id,
+                  Title: row?.title,
+                  ...(row?.quiz?.id ? { Edit: row.quiz.id } : {}),
+                },
+              })
+            }
+            className="inline-flex items-center px-2 py-1 border border-orange-300 rounded text-xs font-medium text-orange-700 bg-orange-50 hover:bg-orange-100"
+          >
+            <HelpCircle className="w-3 h-3 mr-1" />
+            {row?.quiz?.id ? "Edit" : "Add"} Quiz
+          </button>
         </div>
       ),
     },
@@ -135,10 +133,8 @@ export default function PROMOTIONVIDEOS() {
       title: "Order",
       key: "video_order",
       render: (index: any, row: any) => (
-        <span
-          className="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
-        >
-         {row.video_order}
+        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
+          {row.video_order}
         </span>
       ),
     },
@@ -147,10 +143,8 @@ export default function PROMOTIONVIDEOS() {
       key: "video_path",
       render: (index: any, row: any) => (
         <div className="flex items-center justify-start space-x-2">
-           <button
-            onClick={() =>
-              window.open(row.youtube_link || "#", "_blank")
-            }
+          <button
+            onClick={() => window.open(row.youtube_link || "#", "_blank")}
             className="text-blue-600 hover:text-blue-900 p-1"
             title="View Video"
           >
@@ -159,7 +153,10 @@ export default function PROMOTIONVIDEOS() {
           <button
             onClick={() =>
               updateSearchParam({
-                options: { Modal: MODAL_OPEN.PROMOTION_VIDEO_MODAL, Edit: row.id },
+                options: {
+                  Modal: MODAL_OPEN.PROMOTION_VIDEO_MODAL,
+                  Edit: row.id,
+                },
               })
             }
             className="text-indigo-600 hover:text-indigo-900 p-1"
@@ -181,6 +178,7 @@ export default function PROMOTIONVIDEOS() {
 
   const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
+  const PromotionVideoId = searchParams.get("PromotionVideoId") || undefined;
   const [filter, setFilter] = useState(defaultFilter);
 
   const { loading, setQuery, data } = useGetCall(SERVICE.PROMOTIONVIDEOS, {
@@ -304,7 +302,7 @@ export default function PROMOTIONVIDEOS() {
           </div>
         </div>
       </div>
-        {/* Filters and Search */}
+      {/* Filters and Search */}
       <FilterTab
         filter={filter}
         setFilter={setFilter}
@@ -325,7 +323,12 @@ export default function PROMOTIONVIDEOS() {
       </div>
 
       {/* Training Video Form Modal */}
+
       {Modal == MODAL_OPEN.PROMOTION_VIDEO_MODAL && <PromotionVideoFormModal  recoilApi={PromotionVideoAPI}/>}
+      {Modal == MODAL_OPEN.PROMOTION_VIDEO_QUIZ_MODAL && PromotionVideoId && (
+        <PromotionQuizFormModal  recoilApi={PromotionVideoAPI}/>
+      )}
+
     </div>
   );
 }

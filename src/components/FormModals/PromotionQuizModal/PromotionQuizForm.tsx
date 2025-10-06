@@ -149,7 +149,7 @@ const PromotionQuizForm = ({
     setErrors,
   } = useFormik({
     initialValues: {
-      promotion_video_id: 444, // Temporary static ID, replace as needed
+      promotion_video_id: data?.promotion_video_id,
       is_active: true,
       questions: data?.questions
         ? transformQuestionsFromResponse(data?.questions)
