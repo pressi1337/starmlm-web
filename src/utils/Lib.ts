@@ -72,6 +72,15 @@ const Lib = {
         return result;
     },
 
+    breakTextWhileSpace(name: string) {
+        const nameParts = name.split(' ');
+        if (nameParts.length > 1) {
+            return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
+        }
+        return name[0].toUpperCase();
+    },
+
+
     selectOptions(value, OPTIONS: any = []) {
         return OPTIONS.find((item: any) => item.value == value)
     }

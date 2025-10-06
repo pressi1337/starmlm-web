@@ -245,13 +245,6 @@ export default function DailyVideos() {
           }}
         />
       </div>
-
-      {/* Tabel Format */}
-
-      {/* Video Modal */}
-
-      {/* Form Modals */}
-      {/* {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal />} */}
       {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal recoilApi={DailyVideoAPI} />}
     </div>
   );

@@ -44,22 +44,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => {
     return null;
   });
-  const { loading, fetchApi: getUser } = useGetCall(SERVICE.DAILYVIDEOS, {
-    avoidFetch: false,
-  });
-  const fetchUser = async () => {
-    const { data } = await getUser({});
-    console.log({ data, loading });
-    setIsLoading(false);
 
-    //setUser
-  };
   useEffect(() => {
     let token: string | null | undefined = Lib.getCookies("session-token");
     let decordToken: JwtPayload = token ? Lib.DecodeJwt(token) : null;
     if (token && decordToken?.role !== undefined) {
       setRole(decordToken?.role);
-      fetchUser();
+      setUser({
+        name: decordToken?.username,
+        id: decordToken?.id,
+        username: decordToken?.username,
+        role: decordToken?.role,
+      });
+      setIsLoading(false);
     } else {
       logout();
     }

@@ -15,7 +15,7 @@ interface ActionCallResponse {
         payload: any,
         message?: string
     ) => Promise<any>;
-    // Patch: () => Promise<void>;
+    Patch: (payload: any, message?: string | undefined) => Promise<any>;
     Delete: (recordId: string, message?: string) => Promise<any>;
     Upload: (rawFile: any, message?: string) => Promise<any>;
 }
@@ -176,6 +176,81 @@ const useActionCall = (url: string): ActionCallResponse => {
         },
         [navigate, url]
     );
+    const Patch = useCallback(
+        async (
+            payload: any = {},
+            message = "Update Successfull"
+        ): Promise<any> => {
+            recoilInitialState();
+            try {
+                const authToken = Lib.getCookies("session-token");
+                setLoading(true);
+
+                const response = await fetch(`${BASE_URL}${SERVICE[url] ?? url}`, {
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${authToken ?? ""}`,
+                    },
+                    method: "PATCH",
+                    body: JSON.stringify(payload),
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        setLoading(false);
+                        Lib.removeCookies("session-token")
+
+                        const jData = await response.json();
+                        toast.error(jData.message)
+                        navigate.replace("/login");
+                        return;
+                    } else if (response.status === 500) {
+                        throw new Error("Server Error, Please Try Later");
+                    } else if (response.status === 400) {
+                        setLoading(false);
+                        const jData = await response.json();
+                        toast.error(jData.message)
+                        return;
+                    } else if (response.status === 422) {
+                        setLoading(false);
+                        const jData = await response.json();
+
+
+                        const err: any = {};
+
+
+                        for (const key in jData.errors) {
+                            if (jData.errors[key] && jData.errors[key].length > 0) {
+                                err[key] = jData.errors[key][0];
+                            }
+                        }
+
+                        console.log({ err })
+                        setError(err)
+                        // toast.error(jData.message)
+                        return;
+                    } else {
+                        throw new Error("Network Error");
+                    }
+                }
+                if (message) {
+                    toast.success(message);
+                }
+                const jsonData = await response.json();
+                setData(jsonData);
+                setLoading(false);
+                return jsonData;
+            } catch (error: any) {
+                setLoading(false);
+
+
+                toast.error(error.message)
+                setError(error.message);
+            }
+        },
+        [navigate, url]
+    );
     const Delete = useCallback(
         async (
             recordId = '',
@@ -294,7 +369,8 @@ const useActionCall = (url: string): ActionCallResponse => {
         Post,
         Put,
         Delete,
-        Upload
+        Upload,
+        Patch
     };
 }
 

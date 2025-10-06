@@ -12,6 +12,9 @@ export const SERVICE: any = {
     TRAININGVIDEOQUIZES: "training-video-quizzes",
     PROMOTIONVIDEOS: "promotion-videos",
     PROMOTIONVIDEOQUIZES: "promotion-video-quizzes",
-    AUTHuSER: "auth-user",
-    REFERRALS: 'referrals'
+    GET_PROFILE: "auth-user",
+    REFERRALS: 'referrals',
+    PROFILE_UPDATE: "update-personal-details",
+    CHANGE_PASSWORD: "changepassword"
+
 }
