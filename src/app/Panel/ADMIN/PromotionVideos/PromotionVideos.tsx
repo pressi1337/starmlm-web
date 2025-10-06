@@ -191,12 +191,12 @@ export default function PROMOTIONVIDEOS() {
     SERVICE.PROMOTIONVIDEOS
   );
 
-  const TrainingVideoAPI = () => {
+  const PromotionVideoAPI = () => {
     setQuery(filter);
   };
 
   useEffect(() => {
-    TrainingVideoAPI();
+    PromotionVideoAPI();
   }, [filter]);
 
   const ConfirmDeleteModal = async (value: string) => {
@@ -325,7 +325,7 @@ export default function PROMOTIONVIDEOS() {
       </div>
 
       {/* Training Video Form Modal */}
-      {Modal == MODAL_OPEN.PROMOTION_VIDEO_MODAL && <PromotionVideoFormModal />}
+      {Modal == MODAL_OPEN.PROMOTION_VIDEO_MODAL && <PromotionVideoFormModal  recoilApi={PromotionVideoAPI}/>}
     </div>
   );
 }

@@ -101,13 +101,13 @@ const Sidebar = ({
         icon: Users,
         color: "from-purple-500 to-violet-600",
       });
-      baseItems.push({
-        id: "pin-requests",
-        label: "Pin Requests",
-        path: "/portal/admin/pin-requests",
-        icon: Settings,
-        color: "from-teal-500 to-cyan-600",
-      });
+      // baseItems.push({
+      //   id: "pin-requests",
+      //   label: "Pin Requests",
+      //   path: "/portal/admin/pin-requests",
+      //   icon: Settings,
+      //   color: "from-teal-500 to-cyan-600",
+      // });
       baseItems.push({
         id: "referral-settings",
         label: "Referral Settings",

@@ -9,10 +9,18 @@ import {
   Calendar,
   Award,
 } from "lucide-react";
+import DailyVideoFormModal from "@/components/FormModals/DailyVideoModal/DailyVideoFormModal";
+import { MODAL_OPEN } from "@/constants/others";
+import { useQueryParams } from "@/hooks";
+import TrainingVideoFormModal from "@/components/FormModals/TrainingVideoModal/TrainingVideoFormModal";
+import PromotionVideoFormModal from "@/components/FormModals/PromotionVideoModal/PromotionVideoFormModal";
+import UserFormModal from "@/components/FormModals/UserModal/UserFormModal";
 
 export default function Dashboard() {
   const { dailyVideos, trainingVideos, promotionVideos, pinRequests } =
     useData();
+    const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
+    const Modal = searchParams.get("Modal") || undefined;
 
   const stats = [
     {
@@ -138,9 +146,9 @@ export default function Dashboard() {
               Recent Activities
             </h3>
           </div>
-          <div className="p-6">
-            <div className="flow-root">
-              <ul className="-mb-8">
+          <div className=" flex items-center justify-center h-full">
+              <p>Coming Soon</p>
+              {/* <ul className="-mb-8">
                 {recentActivities.map((activity, activityIdx) => (
                   <li key={activity.id}>
                     <div className="relative pb-8">
@@ -170,8 +178,7 @@ export default function Dashboard() {
                     </div>
                   </li>
                 ))}
-              </ul>
-            </div>
+              </ul> */}
           </div>
         </div>
 
@@ -182,25 +189,49 @@ export default function Dashboard() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-2 gap-4">
-              <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
+              <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
+                onClick={() =>
+                  updateSearchParam({
+                    options: { Modal: MODAL_OPEN.DAILY_VIDEO_MODAL },
+                  })
+                }
+              >
                 <Video className="w-8 h-8 text-gray-400 mb-2" />
                 <span className="text-sm font-medium text-gray-900">
                   Add Daily Video
                 </span>
               </button>
-              <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors">
+              <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors"
+               onClick={() =>
+                  updateSearchParam({
+                    options: { Modal: MODAL_OPEN.TRAINING_VIDEO_MODAL },
+                  })
+                }
+              >
                 <Trophy className="w-8 h-8 text-gray-400 mb-2" />
                 <span className="text-sm font-medium text-gray-900">
                   Add Training
                 </span>
               </button>
-              <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors">
+              <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors"
+                onClick={() =>
+                  updateSearchParam({
+                    options: { Modal: MODAL_OPEN.PROMOTION_VIDEO_MODAL },
+                  })
+                }
+              >
                 <Award className="w-8 h-8 text-gray-400 mb-2" />
                 <span className="text-sm font-medium text-gray-900">
                   Add Promotion
                 </span>
               </button>
-              <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors">
+              <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors"
+               onClick={() =>
+                updateSearchParam({
+                  options: { Modal: MODAL_OPEN.USER_MODAL },
+                })
+              }
+              >
                 <Users className="w-8 h-8 text-gray-400 mb-2" />
                 <span className="text-sm font-medium text-gray-900">
                   Manage Users
@@ -248,6 +279,10 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal />}
+      {Modal == MODAL_OPEN.TRAINING_VIDEO_MODAL && <TrainingVideoFormModal />}
+      {Modal == MODAL_OPEN.PROMOTION_VIDEO_MODAL && <PromotionVideoFormModal />}
+      {Modal == MODAL_OPEN.USER_MODAL && <UserFormModal />}
     </div>
   );
 }
