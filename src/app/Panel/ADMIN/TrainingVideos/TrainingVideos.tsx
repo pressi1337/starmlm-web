@@ -294,7 +294,7 @@ export default function TrainingVideos() {
       </div>
 
       {/* Training Video Form Modal */}
-      {Modal == MODAL_OPEN.TRAINING_VIDEO_MODAL && <TrainingVideoFormModal />}
+      {Modal == MODAL_OPEN.TRAINING_VIDEO_MODAL && <TrainingVideoFormModal  recoilApi={TrainingVideoAPI}/>}
     </div>
   );
 }
