@@ -27,6 +27,7 @@ const TrainingVideoForm = ({
 }: any) => {
   const { values, handleChange, errors, handleSubmit, setErrors } = useFormik({
     initialValues: {
+      title: data?.title ?? "",
       description: data?.description ?? "",
       youtube_link: data?.youtube_link ?? "",
       session_type: data?.session_type ?? OPTIONS.SESSION_TYPE[0],
