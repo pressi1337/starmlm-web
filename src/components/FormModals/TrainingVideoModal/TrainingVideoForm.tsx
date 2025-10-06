@@ -30,7 +30,8 @@ const TrainingVideoForm = ({
       title: data?.title ?? "",
       description: data?.description ?? "",
       youtube_link: data?.youtube_link ?? "",
-      // type: "1",
+      day: data?.day?.toString() ?? "",
+      session_type: data?.session_type?.toString() ?? "",
       is_active: "1",
     },
     onSubmit: async (values: any) => {
