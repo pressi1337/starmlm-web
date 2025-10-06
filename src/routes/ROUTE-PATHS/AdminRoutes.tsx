@@ -3,6 +3,7 @@ import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
 import PortalLayout from "@/layout/PortalLayout";
 import Loadable from "@/components/ui/Loadable";
+import path from "path";
 
 const AdminDashboard = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/Dashboard/Dashboard"))
@@ -27,6 +28,9 @@ const ReferralSettings = Loadable(
 );
 const PinRequests = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/PinRequests/PinRequests"))
+);
+const UserProfile = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/ProfileSettings/Profile"))
 );
 const AdminRoutes = {
   path: "portal/admin",
@@ -63,6 +67,10 @@ const AdminRoutes = {
     {
       path: "pin-requests",
       element: <PinRequests />,
+    },
+    {
+      path: "profile-settings",
+      element: <UserProfile />,
     },
   ],
 };
