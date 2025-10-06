@@ -15,7 +15,6 @@ import DataTable from "@/components/DataTable";
 import UIHelpers from "@/utils/UIhelper";
 import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
-import UserFormModal from "@/components/FormModals/UserModal/UserFormModal";
 
 export default function DailyVideos() {
   const Columns: any = [
@@ -253,7 +252,7 @@ export default function DailyVideos() {
 
       {/* Form Modals */}
       {/* {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal />} */}
-      {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <UserFormModal />}
+      {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal />}
     </div>
   );
 }
