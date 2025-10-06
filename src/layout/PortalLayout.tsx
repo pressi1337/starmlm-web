@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Menu,
   Bell,
@@ -164,8 +164,10 @@ const PortalLayout = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
+                    <Link to="/portal/admin/profile-settings" className="flex">
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
                   </DropdownMenuItem>
                   {/* <DropdownMenuItem>
                     <Settings className="mr-2 h-4 w-4" />
