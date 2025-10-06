@@ -17,7 +17,7 @@ const TraningQuizFormModal = ({ recoilApi = () => {} }) => {
     Post,
     Put,
     error: RequestError,
-    loading:actionLoading
+    loading: actionLoading,
   } = useActionCall(SERVICE.TRAININGVIDEOQUIZES);
   const { data, loading, error } = useGetCall(SERVICE.TRAININGVIDEOQUIZES, {
     avoidFetch: !Boolean(Edit),

@@ -48,11 +48,11 @@ const Question = [
     questionEn: "",
     questionTa: "",
     timeLimit: 30,
-    promotor: 10,
-    promotor1: 5,
+    promotor: 1,
+    promotor1: 2,
     promotor2: 3,
-    promotor3: 2,
-    promotor4: 1,
+    promotor3: 4,
+    promotor4: 5,
     choices: [
       { textEn: "", textTa: "", isCorrect: false },
       { textEn: "", textTa: "", isCorrect: false },
@@ -149,7 +149,7 @@ const TraningQuizForm = ({
     setErrors,
   } = useFormik({
     initialValues: {
-      training_video_id: 444, // Temporary static ID, replace as needed
+      training_video_id: data?.training_video_id,
       is_active: true,
       questions: data?.questions
         ? transformQuestionsFromResponse(data?.questions)
