@@ -17,6 +17,7 @@ const PromotionQuizFormModal = ({ recoilApi = () => {} }) => {
     Post,
     Put,
     error: RequestError,
+    loading:actionLoading
   } = useActionCall(SERVICE.PROMOTIONVIDEOQUIZES);
   const { data, loading, error } = useGetCall(SERVICE.PROMOTIONVIDEOQUIZES, {
     avoidFetch: !Boolean(Edit),
@@ -66,6 +67,7 @@ const PromotionQuizFormModal = ({ recoilApi = () => {} }) => {
           onAction={onAction}
           RequestError={RequestError}
           onCloseModal={closeModal}
+          loading={actionLoading}
         />
       )}
     </Modal>

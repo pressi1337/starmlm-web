@@ -11,7 +11,7 @@ const UserFormModal = ({ recoilApi = () => {} }) => {
   const { searchParams, updateSearchParam } = useQueryParams();
   const Edit = searchParams.get("Edit") || undefined;
   const Duplicate = searchParams.get("Duplicate") || undefined;
-  const { Post, Put, error: RequestError } = useActionCall(SERVICE.REFERRALS);
+  const { Post, Put, error: RequestError, loading:actionLoading } = useActionCall(SERVICE.REFERRALS);
   const { data, loading, error } = useGetCall(SERVICE.REFERRALS, {
     avoidFetch: !Boolean(Edit ?? Duplicate),
     key: Edit ?? Duplicate,
@@ -58,6 +58,7 @@ const UserFormModal = ({ recoilApi = () => {} }) => {
           onAction={onAction}
           RequestError={RequestError}
           onCloseModal={closeModal}
+          loading={actionLoading}
         />
       )}
     </Modal>

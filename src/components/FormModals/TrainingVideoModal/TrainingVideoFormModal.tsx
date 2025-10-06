@@ -15,6 +15,7 @@ const TrainingVideoFormModal = ({ recoilApi = () => {} }) => {
     Post,
     Put,
     error: RequestError,
+    loading:actionLoading
   } = useActionCall(SERVICE.TRAININGVIDEOS);
   const { data, loading, error } = useGetCall(SERVICE.TRAININGVIDEOS, {
     avoidFetch: !Boolean(Edit ?? Duplicate),
@@ -61,6 +62,7 @@ const TrainingVideoFormModal = ({ recoilApi = () => {} }) => {
           onAction={onAction}
           RequestError={RequestError}
           onCloseModal={closeModal}
+          loading={actionLoading}
         />
       )}
     </Modal>

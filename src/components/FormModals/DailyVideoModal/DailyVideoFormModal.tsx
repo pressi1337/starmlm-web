@@ -11,7 +11,7 @@ const DailyVideoFormModal = ({ recoilApi = () => {} }) => {
   const { searchParams, updateSearchParam } = useQueryParams();
   const Edit = searchParams.get("Edit") || undefined;
   const Duplicate = searchParams.get("Duplicate") || undefined;
-  const { Post, Put, error: RequestError } = useActionCall(SERVICE.DAILYVIDEOS);
+  const { Post, Put, error: RequestError, loading:actionLoading } = useActionCall(SERVICE.DAILYVIDEOS);
   const { data, loading, error } = useGetCall(SERVICE.DAILYVIDEOS, {
     avoidFetch: !Boolean(Edit ?? Duplicate),
     key: Edit ?? Duplicate,
@@ -54,6 +54,7 @@ const DailyVideoFormModal = ({ recoilApi = () => {} }) => {
           onAction={onAction}
           RequestError={RequestError}
           onCloseModal={closeModal}
+          loading={actionLoading}
         />
       )}
     </Modal>
