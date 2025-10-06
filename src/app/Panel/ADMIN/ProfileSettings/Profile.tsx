@@ -1,31 +1,110 @@
-import { useState } from "react";
-import SelectInput from "@/components/ui/SelectInput";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import * as Yup from "yup";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import InputText from "@/components/ui/InputText";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, Mail, Lock, Bell, Shield, Palette, Globe, Camera } from "lucide-react";
+import { User, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useActionCall, useGetCall } from "@/hooks";
+import { SERVICE } from "@/constants/services";
+import Loader from "@/components/ui/Loader";
+import Lib from "@/utils/Lib";
+import { useFormik } from "formik";
+import Btn from "@/components/ui/Btn";
+import { useEffect, useMemo } from "react";
 
+export const USER_VALIDATION_SCHEMA = Yup.object().shape({
+  first_name: Yup.string().required("Required First Name*"),
+  last_name: Yup.string().required("Required Last Name*"),
+  mobile: Yup.string().required("Required Mobile number*"),
+});
+
+export const PASSWORD_VALIDATION_SCHEMA = Yup.object().shape({
+  current_password: Yup.string().required("Password is required*"),
+  new_password: Yup.string()
+    .required("Password is required*")
+    .min(8, "Password must be at least 8 characters"),
+  password_confirmation: Yup.string()
+    .required("Password confirmation is required*")
+    .oneOf(
+      [Yup.ref("new_password"), null],
+      "Confirm Passwords must match New Password"
+    ),
+});
 const Profile = () => {
-  const { toast } = useToast();
+  const {
+    loading,
+    setQuery,
+    data: profileData,
+  } = useGetCall(SERVICE.GET_PROFILE);
 
-  const handleSaveProfile = () => {
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been saved successfully.",
-    });
-  };
+  const {
+    Patch: updateProfile,
+    error: RequestError,
+    loading: profileUploadingLoading,
+  } = useActionCall(SERVICE.PROFILE_UPDATE);
 
-  const handleChangePassword = () => {
-    toast({
-      title: "Password updated",
-      description: "Your password has been changed successfully.",
-    });
-  };
+  const { Patch: updatePassword, loading: passwordUploadingLoading } =
+    useActionCall(SERVICE.CHANGE_PASSWORD);
+
+  const {
+    values: profileValues,
+    handleChange: handleProfileChange,
+    errors: profileErros,
+    handleSubmit: handleProfileSubmit,
+    setErrors: setProfileError,
+  } = useFormik({
+    initialValues: {
+      first_name: profileData?.data?.first_name ?? "",
+      last_name: profileData?.data?.last_name ?? "",
+      mobile: profileData?.data?.mobile ?? "",
+    },
+    onSubmit: async (values: any) => {
+      let response = await updateProfile(values);
+      if (response) {
+        setQuery({});
+      }
+    },
+
+    validateOnChange: false,
+    validateOnBlur: true,
+    validationSchema: USER_VALIDATION_SCHEMA,
+    enableReinitialize: true,
+  });
+
+  const {
+    values: passwordValues,
+    handleChange: handleChangePassword,
+    errors: passwordErrors,
+    handleSubmit: handlePasswordSubmit,
+  } = useFormik({
+    initialValues: {
+      current_password: "",
+      new_password: "",
+    },
+    onSubmit: async (values: any) => {
+      updatePassword(values);
+    },
+
+    validateOnChange: false,
+    validateOnBlur: true,
+    validationSchema: PASSWORD_VALIDATION_SCHEMA,
+  });
+
+  useMemo(() => {
+    if (RequestError && Object.keys(RequestError).length) {
+      setProfileError(RequestError);
+    }
+  }, [RequestError]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -36,118 +115,150 @@ const Profile = () => {
         </p>
       </div>
       {/* Main Content */}
-      <main className="container p-0">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Profile Overview Card */}
-          <Card className="lg:col-span-1 shadow-soft h-fit">
-            <CardHeader className="text-center">
-              <div className="flex flex-col items-center gap-4">
-                <div className="relative">
-                  <Avatar className="w-24 h-24 border-4 border-background shadow-elegant">
-                    <div className="w-full h-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
-                      <AvatarFallback className="bg-transparent text-white text-3xl font-bold">
-                        JD
-                      </AvatarFallback>
+      {loading ? (
+        <Loader />
+      ) : (
+        <main className="container p-0">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Profile Overview Card */}
+            <Card className="lg:col-span-1 shadow-soft h-fit">
+              <CardHeader className="text-center">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="relative">
+                    <Avatar className="w-24 h-24 border-4 border-background shadow-elegant">
+                      <div className="w-full h-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
+                        <AvatarFallback className="bg-transparent text-white text-3xl font-bold">
+                          {Lib.breakTextWhileSpace(
+                            `${profileData?.data?.first_name} ${profileData?.data?.last_name}`
+                          )}
+                        </AvatarFallback>
+                      </div>
+                    </Avatar>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-xl">
+                      {profileData?.data?.first_name}{" "}
+                      {profileData?.data?.last_name}
+                    </h3>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+
+            {/* Settings Forms */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Personal Information */}
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <User className="w-5 h-5 text-primary" />
+                    <CardTitle>Personal Information</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Update your personal details and information
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <InputText
+                        name="first_name"
+                        label="First Name *"
+                        placeholder="Enter First Name"
+                        onChange={handleProfileChange}
+                        error={profileErros}
+                        value={profileValues}
+                      />
                     </div>
-                  </Avatar>
-                  <button className="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-elegant hover:scale-110 transition-transform">
-                    <Camera className="w-4 h-4 text-white" />
-                  </button>
-                </div>
-                <div>
-                  <h3 className="font-bold text-xl">John Doe</h3>
-                  {/* <p className="text-sm text-muted-foreground">john@example.com</p> */}
-                </div>
-              </div>
-            </CardHeader>
-            {/* <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                <span className="text-sm text-muted-foreground">Member since</span>
-                <span className="text-sm font-medium">Jan 2024</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                <span className="text-sm text-muted-foreground">Account type</span>
-                <span className="text-sm font-medium">Premium</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                <span className="text-sm text-muted-foreground">Status</span>
-                <span className="text-sm font-medium text-green-600">Active</span>
-              </div>
-            </CardContent> */}
-          </Card>
-
-          {/* Settings Forms */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Personal Information */}
-            <Card className="shadow-soft">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <User className="w-5 h-5 text-primary" />
-                  <CardTitle>Personal Information</CardTitle>
-                </div>
-                <CardDescription>Update your personal details and information</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <InputText id="firstName" defaultValue="John" />
+                    <div className="space-y-2">
+                      <InputText
+                        name="last_name"
+                        label="Last Name *"
+                        placeholder="Enter Last Name"
+                        onChange={handleProfileChange}
+                        error={profileErros}
+                        value={profileValues}
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <InputText id="lastName" defaultValue="Doe" />
+                    <InputText
+                      name="mobile"
+                      label="Mobile *"
+                      type="number"
+                      placeholder="Phone Number"
+                      onChange={handleProfileChange}
+                      error={profileErros}
+                      value={profileValues}
+                    />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <InputText id="phone" type="tel" placeholder="+1 (555) 000-0000" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="bio">Bio</Label>
-                  <Textarea 
-                    id="bio" 
-                    placeholder="Tell us about yourself..." 
-                    className="min-h-[100px]"
+                  <Btn
+                    title="Save Changes"
+                    onClick={handleProfileSubmit}
+                    isLoading={profileUploadingLoading}
                   />
-                </div>
-                <Button onClick={handleSaveProfile} className="w-full md:w-auto">
-                  Save Changes
-                </Button>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Security Settings */}
-            <Card className="shadow-soft">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Lock className="w-5 h-5 text-primary" />
-                  <CardTitle>Security</CardTitle>
-                </div>
-                <CardDescription>Manage your password and security preferences</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Current Password</Label>
-                  <InputText id="currentPassword" type="password" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="newPassword">New Password</Label>
-                  <InputText id="newPassword" type="password" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <InputText id="confirmPassword" type="password" />
-                </div>
-                <Button onClick={handleChangePassword} className="w-full md:w-auto">
-                  Update Password
-                </Button>
-                
-                <Separator className="my-4" />
-              </CardContent>
-            </Card>
+              {/* Security Settings */}
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Lock className="w-5 h-5 text-primary" />
+                    <CardTitle>Security</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Manage your password and security preferences
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <InputText
+                      name="current_password"
+                      label="Current Password *"
+                      type="password"
+                      placeholder="Enter Current Password"
+                      onChange={handleChangePassword}
+                      error={passwordErrors}
+                      value={passwordValues}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <InputText
+                      name="new_password"
+                      label="Password *"
+                      type="password"
+                      placeholder="Enter New Password"
+                      onChange={handleChangePassword}
+                      error={passwordErrors}
+                      value={passwordValues}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <InputText
+                      name="password_confirmation"
+                      label="Password *"
+                      type="password"
+                      placeholder="Enter Confirm Password"
+                      onChange={handleChangePassword}
+                      error={passwordErrors}
+                      value={passwordValues}
+                    />
+                  </div>
+
+                  <Btn
+                    title="Update Password"
+                    onClick={handlePasswordSubmit}
+                    isLoading={passwordUploadingLoading}
+                  />
+
+                  <Separator className="my-4" />
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      )}
     </div>
   );
 };

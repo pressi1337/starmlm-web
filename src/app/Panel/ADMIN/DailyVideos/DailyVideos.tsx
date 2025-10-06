@@ -252,8 +252,7 @@ export default function DailyVideos() {
       {/* Video Modal */}
 
       {/* Form Modals */}
-      {/* {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal />} */}
-      {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <UserFormModal />}
+      {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal />}
     </div>
   );
 }
