@@ -3,7 +3,8 @@ import type { ReactNode } from "react";
 import axiosInstance from "@/utils/CustomAxios";
 import { API_AUTH_USER } from "@/utils/http/apiPaths";
 import Lib from "@/utils/Lib";
-import { useQueryParams } from "@/hooks";
+import { useGetCall, useQueryParams } from "@/hooks";
+import { SERVICE } from "@/constants/services";
 
 interface User {
   id: string;
@@ -43,14 +44,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => {
     return null;
   });
+  const { loading, fetchApi: getUser } = useGetCall(SERVICE.DAILYVIDEOS, {
+    avoidFetch: false,
+  });
+  const fetchUser = async () => {
+    const { data } = await getUser({});
+    console.log({ data, loading });
+    setIsLoading(false);
 
+    //setUser
+  };
   useEffect(() => {
     let token: string | null | undefined = Lib.getCookies("session-token");
     let decordToken: JwtPayload = token ? Lib.DecodeJwt(token) : null;
-    console.log(decordToken);
     if (token && decordToken?.role !== undefined) {
       setRole(decordToken?.role);
-      setIsLoading(false);
+      fetchUser();
     } else {
       logout();
     }

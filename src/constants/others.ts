@@ -324,6 +324,37 @@ export const URL_QUERY: any = {
 
 }
 
+
+export const OPTIONS = {
+    DAYS: [
+        { label: 'Sunday', value: '0' },
+        { label: 'Monday', value: '1' },
+        { label: 'Tuesday', value: '2' },
+        { label: 'Wednesday', value: '3' },
+        { label: 'Thursday', value: '4' },
+        { label: 'Friday', value: '5' },
+        { label: 'Saturday', value: '6' },
+    ],
+    SESSION_TYPE: [
+        { value: "1", label: "Morning Session" },
+        { value: "2", label: "Evening Session" },
+    ],
+    VIDEO_ORDER: [{ value: "1", label: "1" },
+    { value: "2", label: "2" },
+    { value: "3", label: "3" },
+    { value: "4", label: "4" },],
+    LANG: [
+        { value: "Hindi", label: "Hindi" },
+        { value: "Kannada", label: "Kannada" },
+        { value: "Malayalam", label: "Malayalam" },
+        { value: "Tamil", label: "Tamil" },
+        { value: "Telugu", label: "Telugu" },
+        { value: "English", label: "English" }
+    ]
+
+
+}
+
 export const ROLE: any = {
     ADMIN: 0,
     SUPER_ADMIN: 1,

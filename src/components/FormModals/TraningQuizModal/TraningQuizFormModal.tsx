@@ -65,6 +65,7 @@ const TraningQuizFormModal = ({ recoilApi = () => {} }) => {
           data={data?.data ?? { training_video_id: TrainingVideoId ?? 0 }}
           onAction={onAction}
           RequestError={RequestError}
+          onCloseModal={closeModal}
         />
       )}
     </Modal>

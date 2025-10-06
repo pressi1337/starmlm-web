@@ -8,8 +8,10 @@ import SelectInput from "@/components/ui/SelectInput";
 import moment from "moment";
 import Btn from "@/components/ui/Btn";
 import CheckboxInput from "@/components/ui/CheckboxInput";
+import { OPTIONS } from "@/constants/others";
+import Lib from "@/utils/Lib";
 
-export const BLOG_SCHEMA = Yup.object().shape({
+export const VALIDATION_SCHEMA = Yup.object().shape({
   title: Yup.string().required("Required Title*"),
   description: Yup.string().required("Required description*"),
   youtube_link: Yup.string(),
@@ -31,8 +33,9 @@ const PromotionVideoForm = ({
       showing_date: data?.showing_date
         ? moment(new Date(data?.showing_date)).format("YYYY-MM-DD")
         : "",
-      type: "1",
-      is_active: "1",
+      session_type: data?.session_type ?? OPTIONS.SESSION_TYPE[0],
+      video_order: data?.video_order ?? OPTIONS.VIDEO_ORDER[0],
+      is_active: data?.is_active ?? 1,
     },
     onSubmit: async (values: any) => {
       onAction(values);
@@ -40,7 +43,7 @@ const PromotionVideoForm = ({
 
     validateOnChange: false,
     validateOnBlur: true,
-    validationSchema: BLOG_SCHEMA,
+    validationSchema: VALIDATION_SCHEMA,
   });
 
   useMemo(() => {
@@ -72,12 +75,7 @@ const PromotionVideoForm = ({
           name="video_order"
           label="Video Order *"
           placeholder="Select Video Order"
-          options={[
-            { value: "1", label: "1" },
-            { value: "2", label: "2" },
-            { value: "3", label: "3" },
-            { value: "4", label: "4" },
-          ]}
+          options={OPTIONS.VIDEO_ORDER}
           onChange={handleChange}
           error={errors}
           value={values}
@@ -86,10 +84,7 @@ const PromotionVideoForm = ({
           name="session_type"
           label="Video Time Range *"
           placeholder="Select a time range"
-          options={[
-            { value: "1", label: "Morning Session" },
-            { value: "2", label: "Evening Session" },
-          ]}
+          options={OPTIONS.SESSION_TYPE}
           onChange={handleChange}
           error={errors}
           value={values}

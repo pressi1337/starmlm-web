@@ -11,7 +11,11 @@ const PromotionVideoFormModal = ({ recoilApi = () => {} }) => {
   const { searchParams, updateSearchParam } = useQueryParams();
   const Edit = searchParams.get("Edit") || undefined;
   const Duplicate = searchParams.get("Duplicate") || undefined;
-  const { Post, Put, error: RequestError } = useActionCall(SERVICE.PROMOTIONVIDEOS);
+  const {
+    Post,
+    Put,
+    error: RequestError,
+  } = useActionCall(SERVICE.PROMOTIONVIDEOS);
   const { data, loading, error } = useGetCall(SERVICE.PROMOTIONVIDEOS, {
     avoidFetch: !Boolean(Edit ?? Duplicate),
     key: Edit ?? Duplicate,
@@ -45,7 +49,10 @@ const PromotionVideoFormModal = ({ recoilApi = () => {} }) => {
   };
 
   return (
-    <Modal title={`${Edit ? "Edit" : "Add"} Promotion Video`} onClose={closeModal}>
+    <Modal
+      title={`${Edit ? "Edit" : "Add"} Promotion Video`}
+      onClose={closeModal}
+    >
       {loading ? (
         <Loader />
       ) : (
@@ -53,6 +60,7 @@ const PromotionVideoFormModal = ({ recoilApi = () => {} }) => {
           data={data?.data ?? {}}
           onAction={onAction}
           RequestError={RequestError}
+          onCloseModal={closeModal}
         />
       )}
     </Modal>

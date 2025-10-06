@@ -13,4 +13,5 @@ export const SERVICE: any = {
     PROMOTIONVIDEOS: "promotion-videos",
     PROMOTIONVIDEOQUIZES: "promotion-video-quizzes",
     AUTHuSER: "auth-user",
+    REFERRALS: 'referrals'
 }
