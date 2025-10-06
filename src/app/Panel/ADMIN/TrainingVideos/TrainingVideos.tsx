@@ -287,10 +287,12 @@ export default function TrainingVideos() {
       </div>
 
       {/* Training Video Form Modal */}
-      {Modal == MODAL_OPEN.TRAINING_VIDEO_MODAL && <TrainingVideoFormModal />}
+
+      {Modal == MODAL_OPEN.TRAINING_VIDEO_MODAL && <TrainingVideoFormModal  recoilApi={TrainingVideoAPI}/>}
       {Modal == MODAL_OPEN.TRAINING_VIDEO_QUIZ_MODAL && TrainingVideoId && (
-        <TraningQuizFormModal />
+        <TraningQuizFormModal recoilApi={TrainingVideoAPI}/>
       )}
+
     </div>
   );
 }

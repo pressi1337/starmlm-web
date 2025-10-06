@@ -245,9 +245,7 @@ export default function DailyVideos() {
           }}
         />
       </div>
-
-
-      {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal />}
+      {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal recoilApi={DailyVideoAPI} />}
     </div>
   );
 }
