@@ -8,9 +8,9 @@ import SelectInput from "@/components/ui/SelectInput";
 import moment from "moment";
 import Btn from "@/components/ui/Btn";
 import CheckboxInput from "@/components/ui/CheckboxInput";
+import { OPTIONS } from "@/constants/others";
 
-export const BLOG_SCHEMA = Yup.object().shape({
-  title: Yup.string().required("Required Title*"),
+export const VALIDATION_SCHEMA = Yup.object().shape({
   description: Yup.string().required("Required description*"),
   day: Yup.string().required("Required day*"),
   session_type: Yup.string().required("Required session type*"),
@@ -27,12 +27,14 @@ const TrainingVideoForm = ({
 }: any) => {
   const { values, handleChange, errors, handleSubmit, setErrors } = useFormik({
     initialValues: {
-      title: data?.title ?? "",
       description: data?.description ?? "",
       youtube_link: data?.youtube_link ?? "",
-      day: data?.day?.toString() ?? "",
-      session_type: data?.session_type?.toString() ?? "",
-      is_active: "1",
+      session_type: data?.session_type ?? OPTIONS.SESSION_TYPE[0],
+      day: data?.day ?? OPTIONS.DAYS[0],
+      // showing_date: data?.showing_date
+      //   ? moment(new Date(data?.showing_date)).format("YYYY-MM-DD")
+      //   : "",
+      is_active: data?.is_active ?? 1,
     },
     onSubmit: async (values: any) => {
       onAction(values);
@@ -40,7 +42,7 @@ const TrainingVideoForm = ({
 
     validateOnChange: false,
     validateOnBlur: true,
-    validationSchema: BLOG_SCHEMA,
+    validationSchema: VALIDATION_SCHEMA,
   });
 
   useMemo(() => {
@@ -72,15 +74,7 @@ const TrainingVideoForm = ({
           name="day"
           label="Day *"
           placeholder="Select Day"
-          options={[
-            { value: "1", label: "Monday" },
-            { value: "2", label: "Tuesday" },
-            { value: "3", label: "Wednesday" },
-            { value: "4", label: "Thursday" },
-            { value: "5", label: "Friday" },
-            { value: "6", label: "Saturday" },
-            { value: "7", label: "Sunday" },
-          ]}
+          options={OPTIONS.DAYS}
           onChange={handleChange}
           error={errors}
           value={values}
@@ -89,10 +83,7 @@ const TrainingVideoForm = ({
           name="session_type"
           label="Video Time Range *"
           placeholder="Select a time range"
-          options={[
-            { value: "1", label: "Morning Session" },
-            { value: "2", label: "Evening Session" },
-          ]}
+          options={OPTIONS.SESSION_TYPE}
           onChange={handleChange}
           error={errors}
           value={values}

@@ -53,6 +53,7 @@ const DailyVideoFormModal = ({ recoilApi = () => {} }) => {
           data={data?.data ?? {}}
           onAction={onAction}
           RequestError={RequestError}
+          onCloseModal={closeModal}
         />
       )}
     </Modal>

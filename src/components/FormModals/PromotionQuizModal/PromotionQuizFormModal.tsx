@@ -65,6 +65,7 @@ const PromotionQuizFormModal = ({ recoilApi = () => {} }) => {
           data={data?.data ?? { promotion_video_id: PromotionVideoId ?? 0 }}
           onAction={onAction}
           RequestError={RequestError}
+          onCloseModal={closeModal}
         />
       )}
     </Modal>

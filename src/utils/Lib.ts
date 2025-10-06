@@ -72,6 +72,10 @@ const Lib = {
         return result;
     },
 
+    selectOptions(value, OPTIONS: any = []) {
+        return OPTIONS.find((item: any) => item.value == value)
+    }
+
 }
 
 export default Lib

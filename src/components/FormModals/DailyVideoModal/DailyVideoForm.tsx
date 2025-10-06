@@ -6,8 +6,10 @@ import InputTextArea from "@/components/ui/InputTextArea";
 import YouTubeInputText from "@/components/ui/YouTubeInput";
 import moment from "moment";
 import Btn from "@/components/ui/Btn";
+import { Check } from "lucide-react";
+import CheckboxInput from "@/components/ui/CheckboxInput";
 
-export const BLOG_SCHEMA = Yup.object().shape({
+export const VALIDATION_SCHEMA = Yup.object().shape({
   title: Yup.string().required("Required Title*"),
   description: Yup.string().required("Required description*"),
   youtube_link: Yup.string(),
@@ -30,7 +32,7 @@ const DailyVideoForm = ({
         ? moment(new Date(data?.showing_date)).format("YYYY-MM-DD")
         : "",
       type: "1",
-      is_active: "1",
+      is_active: data?.is_active ?? 1,
     },
     onSubmit: async (values: any) => {
       onAction(values);
@@ -38,7 +40,7 @@ const DailyVideoForm = ({
 
     validateOnChange: false,
     validateOnBlur: true,
-    validationSchema: BLOG_SCHEMA,
+    validationSchema: VALIDATION_SCHEMA,
   });
 
   useMemo(() => {
@@ -81,6 +83,13 @@ const DailyVideoForm = ({
           onChange={handleChange}
           error={errors}
           value={values}
+        />
+        <CheckboxInput
+          label="Is Active?"
+          name="is_active"
+          value={values}
+          onChange={handleChange}
+          error={errors}
         />
         <div className="flex justify-end space-x-3 pt-4">
           <Btn title="Cancel" onClick={onCloseModal} uiType="secondary" />

@@ -11,7 +11,11 @@ const YoutubeFormModal = ({ recoilApi = () => {} }) => {
   const { searchParams, updateSearchParam } = useQueryParams();
   const Edit = searchParams.get("Edit") || undefined;
   const Duplicate = searchParams.get("Duplicate") || undefined;
-  const { Post, Put, error: RequestError } = useActionCall(SERVICE.YOUTUBECHANNELS);
+  const {
+    Post,
+    Put,
+    error: RequestError,
+  } = useActionCall(SERVICE.YOUTUBECHANNELS);
   const { data, loading, error } = useGetCall(SERVICE.YOUTUBECHANNELS, {
     avoidFetch: !Boolean(Edit ?? Duplicate),
     key: Edit ?? Duplicate,
@@ -45,7 +49,10 @@ const YoutubeFormModal = ({ recoilApi = () => {} }) => {
   };
 
   return (
-    <Modal title={`${Edit ? "Edit" : "Add"} YouTube Channel`} onClose={closeModal}>
+    <Modal
+      title={`${Edit ? "Edit" : "Add"} YouTube Channel`}
+      onClose={closeModal}
+    >
       {loading ? (
         <Loader />
       ) : (
@@ -53,6 +60,7 @@ const YoutubeFormModal = ({ recoilApi = () => {} }) => {
           data={data?.data ?? {}}
           onAction={onAction}
           RequestError={RequestError}
+          onCloseModal={closeModal}
         />
       )}
     </Modal>
