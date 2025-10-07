@@ -36,17 +36,14 @@ export default function Dashboard() {
   // Fetch counts for each module
   const { data: dailyVideosData, loading: dailyVideosLoading } = useGetCall(SERVICE.DAILYVIDEOS);
   const { data: trainingVideosData, loading: trainingVideosLoading } = useGetCall(SERVICE.TRAININGVIDEOS);
-
   const { data: promotionVideosData, loading: promotionVideosLoading } = useGetCall(SERVICE.PROMOTIONVIDEOS);
-
   const { data: youtubeChannelsData, loading: youtubeChannelsLoading } = useGetCall(SERVICE.YOUTUBECHANNELS);
-
   const isLoading = dailyVideosLoading || trainingVideosLoading || promotionVideosLoading || youtubeChannelsLoading;
 
   const stats: StatCard[] = [
     {
       name: "Daily Videos",
-      value: isLoading ? '...' : dailyVideosData?.data?.total_records || 0,
+      value: isLoading ? '...' : dailyVideosData?.data?.length || 0,
       icon: Video,
       color: "bg-blue-500",
       change: "",
@@ -54,7 +51,7 @@ export default function Dashboard() {
     },
     {
       name: "Training Videos",
-      value: isLoading ? '...' : trainingVideosData?.data?.total_records || 0,
+      value: isLoading ? '...' : trainingVideosData?.data?.length || 0,
       icon: Trophy,
       color: "bg-green-500",
       change: "",
@@ -62,7 +59,7 @@ export default function Dashboard() {
     },
     {
       name: "Promotion Videos",
-      value: isLoading ? '...' : promotionVideosData?.data?.total_records || 0,
+      value: isLoading ? '...' : promotionVideosData?.data?.length || 0,
       icon: Award,
       color: "bg-purple-500",
       change: "",
@@ -70,7 +67,7 @@ export default function Dashboard() {
     },
     {
       name: "YouTube Channels",
-      value: isLoading ? '...' : youtubeChannelsData?.data?.total_records || 0,
+      value: isLoading ? '...' : youtubeChannelsData?.data?.length || 0,
       icon: Users,
       color: "bg-red-500",
       change: "",
