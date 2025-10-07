@@ -55,36 +55,6 @@ export default function Login() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-xl rounded-2xl sm:px-10 border border-gray-100">
-          {/* Login Method Toggle */}
-          <div className="mb-6">
-            <div className="flex bg-gray-100 rounded-xl p-1">
-              <button
-                type="button"
-                onClick={() => setLoginMethod("username")}
-                className={`flex-1 flex items-center justify-center py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  loginMethod === "username"
-                    ? "bg-white text-blue-600 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                <User className="w-4 h-4 mr-2" />
-                Username
-              </button>
-              <button
-                type="button"
-                onClick={() => setLoginMethod("mobile")}
-                className={`flex-1 flex items-center justify-center py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  loginMethod === "mobile"
-                    ? "bg-white text-blue-600 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                <Smartphone className="w-4 h-4 mr-2" />
-                Mobile
-              </button>
-            </div>
-          </div>
-
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Username/Mobile Input */}
             <div>
