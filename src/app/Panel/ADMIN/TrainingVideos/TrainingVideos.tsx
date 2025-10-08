@@ -9,6 +9,7 @@ import DataTable from "@/components/DataTable";
 import UIHelpers from "@/utils/UIhelper";
 import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
+import Lib from "@/utils/Lib";
 
 export default function TrainingVideos() {
   const Columns: any = [
@@ -20,14 +21,25 @@ export default function TrainingVideos() {
         console.log(row);
         return (
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">{row.day}</span>
-            </div>
-            <div className="ml-3">
-              <div className="text-sm font-medium text-gray-900">
-                Day {row.day}
+            <a href={
+                  row?.video_path
+                    ? Lib.CloudPath(row?.video_path)
+                    : row?.youtube_link
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
+              <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold">{row.day}</span>
               </div>
-            </div>
+              <div className="ml-3">
+                <div className="text-sm font-medium text-gray-900">
+                  Day {row.day}
+                </div>
+              </div>
+            </a>
+
           </div>
         );
       },
@@ -38,13 +50,13 @@ export default function TrainingVideos() {
       render: (index: any, row: any) => (
         <div>
           <div className="text-sm font-medium text-gray-900" title={row.title}>
-            {UIHelpers.truncateText(row.title, 100)}
+            {UIHelpers.truncateText(row.title, 60)}
           </div>
           <div
             className="text-sm text-gray-500 max-w-xs truncate"
             title={row.description}
           >
-            {UIHelpers.truncateText(row.description, 100)}
+            {UIHelpers.truncateText(row.description, 60)}
           </div>
         </div>
       ),
@@ -75,7 +87,7 @@ export default function TrainingVideos() {
       title: "Quiz",
       key: "quiz",
       render: (index: any, row: any) => (
-        <div className="flex items-center">
+        <div className="flex items-center whitespace-nowrap">
           <button
             onClick={() =>
               updateSearchParam({
@@ -115,13 +127,17 @@ export default function TrainingVideos() {
       key: "video_path",
       render: (index: any, row: any) => (
         <div className="flex items-center justify-start space-x-2">
-          <button
-            onClick={() => window.open(row.youtube_link || "#", "_blank")}
+          <a 
+            href={row?.video_path
+              ? Lib.CloudPath(row?.video_path)
+              : row?.youtube_link || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-900 p-1"
             title="View Video"
           >
             <Eye className="w-4 h-4" />
-          </button>
+          </a>
           <button
             onClick={() =>
               updateSearchParam({
