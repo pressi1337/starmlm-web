@@ -49,18 +49,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let token: string | null | undefined = Lib.getCookies("session-token");
     let decordToken: JwtPayload = token ? Lib.DecodeJwt(token) : null;
     if (token && decordToken?.role !== undefined) {
-      setRole(decordToken?.role);
-      setUser({
-        name: decordToken?.username,
-        id: decordToken?.id,
-        username: decordToken?.username,
-        role: decordToken?.role,
-      });
-      setIsLoading(false);
+      setUpUserData(decordToken);
     } else {
       logout();
     }
   }, []);
+
+  const setUpUserData = (decordToken: any) => {
+    setRole(decordToken?.role);
+    setUser((prv) => ({
+      name: decordToken?.username,
+      id: decordToken?.id,
+      username: decordToken?.username,
+      role: decordToken?.role,
+    }));
+    setIsLoading(false);
+  };
 
   // Function to handle logout
   const logout = (redirect: boolean = false) => {
@@ -78,8 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         value: token,
         exp: decordToken?.exp ? Lib.expiredSec(decordToken?.exp ?? 1) : 1,
       });
-      setRole(decordToken?.role);
-      setIsLoading(false);
+      setUpUserData(decordToken);
       navigate.push(
         TokenDecoder?.role == 2
           ? "/portal/user/dashboard"

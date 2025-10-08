@@ -2,6 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { Cloud } from "lucide-react";
 
 const Lib = {
 
@@ -79,8 +80,14 @@ const Lib = {
         }
         return name[0].toUpperCase();
     },
+    CloudPath(fileName: string) {
 
-
+        return `https://api.starupworld.com/storage/uploads/final/${fileName}`
+    },
+    getFileName(uniqueFilename = '') {
+        let filename = uniqueFilename.split("_");
+        return filename[filename.length - 1] ?? ''
+    },
     selectOptions(value, OPTIONS: any = []) {
         return OPTIONS.find((item: any) => item.value == value)
     }
