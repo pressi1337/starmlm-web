@@ -32,6 +32,9 @@ const WithdrawRequests = Loadable(
 const YoutubeChannels = Loadable(
   lazy(() => import("@/app/Panel/USER/YoutubeChannels"))
 );
+const Profile = Loadable(
+  lazy(() => import("@/app/Panel/USER/UserDashboard/ProfileSettings/Profile"))
+);
 const NormalUserRoutes = {
   path: "portal/user",
   element: <PortalLayout />,
@@ -72,6 +75,10 @@ const NormalUserRoutes = {
     {
       path: "youtube-channels",
       element: <YoutubeChannels />,
+    },
+    {
+      path: "profile-settings",
+      element: <Profile />,
     },
   ],
 };
