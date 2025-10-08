@@ -17,11 +17,21 @@ import Lib from "@/utils/Lib";
 import { useFormik } from "formik";
 import Btn from "@/components/ui/Btn";
 import {useMemo } from "react";
+import { OPTIONS } from "@/constants/others";
+import { STATE_OPTIONS, DISTRICTS_OPTIONS } from "@/constants/state";
+import SelectInput from "@/components/ui/SelectInput";
 
 export const USER_VALIDATION_SCHEMA = Yup.object().shape({
   first_name: Yup.string().required("Required First Name*"),
   last_name: Yup.string().required("Required Last Name*"),
   mobile: Yup.string().required("Required Mobile number*"),
+  dob: Yup.string().required("Required Date of Birth*"),
+  nationality: Yup.string().required("Required Nationality*"),
+  state: Yup.string().required("Required State*"),
+  district: Yup.string().required("Required District*"),
+  city: Yup.string().required("Required City*"),
+  pin_code: Yup.string().required("Required Pin Code*"),
+  language: Yup.string().required("Required Language*"),
 });
 
 export const PASSWORD_VALIDATION_SCHEMA = Yup.object().shape({
@@ -52,6 +62,9 @@ const Profile = () => {
   const { Patch: updatePassword, loading: passwordUploadingLoading } =
     useActionCall(SERVICE.CHANGE_PASSWORD);
 
+  const isProfileLocked = profileData?.data?.is_profile_updated === 1;
+  const uploading = profileUploadingLoading || false;
+
   const {
     values: profileValues,
     handleChange: handleProfileChange,
@@ -63,6 +76,14 @@ const Profile = () => {
       first_name: profileData?.data?.first_name ?? "",
       last_name: profileData?.data?.last_name ?? "",
       mobile: profileData?.data?.mobile ?? "",
+      email: profileData?.data?.email ?? "",
+      dob: profileData?.data?.dob ?? "",
+      nationality: profileData?.data?.nationality ?? "",
+      state: profileData?.data?.state ?? "",
+      district: profileData?.data?.district ?? "",
+      city: profileData?.data?.city ?? "",
+      pin_code: profileData?.data?.pin_code ?? "",
+      language: profileData?.data?.language ?? "",
     },
     onSubmit: async (values: any) => {
       let response = await updateProfile(values);
@@ -155,15 +176,23 @@ const Profile = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  { isProfileLocked &&
+                    <div className="text-sm text-yellow-600 bg-yellow-50 px-4 py-2 rounded-md mt-4">
+                      Your profile has been locked and cannot be edited. Please contact support if you need to make changes.
+                    </div>
+                  }
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <InputText
                         name="first_name"
                         label="First Name *"
                         placeholder="Enter First Name"
-                        onChange={handleProfileChange}
-                        error={profileErros}
+                        onChange={isProfileLocked ? undefined : handleProfileChange}
+                        error={isProfileLocked ? {} : profileErros}
                         value={profileValues}
+                        disabled={isProfileLocked}
+                        readOnly={isProfileLocked}
+                        
                       />
                     </div>
                     <div className="space-y-2">
@@ -171,28 +200,136 @@ const Profile = () => {
                         name="last_name"
                         label="Last Name *"
                         placeholder="Enter Last Name"
-                        onChange={handleProfileChange}
-                        error={profileErros}
+                        onChange={isProfileLocked ? undefined : handleProfileChange}
+                        error={isProfileLocked ? {} : profileErros}
                         value={profileValues}
+                        disabled={isProfileLocked}
+                        readOnly={isProfileLocked}
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <InputText
-                      name="mobile"
-                      label="Mobile *"
-                      type="number"
-                      placeholder="Phone Number"
-                      onChange={handleProfileChange}
-                      error={profileErros}
-                      value={profileValues}
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <InputText
+                        name="mobile"
+                        label="Mobile *"
+                        type="tel"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        placeholder="Phone Number"
+                        onChange={isProfileLocked ? undefined : handleProfileChange}
+                        error={isProfileLocked ? {} : profileErros}
+                        value={profileValues || ''}
+                        disabled={isProfileLocked}
+                        readOnly={isProfileLocked}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <InputText
+                        type="Date"
+                        name="dob"
+                        label="Date of Birth *"
+                        placeholder="Enter Date of Birth"
+                        onChange={isProfileLocked ? undefined : handleProfileChange}
+                        error={isProfileLocked ? {} : profileErros}
+                        value={profileValues}
+                        disabled={isProfileLocked}
+                        readOnly={isProfileLocked}
+                      />
+                    </div>
                   </div>
-                  <Btn
-                    title="Save Changes"
-                    onClick={handleProfileSubmit}
-                    isLoading={profileUploadingLoading}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <InputText
+                        name="nationality"
+                        label="Nationality *"
+                        type="text"
+                        placeholder="Nationality"
+                        onChange={isProfileLocked ? undefined : handleProfileChange}
+                        error={isProfileLocked ? {} : profileErros}
+                        value={profileValues}
+                        disabled={isProfileLocked}
+                        readOnly={isProfileLocked}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <SelectInput
+                        name="state"
+                        label="Select State *"
+                        placeholder="Select State"
+                        options={STATE_OPTIONS()}
+                        onChange={isProfileLocked ? undefined : handleProfileChange}
+                        error={isProfileLocked ? {} : profileErros}
+                        value={profileValues}
+                        disabled={isProfileLocked}
+                        readOnly={isProfileLocked}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <div className="space-y-2">
+                      <SelectInput
+                        name="district"
+                        label="Select District *"
+                        placeholder="Select District"
+                        options={DISTRICTS_OPTIONS(profileValues?.state ?? "")}
+                        onChange={isProfileLocked ? undefined : handleProfileChange}
+                        error={isProfileLocked ? {} : profileErros}
+                        value={profileValues}
+                        disabled={isProfileLocked}
+                        readOnly={isProfileLocked}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <InputText
+                        name="city"
+                        label="City *"
+                        placeholder="Enter City"
+                        onChange={isProfileLocked ? undefined : handleProfileChange}
+                        error={isProfileLocked ? {} : profileErros}
+                        value={profileValues}
+                        disabled={isProfileLocked}
+                        readOnly={isProfileLocked}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <InputText
+                        name="pin_code"
+                        label="Pin Code *"
+                        placeholder="Enter Pin Code"
+                        onChange={isProfileLocked ? undefined : handleProfileChange}
+                        error={isProfileLocked ? {} : profileErros}
+                        value={profileValues}
+                        disabled={isProfileLocked}
+                        readOnly={isProfileLocked}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                        <SelectInput
+                          name="language"
+                          label="Select Mother tongue*"
+                          placeholder="Select Mother tongue"
+                          options={OPTIONS.LANG}
+                          onChange={isProfileLocked ? undefined : handleProfileChange}
+                          error={isProfileLocked ? {} : profileErros}
+                          value={profileValues}
+                          disabled={isProfileLocked}
+                          readOnly={isProfileLocked}
+                        />
+                    </div>
+                  </div>
+                  {!isProfileLocked && 
+                    <Btn
+                      title="Save Changes"
+                      type="button"
+                      onClick={handleProfileSubmit}
+                      className="w-fit px-6 mt-4"
+                      isLoading={uploading}
+                    />
+                  }
                 </CardContent>
               </Card>
 

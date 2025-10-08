@@ -17,6 +17,7 @@ import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
 import PromotionVideoFormModal from "@/components/FormModals/PromotionVideoModal/PromotionVideoFormModal";
 import PromotionQuizFormModal from "@/components/FormModals/PromotionQuizModal/PromotionQuizFormModal";
+import Lib from "@/utils/Lib";
 
 export default function PROMOTIONVIDEOS() {
   const getSessionIcon = (session) => {
@@ -50,13 +51,13 @@ export default function PROMOTIONVIDEOS() {
       render: (index: any, row: any) => (
         <div>
           <div className="text-sm font-medium text-gray-900" title={row.title}>
-            {UIHelpers.truncateText(row.title, 100)}
+            {UIHelpers.truncateText(row.title, 60)}
           </div>
           <div
             className="text-sm text-gray-500 max-w-xs truncate"
             title={row.description}
           >
-            {UIHelpers.truncateText(row.description, 100)}
+            {UIHelpers.truncateText(row.description, 60)}
           </div>
         </div>
       ),
@@ -83,7 +84,7 @@ export default function PROMOTIONVIDEOS() {
       sortable: true,
       render: (index: any, row: any) => {
         return (
-          <div className="flex items-center text-sm text-gray-900">
+          <div className="flex items-center text-sm text-gray-900 whitespace-nowrap">
             <Calendar className="w-4 h-4 mr-2 text-gray-400" />
             {row.showing_date}
           </div>
@@ -94,7 +95,7 @@ export default function PROMOTIONVIDEOS() {
       title: "Quiz",
       key: "quiz",
       render: (index: any, row: any) => (
-        <div className="flex items-center">
+        <div className="flex items-center whitespace-nowrap">
           <button
             onClick={() =>
               updateSearchParam({
@@ -143,13 +144,17 @@ export default function PROMOTIONVIDEOS() {
       key: "video_path",
       render: (index: any, row: any) => (
         <div className="flex items-center justify-start space-x-2">
-          <button
-            onClick={() => window.open(row.youtube_link || "#", "_blank")}
+          <a
+            href={row?.video_path
+              ? Lib.CloudPath(row?.video_path)
+              : row?.youtube_link || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-900 p-1"
             title="View Video"
           >
             <Eye className="w-4 h-4" />
-          </button>
+          </a>
           <button
             onClick={() =>
               updateSearchParam({

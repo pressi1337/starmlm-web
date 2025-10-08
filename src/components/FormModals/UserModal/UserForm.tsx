@@ -2,8 +2,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useMemo } from "react";
 import InputText from "@/components/ui/InputText";
-import InputTextArea from "@/components/ui/InputTextArea";
-import YouTubeInputText from "@/components/ui/YouTubeInput";
 import SelectInput from "@/components/ui/SelectInput";
 import moment from "moment";
 import Btn from "@/components/ui/Btn";
@@ -34,7 +32,6 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
     .required("Password confirmation is required*")
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
-
 const UserForm = ({
   data = {},
   onAction = (values: any) => {},
@@ -45,7 +42,7 @@ const UserForm = ({
   const { values, handleChange, errors, handleSubmit, setErrors } = useFormik({
     initialValues: {
       first_name: data?.first_name ?? "",
-      last_name: data?.first_name ?? "",
+      last_name: data?.last_name ?? "",
       dob: data?.dob ?? "",
       mobile: data?.mobile ?? "",
       nationality: data?.nationality ?? "India",
@@ -162,8 +159,8 @@ const UserForm = ({
         />
         <SelectInput
           name="language"
-          label="Select Mother thought*"
-          placeholder="Select Mother thought"
+          label="Select Mother tongue*"
+          placeholder="Select Mother tongue"
           options={OPTIONS.LANG}
           onChange={handleChange}
           error={errors}

@@ -47,10 +47,10 @@ export default function DailyVideos() {
       render: (index: any, row: any) => (
         <div>
           <div className="text-sm font-medium text-gray-900">
-            {UIHelpers.truncateText(row.title, 100)}
+            {UIHelpers.truncateText(row.title, 60)}
           </div>
           <div className="text-sm text-gray-500 max-w-xs truncate">
-            {UIHelpers.truncateText(row.description, 100)}
+            {UIHelpers.truncateText(row.description, 60)}
           </div>
         </div>
       ),
