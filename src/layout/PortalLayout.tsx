@@ -29,6 +29,7 @@ import Header from "./Header/Header";
 import { useAuth } from "@/context/AuthContext";
 import { Outlet } from "react-router-dom";
 import DailyVideoFormModal from "@/components/FormModals/DailyVideoModal/DailyVideoFormModal";
+import { ROLE } from "@/constants/others";
 
 const roleLabels: Record<number, string> = {
   0: "Admin",
@@ -58,7 +59,7 @@ const PortalLayout = () => {
         return "Purchase Orders";
 
       default:
-        return "Admin Panel";
+        return role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN ? "Admin Panel" : "User Panel";
     }
   };
 
@@ -98,7 +99,7 @@ const PortalLayout = () => {
 
               <div className="flex items-center space-x-2">
                 <div className="h-8 w-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">AP</span>
+                  <span className="text-white font-bold text-sm">{role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN ? "AP" : "UP"}</span>
                 </div>
                 <h1 className="text-xl font-bold text-gray-800 dark:text-white">
                   {getPageTitle()}
@@ -164,7 +165,7 @@ const PortalLayout = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem>
-                    <Link to="/portal/admin/profile-settings" className="flex">
+                    <Link to={role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN ? "/portal/admin/profile-settings" : "/portal/user/profile-settings"} className="flex">
                       <User className="mr-2 h-4 w-4" />
                       Profile
                     </Link>

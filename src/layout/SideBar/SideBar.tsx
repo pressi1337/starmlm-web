@@ -43,12 +43,6 @@ const Sidebar = ({
       [id]: !prev[id],
     }));
   };
-
-  const roleLabels = {
-    0: "Admin",
-    2: "User",
-  };
-
   const getMenuItems = () => {
     let baseItems = [];
     baseItems = [
@@ -115,7 +109,7 @@ const Sidebar = ({
         icon: Settings,
         color: "from-sky-500 to-blue-600",
       });
-    } else {
+    } else if (user.role === ROLE.USER) {
       baseItems.push(
         {
           id: "daily-videos",
