@@ -6,13 +6,46 @@ import InputTextArea from "@/components/ui/InputTextArea";
 import YouTubeInputText from "@/components/ui/YouTubeInput";
 import moment from "moment";
 import Btn from "@/components/ui/Btn";
-import { Check } from "lucide-react";
 import CheckboxInput from "@/components/ui/CheckboxInput";
+import FileUpload from "@/components/FileUpload";
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
   title: Yup.string().required("Required Title*"),
   description: Yup.string().required("Required description*"),
-  youtube_link: Yup.string(),
+  youtube_link: Yup.string()
+    .nullable()
+    .test(
+      "youtube-or-video",
+      "Either YouTube link or Video path is required*",
+      function (value) {
+        const { video_path } = this.parent;
+        if (
+          (value && value.trim() !== "") ||
+          (video_path && video_path.trim() !== "")
+        ) {
+          return true;
+        }
+        return false;
+      }
+    ),
+
+  video_path: Yup.string()
+    .nullable()
+    .test(
+      "video-or-youtube",
+      "Either Video path or YouTube link is required*",
+      function (value) {
+        const { youtube_link } = this.parent;
+        if (
+          (value && value.trim() !== "") ||
+          (youtube_link && youtube_link.trim() !== "")
+        ) {
+          return true;
+        }
+        return false;
+      }
+    ),
+
   showing_date: Yup.string().required("Required Date"),
 });
 
@@ -28,6 +61,7 @@ const DailyVideoForm = ({
       title: data?.title ?? "",
       description: data?.description ?? "",
       youtube_link: data?.youtube_link ?? "",
+      video_path: data?.video_path ?? "",
       showing_date: data?.showing_date
         ? moment(new Date(data?.showing_date)).format("YYYY-MM-DD")
         : "",
@@ -48,7 +82,7 @@ const DailyVideoForm = ({
       setErrors(RequestError);
     }
   }, [RequestError]);
-
+  console.log({ values, errors });
   return (
     <div className="max-h-[70vh] overflow-y-auto">
       <form className="space-y-4" onSubmit={handleSubmit}>
@@ -68,12 +102,23 @@ const DailyVideoForm = ({
           error={errors}
           value={values}
         />
-        <YouTubeInputText
-          name="youtube_link"
-          onChange={handleChange}
-          error={errors}
-          value={values}
-        />
+        <div>
+          <div className="space-y-3">
+            <FileUpload
+              name="video_path"
+              onChange={handleChange}
+              error={errors}
+              value={values}
+            />
+            <div className="text-center text-gray-500">OR</div>
+            <YouTubeInputText
+              name="youtube_link"
+              onChange={handleChange}
+              error={errors}
+              value={values}
+            />
+          </div>
+        </div>
 
         <InputText
           type="Date"

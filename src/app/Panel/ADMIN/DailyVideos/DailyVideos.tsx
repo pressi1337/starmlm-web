@@ -15,6 +15,7 @@ import DataTable from "@/components/DataTable";
 import UIHelpers from "@/utils/UIhelper";
 import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
+import Lib from "@/utils/Lib";
 
 export default function DailyVideos() {
   const Columns: any = [
@@ -26,7 +27,11 @@ export default function DailyVideos() {
         <div className="flex items-center">
           <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
             <a
-              href={row?.video_path ?? row?.youtube_link}
+              href={
+                row?.video_path
+                  ? Lib.CloudPath(row?.video_path)
+                  : row?.youtube_link
+              }
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -245,7 +250,9 @@ export default function DailyVideos() {
           }}
         />
       </div>
-      {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal recoilApi={DailyVideoAPI} />}
+      {Modal == MODAL_OPEN.DAILY_VIDEO_MODAL && (
+        <DailyVideoFormModal recoilApi={DailyVideoAPI} />
+      )}
     </div>
   );
 }

@@ -9,12 +9,45 @@ import moment from "moment";
 import Btn from "@/components/ui/Btn";
 import CheckboxInput from "@/components/ui/CheckboxInput";
 import { OPTIONS } from "@/constants/others";
+import FileUpload from "@/components/FileUpload";
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
   description: Yup.string().required("Required description*"),
   day: Yup.string().required("Required day*"),
   session_type: Yup.string().required("Required session type*"),
-  youtube_link: Yup.string(),
+  youtube_link: Yup.string()
+    .nullable()
+    .test(
+      "youtube-or-video",
+      "Either YouTube link or Video path is required*",
+      function (value) {
+        const { video_path } = this.parent;
+        if (
+          (value && value.trim() !== "") ||
+          (video_path && video_path.trim() !== "")
+        ) {
+          return true;
+        }
+        return false;
+      }
+    ),
+
+  video_path: Yup.string()
+    .nullable()
+    .test(
+      "video-or-youtube",
+      "Either Video path or YouTube link is required*",
+      function (value) {
+        const { youtube_link } = this.parent;
+        if (
+          (value && value.trim() !== "") ||
+          (youtube_link && youtube_link.trim() !== "")
+        ) {
+          return true;
+        }
+        return false;
+      }
+    ),
   // showing_date: Yup.string().required("Required Date"),
 });
 
@@ -30,8 +63,8 @@ const TrainingVideoForm = ({
       title: data?.title ?? "",
       description: data?.description ?? "",
       youtube_link: data?.youtube_link ?? "",
-      session_type: data?.session_type ?? OPTIONS.SESSION_TYPE[0],
-      day: data?.day ?? OPTIONS.DAYS[0],
+      session_type: data?.session_type ?? "",
+      day: data?.day ?? "",
       // showing_date: data?.showing_date
       //   ? moment(new Date(data?.showing_date)).format("YYYY-MM-DD")
       //   : "",
@@ -89,12 +122,24 @@ const TrainingVideoForm = ({
           error={errors}
           value={values}
         />
-        <YouTubeInputText
-          name="youtube_link"
-          onChange={handleChange}
-          error={errors}
-          value={values}
-        />
+
+        <div>
+          <div className="space-y-3">
+            <FileUpload
+              name="video_path"
+              onChange={handleChange}
+              error={errors}
+              value={values}
+            />
+            <div className="text-center text-gray-500">OR</div>
+            <YouTubeInputText
+              name="youtube_link"
+              onChange={handleChange}
+              error={errors}
+              value={values}
+            />
+          </div>
+        </div>
         <CheckboxInput
           label="Is Active?"
           name="is_active"

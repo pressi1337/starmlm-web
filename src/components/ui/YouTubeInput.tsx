@@ -10,7 +10,8 @@ const YouTubeInputText = ({
   readOnly = false,
 }: any) => {
   return (
-    <div className="flex items-center space-x-3">
+    <div className="flex items-center space-x-3 p-3 border border-gray-300 rounded-lg">
+      <Youtube className="w-5 h-5 text-red-500" />
       <div className="flex-1">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           {label}
