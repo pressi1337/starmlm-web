@@ -99,8 +99,8 @@ export default function DailyVideoWatch({
         },
         ""
       );
-      setPlaying(false);
     }
+    setPlaying(false);
   };
 
   return (
