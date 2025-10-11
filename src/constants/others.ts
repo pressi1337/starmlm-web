@@ -362,3 +362,8 @@ export const ROLE: any = {
     SUPER_ADMIN: 1,
     USER: 2
 }
+
+export const LANG: any = {
+    EN: 1,
+    TN: 2
+}

@@ -1,3 +1,5 @@
+import { cx } from "class-variance-authority";
+
 const classes = {
   primary:
     "px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
@@ -22,13 +24,14 @@ const Btn: React.FC<ButtonProps> = ({
   type = "button",
   onClick = () => {},
   isLoading = false,
+  className = "",
 }) => {
   return (
     <>
       <button
         disabled={isDisable || isLoading}
         type={type}
-        className={classes[uiType]}
+        className={cx(classes[uiType], className)}
         onClick={onClick}
       >
         {isLoading ? (
