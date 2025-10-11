@@ -90,6 +90,85 @@ const Lib = {
     },
     selectOptions(value, OPTIONS: any = []) {
         return OPTIONS.find((item: any) => item.value == value)
+    },
+    // Converts backend question array (alternating EN/TA) → formatted question list
+    transformQuestionsFromResponse(questions = []) {
+        const formattedQuestions = [];
+
+        for (let i = 0; i < questions.length; i += 2) {
+            const enQuestion = questions[i];
+            const taQuestion = questions[i + 1];
+
+            formattedQuestions.push({
+                id: enQuestion?.id,
+                questionEn: enQuestion?.question ?? "",
+                questionTa: taQuestion?.question ?? "",
+                timeLimit: enQuestion?.time_limit ?? 0,
+                promotor: enQuestion?.promotor,
+                promotor1: enQuestion?.promotor1,
+                promotor2: enQuestion?.promotor2,
+                promotor3: enQuestion?.promotor3,
+                promotor4: enQuestion?.promotor4,
+                choices:
+                    enQuestion?.choices?.map((choice: any, index: any) => ({
+                        id: choice?.id ?? "",
+                        textEn: choice?.choice_value ?? "",
+                        textTa: taQuestion?.choices?.[index]?.choice_value ?? "",
+                        isCorrect: choice?.is_correct ?? false,
+                    })) ?? [],
+            });
+        }
+
+        return formattedQuestions;
+    },
+
+    // Converts formatted question list → payload for backend (both EN + TA)
+    generateQuestionPayload(questions = []) {
+        const payload = [];
+
+        questions.forEach((item) => {
+            const baseData = {
+                time_limit: item?.timeLimit ?? 0,
+                promotor: item?.promotor,
+                promotor1: item?.promotor1,
+                promotor2: item?.promotor2,
+                promotor3: item?.promotor3,
+                promotor4: item?.promotor4,
+            };
+
+            // English entry
+            payload.push({
+                ...baseData,
+                lang_type: 1,
+                question: item?.questionEn ?? "",
+                choices:
+                    item?.choices?.map((c) => ({
+                        lang_type: 1,
+                        choice_value: c?.textEn ?? "",
+                        is_correct: c?.isCorrect ?? false,
+                    })) ?? [],
+            });
+
+            // Tamil entry
+            payload.push({
+                ...baseData,
+                lang_type: 2,
+                question: item?.questionTa ?? "",
+                choices:
+                    item?.choices?.map((c) => ({
+                        lang_type: 2,
+                        choice_value: c?.textTa ?? "",
+                        is_correct: c?.isCorrect ?? false,
+                    })) ?? [],
+            });
+        });
+
+        return payload;
+    },
+
+    getBaseURL() {
+        const baseUrl = `${window.location.protocol}//${window.location.host}`;
+        return baseUrl
     }
 
 }
