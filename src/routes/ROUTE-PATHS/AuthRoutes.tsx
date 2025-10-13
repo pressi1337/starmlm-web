@@ -2,6 +2,7 @@ import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
 import Loadable from "@/components/ui/Loadable";
 import AuthLayout from "@/layout/AuthLayout";
+import Register from "@/app/Auth/Register";
 
 // Lazy-loaded component
 const Login = Loadable(lazy(() => import("../../app/Auth/Login")));
@@ -19,6 +20,10 @@ const AuthRoutes = {
     {
       path: "login",
       element: <Login />,
+    },
+    {
+      path: "register",
+      element: <Register />,
     },
   ],
 };

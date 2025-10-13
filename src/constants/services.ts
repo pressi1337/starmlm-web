@@ -19,4 +19,14 @@ export const SERVICE: any = {
     USER_PROMOTERS: "user-promoters",
     GET_PIN_REQUESTS: "user-promoters/list",
     ACTIVATE_PIN: "activate-pin",
+
+    //User Service endpoint
+    DAILY_VIDEO_STATUS: 'daily-videos-status',
+    DAILY_VIDEO_TODAY: 'daily-videos-today',
+    DAILY_VIDEO_STATUS_UPDATE: 'daily-videos-watched',
+
+
+    USER_TRAINING_CURRENCT: 'user-training-current',
+    TRAINING_STATUS_UPDATE: 'user-day-training-mark-as-completed'
+
 }
