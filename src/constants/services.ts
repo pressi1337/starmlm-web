@@ -15,6 +15,8 @@ export const SERVICE: any = {
     GET_PROFILE: "auth-user",
     REFERRALS: 'referrals',
     PROFILE_UPDATE: "update-personal-details",
-    CHANGE_PASSWORD: "changepassword"
-
+    CHANGE_PASSWORD: "changepassword",
+    USER_PROMOTERS: "user-promoters",
+    GET_PIN_REQUESTS: "user-promoters/list",
+    ACTIVATE_PIN: "activate-pin",
 }

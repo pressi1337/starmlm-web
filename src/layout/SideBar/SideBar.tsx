@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import logo from '@/assets/logo.png';
 import {
   Tooltip,
   TooltipContent,
@@ -186,12 +187,13 @@ const Sidebar = ({
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 h-16">
         {!collapsed && (
           <div className="flex items-center space-x-3">
-            <div className="h-8 w-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <img src={logo} alt="Logo" className="w-12 h-12" />
+            {/* <div className="h-8 w-8 bg-gradient-to-r from-green-600 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
               <LayoutDashboard className="h-5 w-5 text-white" />
-            </div>
+            </div> */}
             <div>
               <h1 className="font-bold text-gray-800 dark:text-white">
-                StarUp
+                Star Up
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400"></p>
             </div>
