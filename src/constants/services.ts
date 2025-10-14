@@ -28,6 +28,7 @@ export const SERVICE: any = {
 
 
     USER_TRAINING_CURRENCT: 'user-training-current',
-    TRAINING_STATUS_UPDATE: 'user-day-training-mark-as-completed'
+    TRAINING_STATUS_UPDATE: 'user-day-training-mark-as-completed',
+    EARNINGS_HISTORY: 'earning-histories',
 
 }
