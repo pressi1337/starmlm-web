@@ -30,8 +30,7 @@ const PinForm = ({
     validateOnBlur: true,
     validationSchema: VALIDATION_SCHEMA,
   });
-  console.log("values",values);
-  const currentLevel = values.current_level ?? "";
+  const currentLevel = data?.user?.current_promoter_level ?? "";
 
   const getLevelName = (level: string | number) => {
     const levelMap: { [key: string]: string } = {
@@ -48,13 +47,40 @@ const PinForm = ({
   const displayCurrentLevel = getLevelName(currentLevel);
 
   const availableOptions = useMemo(() => {
-    if (!currentLevel) {
+    const currentLevelStr = currentLevel.toString();
+    
+    if (!currentLevelStr || currentLevelStr === "") {
       return OPTIONS.PROMOTER_LEVEL.filter(option => option.value === "0");
     }
-
-    const currentLevelNum = parseInt(currentLevel.toString());
-    return OPTIONS.PROMOTER_LEVEL.filter(option => parseInt(option.value) > currentLevelNum);
+    
+    if (currentLevelStr === "0") {
+      return OPTIONS.PROMOTER_LEVEL.filter(option => option.value === "1");
+    }
+    
+    if (currentLevelStr === "1") {
+      return OPTIONS.PROMOTER_LEVEL.filter(option => 
+        ["2", "3", "4"].includes(option.value)
+      );
+    }
+    
+    if (currentLevelStr === "2") {
+      return OPTIONS.PROMOTER_LEVEL.filter(option => 
+        ["3", "4"].includes(option.value)
+      );
+    }
+    
+    if (currentLevelStr === "3") {
+      return OPTIONS.PROMOTER_LEVEL.filter(option => option.value === "4");
+    }
+    
+    if (currentLevelStr === "4") {
+      return [];
+    }
+    
+    return [];
   }, [currentLevel]);
+
+  const isMaxLevel = currentLevel.toString() === "4";
 
   useMemo(() => {
     if (RequestError && Object.keys(RequestError).length) {
@@ -70,18 +96,19 @@ const PinForm = ({
         placeholder="Trainee"
         onChange={handleChange}
         error={errors}
-        value={displayCurrentLevel}
+        value={{ current_level:displayCurrentLevel }}
         disabled
         readOnly
       />
        <SelectInput
           name="level"
           label="Upgrade to Level *"
-          placeholder="Select Upgrade Level"
+          placeholder={isMaxLevel ? "Maximum level reached" : "Select Upgrade Level"}
           options={availableOptions}
           onChange={handleChange}
           error={errors}
           value={values}
+          disabled={isMaxLevel}
         />
          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-medium text-blue-900 mb-2">Important Notes:</h4>
@@ -94,7 +121,12 @@ const PinForm = ({
           </div>
       <div className="flex justify-end space-x-3 pt-4">
         <Btn title="Cancel" onClick={onCloseModal} uiType="secondary" />
-        <Btn title={"Submit Request"} isLoading={loading} onClick={handleSubmit} />
+        <Btn 
+          title={"Submit Request"} 
+          isLoading={loading} 
+          onClick={handleSubmit}
+          disabled={isMaxLevel}
+        />
       </div>
     </form>
   );

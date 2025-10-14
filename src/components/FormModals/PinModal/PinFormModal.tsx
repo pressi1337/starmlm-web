@@ -48,7 +48,7 @@ const PinConfirmationForm = ({ recoilApi = () => {} }) => {
 
   return (
     <Modal
-      title={`${Edit ? "Edit" : "Request Pin Upgrade"}`}
+      title={`${Edit ? "Edit" : "Request Level Upgrade"}`}
       onClose={closeModal}
     >
       {loading ? (

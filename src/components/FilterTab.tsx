@@ -36,6 +36,7 @@ const FilterTab = ({ filter, setFilter, TABLE_FILTER }) => {
                 case "search":
                   return (
                     <SearchInput
+                      key={fields}
                       value={filter[FILTER_FIELD[fields].name]}
                       onChange={(e: any) =>
                         setFilter((prv) => ({
