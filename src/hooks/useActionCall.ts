@@ -62,11 +62,13 @@ const useActionCall = (url: string): ActionCallResponse => {
                         navigate.replace("/login");
                         return;
                     } else if (response.status === 500) {
+                        setError('Server Error, Please Try Later')
                         throw new Error("Server Error, Please Try Later");
                     } else if (response.status === 400) {
                         setLoading(false);
                         const jData = await response.json();
                         toast.error(jData.message)
+                        setError(jData.message)
                         return;
                     } else if (response.status === 422) {
                         setLoading(false);

@@ -45,8 +45,8 @@ const QuizForm = ({
 
       // 2. Build payload for current question
       const newEntry = {
-        questionId: currentQuestion.id,
-        choosedId: choosedId, // null if timed out
+        question_id: currentQuestion.id,
+        choice_id: choosedId, // null if timed out
       };
 
       // 3. Update global payload state
@@ -232,11 +232,6 @@ const QuizForm = ({
 
       {/* FOOTER/ACTION BAR */}
       <div className="flex justify-between items-center p-4 bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="text-sm text-gray-500">
-          Potential **Earnings**:{" "}
-          <span className="font-semibold text-green-600">₹1</span> (70% score
-          required)
-        </div>
         <button
           onClick={onSubmit}
           className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/50 transition-all"
