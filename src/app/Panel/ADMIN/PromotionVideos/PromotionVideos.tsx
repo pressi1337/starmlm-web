@@ -145,9 +145,11 @@ export default function PROMOTIONVIDEOS() {
       render: (index: any, row: any) => (
         <div className="flex items-center justify-start space-x-2">
           <a
-            href={row?.video_path
-              ? Lib.CloudPath(row?.video_path)
-              : row?.youtube_link || "#"}
+            href={
+              row?.video_path
+                ? Lib.CloudPath(row?.video_path)
+                : row?.youtube_link || "#"
+            }
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-900 p-1"
@@ -233,7 +235,7 @@ export default function PROMOTIONVIDEOS() {
         if (result.isConfirmed) {
           const resp = await DeleteTrainingVideo(value);
           if (resp) {
-            TrainingVideoAPI();
+            PromotionVideoAPI();
             Swal.fire({
               icon: "success",
               title: "Deleted!",
@@ -329,11 +331,12 @@ export default function PROMOTIONVIDEOS() {
 
       {/* Training Video Form Modal */}
 
-      {Modal == MODAL_OPEN.PROMOTION_VIDEO_MODAL && <PromotionVideoFormModal  recoilApi={PromotionVideoAPI}/>}
-      {Modal == MODAL_OPEN.PROMOTION_VIDEO_QUIZ_MODAL && PromotionVideoId && (
-        <PromotionQuizFormModal  recoilApi={PromotionVideoAPI}/>
+      {Modal == MODAL_OPEN.PROMOTION_VIDEO_MODAL && (
+        <PromotionVideoFormModal recoilApi={PromotionVideoAPI} />
       )}
-
+      {Modal == MODAL_OPEN.PROMOTION_VIDEO_QUIZ_MODAL && PromotionVideoId && (
+        <PromotionQuizFormModal recoilApi={PromotionVideoAPI} />
+      )}
     </div>
   );
 }
