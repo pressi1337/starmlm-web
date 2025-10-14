@@ -1,86 +1,330 @@
-import React, { useState } from 'react';
-import { useData } from '@/context/DataContext';
-import { CheckCircle, XCircle, Clock, User, Smartphone, Calendar, ArrowUp } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  HeartHandshake,
+  Clock,
+  CheckCircle,
+  XCircle,
+  User,
+  Smartphone,
+  CircleX,
+} from "lucide-react";
+import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
+import { OPTIONS } from "@/constants/others";
+import { SERVICE } from "@/constants/services";
+import DataTable from "@/components/DataTable";
+import Swal from "sweetalert2";
+import FilterTab from "@/components/FilterTab";
 
-export default function PinRequests() {
-  const { pinRequests, updatePinRequest, generatePin } = useData();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [sortBy, setSortBy] = useState('requestDate');
-  const [sortOrder, setSortOrder] = useState('desc');
-
-  const itemsPerPage = 10;
-
-  // Filter and sort requests
-  const filteredRequests = pinRequests
-    .filter(request => filterStatus === 'all' || request.status === filterStatus)
-    .sort((a, b) => {
-      const aValue = a[sortBy];
-      const bValue = b[sortBy];
-      if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      }
-      return aValue < bValue ? 1 : -1;
-    });
-
-  const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedRequests = filteredRequests.slice(startIndex, startIndex + itemsPerPage);
-
-  const handleApprove = (requestId) => {
-    updatePinRequest(requestId, { status: 'approved' });
-  };
-
-  const handleReject = (requestId) => {
-    if (window.confirm('Are you sure you want to reject this pin request?')) {
-      updatePinRequest(requestId, { status: 'rejected' });
-    }
-  };
-
-  const handleGeneratePin = (request) => {
-    if (window.confirm(`Generate pin for ${request.username} to upgrade to ${request.requestedLevel}?`)) {
-      generatePin(request.userId, request.requestedLevel);
-      updatePinRequest(request.id, { status: 'activated' });
-    }
-  };
-
-  const getStatusBadge = (status) => {
+export default function PROMOTIONVIDEOS() {
+    const getStatusBadge = (status) => {
     const badges = {
-      pending: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-      approved: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
-      activated: { color: 'bg-blue-100 text-blue-800', icon: CheckCircle },
-      rejected: { color: 'bg-red-100 text-red-800', icon: XCircle }
+      0: { color: 'bg-yellow-100 text-yellow-800', icon: Clock, text: 'Pending Review' },
+      1: { color: 'bg-green-100 text-green-800', icon: CheckCircle, text: 'Pin Generated' },
+      2: { color: 'bg-blue-100 text-blue-800', icon: CheckCircle, text: 'Pin Activated' },
+      3: { color: 'bg-red-100 text-red-800', icon: CircleX, text: 'Rejected' },
     };
-    const badge = badges[status] || badges.pending;
+    const badge = badges[status] || badges[0];
     const Icon = badge.icon;
     
     return (
-      <span className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${badge.color}`}>
-        <Icon className="w-3 h-3 mr-1" />
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+      <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${badge.color}`}>
+        <Icon className="w-4 h-4 mr-1" />
+        {badge.text}
       </span>
     );
   };
+  const Columns: any = [
+    {
+      title: "User",
+      key: "id",
+      sortable: true,
+      render: (index: any, row: any) => {
+        console.log("roedatata",row);
+        return (
+          <div className="flex items-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-yellow-600 rounded-full flex items-center justify-center">
+              <User className="w-5 h-5 text-white" />
+            </div>
+            <div className="ml-4">
+              <div className="text-sm font-medium text-gray-900">{row?.user?.first_name}</div>
+              <div className="text-sm text-gray-500 flex items-center">
+                <Smartphone className="w-3 h-3 mr-1" />
+                {row?.user?.mobile}
+              </div>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      title: "Level Upgrade",
+      key: "level_upgrade",
+      render: (index: any, row: any) => (
+        <div>
+          <div className={`text-sm font-medium text-gray-900 ${OPTIONS.PROMOTER_LEVEL[row.level].color}`} title={row.level}>
+            {OPTIONS.PROMOTER_LEVEL[row.level].label}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Request Date",
+      key: "request_date",
+      render: (index: any, row: any) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">
+            {row?.created_at_formatted}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Status",
+      key: "status",
+      render: (index: any, row: any) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">
+            {getStatusBadge(row?.status)}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (index: any, row: any) => (
+        <div className="flex items-center justify-start space-x-2">
+          {row?.user?.promoter_status === 0 && row?.status === 0 && (
+            <button
+              className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              onClick={() => handleRaiseTerm(row.id)}
+            >
+              <HeartHandshake className="w-3 h-3 mr-1" />
+              Raise Term
+            </button>
+          )}
+          {row?.user?.promoter_status === 2 && row?.status === 0 && (
+            <button
+              className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              onClick={() => handleGeneratePin(row.id)}
+            >
+              Generate Pin
+            </button>
+          )}
+          {![1, 3, 4].includes(row?.user?.promoter_status) && row?.status === 0 && (
+            <button
+              className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              onClick={() => handleReject(row.id)}
+            >
+              <XCircle className="w-3 h-3 mr-1" />
+              Reject
+            </button>
+          )}
+        </div>
+      ),
+    },
+  ];
 
-  const getLevelUpgradeInfo = (currentLevel, requestedLevel) => {
-    const levels = {
-      promotor: { name: 'Promotor', color: 'text-blue-600' },
-      promotor1: { name: 'Promotor 1', color: 'text-green-600' },
-      promotor2: { name: 'Promotor 2', color: 'text-purple-600' },
-      promotor3: { name: 'Promotor 3', color: 'text-yellow-600' },
-      promotor4: { name: 'Promotor 4', color: 'text-pink-600' }
-    };
+  const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
+  const Modal = searchParams.get("Modal") || undefined;
+  const [filter, setFilter] = useState(defaultFilter);
+  const { loading, setQuery, data } = useGetCall(SERVICE.ADMIN_PIN_REQUESTS, {
+    avoidFetch: true,
+  });
 
-    const current = levels[currentLevel] || { name: currentLevel, color: 'text-gray-600' };
-    const requested = levels[requestedLevel] || { name: requestedLevel, color: 'text-gray-600' };
+  const { loading: deleteLoading, Delete: DeleteTrainingVideo } = useActionCall(
+    SERVICE.ADMIN_PIN_REQUESTS
+  );
 
-    return (
-      <div className="flex items-center space-x-2">
-        <span className={`font-medium ${current.color}`}>{current.name}</span>
-        <ArrowUp className="w-4 h-4 text-gray-400" />
-        <span className={`font-medium ${requested.color}`}>{requested.name}</span>
-      </div>
+  const { loading: raiseTermLoading, Post: RaiseTerm } = useActionCall(
+    SERVICE.RIASE_TERM
+  );
+
+  const { loading: generatePinLoading, Post: GeneratePin } = useActionCall(
+    SERVICE.GENERATE_PIN
+  );
+
+  const { loading: rejectLoading, Post: Reject } = useActionCall(
+    SERVICE.REJECT_REQUEST
+  );
+
+  const getStatsCounts = () => {
+    if (!data?.data || !Array.isArray(data.data)) {
+      return {
+        pending: 0,
+        approved: 0,
+        activated: 0,
+        rejected: 0,
+      };
+    }
+
+    return data.data.reduce(
+      (acc, item) => {
+        switch (item.status) {
+          case "pending":
+            acc.pending++;
+            break;
+          case "approved":
+            acc.approved++;
+            break;
+          case "activated":
+            acc.activated++;
+            break;
+          case "rejected":
+            acc.rejected++;
+            break;
+        }
+        return acc;
+      },
+      { pending: 0, approved: 0, activated: 0, rejected: 0 }
     );
+  };
+
+  const stats = getStatsCounts();
+
+  const PromotionVideoAPI = () => {
+    setQuery(filter);
+  };
+
+  useEffect(() => {
+    PromotionVideoAPI();
+  }, [filter]);
+
+  const ConfirmDeleteModal = async (value: string) => {
+    const swalWithTailwind = Swal.mixin({
+      customClass: {
+        confirmButton:
+          "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md shadow-sm transition-all duration-200 ml-3",
+        cancelButton:
+          "bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-md shadow-sm transition-all duration-200",
+        popup:
+          "rounded-xl shadow-2xl border border-gray-200 bg-white p-6 dark:bg-gray-800 dark:border-gray-700",
+        title: "text-lg font-semibold text-gray-800 dark:text-gray-100",
+        htmlContainer: "text-gray-600 dark:text-gray-300",
+      },
+      buttonsStyling: false,
+    });
+
+    swalWithTailwind
+      .fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel!",
+        reverseButtons: true,
+        padding: "2em",
+        backdrop: true,
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          const resp = await DeleteTrainingVideo(value);
+          if (resp) {
+            PromotionVideoAPI();
+            Swal.fire({
+              icon: "success",
+              title: "Deleted!",
+              text: "Your record has been deleted successfully.",
+              confirmButtonText: "OK",
+              customClass: {
+                confirmButton:
+                  "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
+              },
+            });
+          }
+        }
+      });
+  };
+
+  const handleRaiseTerm = async (userPromoterId: number) => {
+    try {
+      const response = await RaiseTerm({ id: userPromoterId });
+      if (response) {
+        PromotionVideoAPI();
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Term raised successfully.",
+          confirmButtonText: "OK",
+          customClass: {
+            confirmButton:
+              "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
+          },
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to raise term. Please try again.",
+        confirmButtonText: "OK",
+        customClass: {
+          confirmButton:
+            "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
+        },
+      });
+    }
+  };
+
+  const handleGeneratePin = async (userPromoterId: number) => {
+    try {
+      const response = await GeneratePin({ id: userPromoterId });
+      if (response) {
+        PromotionVideoAPI();
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Pin generated successfully.",
+          confirmButtonText: "OK",
+          customClass: {
+            confirmButton:
+              "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
+          },
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to generate pin. Please try again.",
+        confirmButtonText: "OK",
+        customClass: {
+          confirmButton:
+            "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
+        },
+      });
+    }
+  };
+
+  const handleReject = async (userPromoterId: number) => {
+    try {
+      const response = await Reject({ id: userPromoterId });
+      if (response) {
+        PromotionVideoAPI();
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Request rejected successfully.",
+          confirmButtonText: "OK",
+          customClass: {
+            confirmButton:
+              "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
+          },
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to reject request. Please try again.",
+        confirmButtonText: "OK",
+        customClass: {
+          confirmButton:
+            "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
+        },
+      });
+    }
   };
 
   return (
@@ -104,7 +348,7 @@ export default function PinRequests() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Pending</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {pinRequests.filter(r => r.status === 'pending').length}
+                {stats.pending}
               </p>
             </div>
           </div>
@@ -117,7 +361,7 @@ export default function PinRequests() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Approved</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {pinRequests.filter(r => r.status === 'approved').length}
+                {stats.approved}
               </p>
             </div>
           </div>
@@ -130,7 +374,7 @@ export default function PinRequests() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Activated</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {pinRequests.filter(r => r.status === 'activated').length}
+                {stats.activated}
               </p>
             </div>
           </div>
@@ -143,194 +387,31 @@ export default function PinRequests() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Rejected</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {pinRequests.filter(r => r.status === 'rejected').length}
+                {stats.rejected}
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white shadow-sm rounded-xl border border-gray-200 mb-6">
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Status</label>
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="activated">Activated</option>
-                <option value="rejected">Rejected</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="requestDate">Request Date</option>
-                <option value="username">Username</option>
-                <option value="currentLevel">Current Level</option>
-                <option value="requestedLevel">Requested Level</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
-              <select
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="desc">Newest First</option>
-                <option value="asc">Oldest First</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Requests Table */}
+       {/* Filters and Search */}
+      <FilterTab
+        filter={filter}
+        setFilter={setFilter}
+        TABLE_FILTER={["SEARCH"]}
+      />
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  User
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Level Upgrade
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Request Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedRequests.map((request) => (
-                <tr key={request.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-yellow-600 rounded-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{request.username}</div>
-                        <div className="text-sm text-gray-500 flex items-center">
-                          <Smartphone className="w-3 h-3 mr-1" />
-                          {request.mobile}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getLevelUpgradeInfo(request.currentLevel, request.requestedLevel)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center text-sm text-gray-900">
-                      <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                      {new Date(request.requestDate).toLocaleDateString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getStatusBadge(request.status)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
-                      {request.status === 'pending' && (
-                        <>
-                          <button
-                            onClick={() => handleApprove(request.id)}
-                            className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                          >
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => handleReject(request.id)}
-                            className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                          >
-                            <XCircle className="w-3 h-3 mr-1" />
-                            Reject
-                          </button>
-                        </>
-                      )}
-                      {request.status === 'approved' && (
-                        <button
-                          onClick={() => handleGeneratePin(request)}
-                          className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                          Generate Pin
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{startIndex + 1}</span> to{' '}
-                  <span className="font-medium">{Math.min(startIndex + itemsPerPage, filteredRequests.length)}</span> of{' '}
-                  <span className="font-medium">{filteredRequests.length}</span> results
-                </p>
-              </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        page === currentPage
-                          ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                      } ${page === 1 ? 'rounded-l-md' : ''} ${page === totalPages ? 'rounded-r-md' : ''}`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                </nav>
-              </div>
-            </div>
-          </div>
-        )}
+        <DataTable
+          columns={Columns}
+          data={data?.data || []}
+          loading={loading}
+          filter={filter}
+          setFilter={setFilter}
+          totalCount={data?.total || 0}
+          searchPlaceholder="Search training videos..."
+          showSearch={true}
+          showPagination={true}
+        />
       </div>
     </div>
   );

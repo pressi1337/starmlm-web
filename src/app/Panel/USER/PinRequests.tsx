@@ -112,9 +112,9 @@ export default function PinRequests() {
               (() => {
                 const latestData = pinRequests.data[0];
                 if (!latestData) return null;
-
+                console.log("latestData",latestData);
                 // If level 3 — show "Maximum Level Reached"
-                if (latestData.level === 3) {
+                if (latestData?.user?.current_promoter_level === 4) {
                   return (
                     <div className="text-center py-8">
                       <Crown className="mx-auto h-12 w-12 text-gray-400" />
@@ -137,26 +137,28 @@ export default function PinRequests() {
                     <div className="flex items-center">
                       <ArrowUp className="w-5 h-5 text-green-600 mr-3" />
                       <div>
-                        <div className={`font-medium ${getLevelColor(latestData.level)}`}>
-                          {getLevelName(latestData.level + 1)}
+                        <div className={`font-medium ${getLevelColor(latestData?.user?.current_promoter_level)}`}>
+                          {getLevelName(latestData?.user?.current_promoter_level + 1)}
                         </div>
                         <div className="text-sm text-gray-500">
                           Unlock advanced features and higher earnings
                         </div>
                       </div>
                     </div>
-                    <button
-                      onClick={() =>
-                        updateSearchParam({
-                          options: {
-                            Modal: MODAL_OPEN.PIN_REQUEST_MODAL,
-                          },
-                        })
-                      }
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Request Pin
-                    </button>
+                    {pinRequests?.data[0]?.user?.promoter_status == "" || pinRequests?.data[0]?.user?.promoter_status === 4 && (
+                      <button
+                        onClick={() =>
+                          updateSearchParam({
+                            options: {
+                              Modal: MODAL_OPEN.PIN_REQUEST_MODAL,
+                            },
+                          })
+                        }
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        Request Level Upgrade
+                      </button>
+                    )}
                   </div>
                 );
               })()
