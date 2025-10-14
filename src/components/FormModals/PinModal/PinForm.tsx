@@ -19,8 +19,8 @@ const PinForm = ({
 }: any) => {
   const { values, handleChange, errors, handleSubmit, setErrors } = useFormik({
     initialValues: {
-      current_level: data?.level ?? "Trainee",
-      level: data?.level ?? "Trainee",
+      current_level: data?.level ?? "",
+      level: data?.level ?? "",
     },
     onSubmit: async (values: any) => {
       onAction(values);
@@ -30,21 +30,47 @@ const PinForm = ({
     validateOnBlur: true,
     validationSchema: VALIDATION_SCHEMA,
   });
+  console.log("values",values);
+  const currentLevel = values.current_level ?? "";
+
+  const getLevelName = (level: string | number) => {
+    const levelMap: { [key: string]: string } = {
+      "":"Trainee",
+      "0": "Promoter",
+      "1": "Promoter Level 1",
+      "2": "Promoter Level 2",
+      "3": "Promoter Level 3",
+      "4": "Promoter Level 4"
+    };
+    return levelMap[level.toString()] || `Level ${level}`;
+  };
+
+  const displayCurrentLevel = getLevelName(currentLevel);
+
+  const availableOptions = useMemo(() => {
+    if (!currentLevel) {
+      return OPTIONS.PROMOTER_LEVEL.filter(option => option.value === "0");
+    }
+
+    const currentLevelNum = parseInt(currentLevel.toString());
+    return OPTIONS.PROMOTER_LEVEL.filter(option => parseInt(option.value) > currentLevelNum);
+  }, [currentLevel]);
+
   useMemo(() => {
     if (RequestError && Object.keys(RequestError).length) {
       setErrors(RequestError);
     }
-  }, [RequestError]); 
+  }, [RequestError, setErrors]);
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
       <InputText
         name="current_level"
         label="Current Level *"
-        placeholder="Current Level"
+        placeholder="Trainee"
         onChange={handleChange}
         error={errors}
-        value={values}
+        value={displayCurrentLevel}
         disabled
         readOnly
       />
@@ -52,7 +78,7 @@ const PinForm = ({
           name="level"
           label="Upgrade to Level *"
           placeholder="Select Upgrade Level"
-          options={OPTIONS.PROMOTER_LEVEL}
+          options={availableOptions}
           onChange={handleChange}
           error={errors}
           value={values}

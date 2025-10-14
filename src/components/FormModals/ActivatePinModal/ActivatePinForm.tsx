@@ -61,6 +61,15 @@ const ActivatePinForm = ({
           error={errors}
           value={values}
         />
+        <InputText
+          name="delivery_date"
+          label="Delivery Date *"
+          type="date"
+          placeholder="Delivery Date"
+          onChange={handleChange}
+          error={errors}
+          value={values}
+        />
         <InputTextArea
           name="gift_delivery_address"
           label="Gift Delivery Address *"

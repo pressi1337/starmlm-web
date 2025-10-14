@@ -344,12 +344,11 @@ export const OPTIONS = {
         { value: "2", label: "Evening Session" },
     ],
     PROMOTER_LEVEL: [
-        { value: "0", label: "Trainee" },
-        { value: "1", label: "Promoter" },
-        { value: "2", label: "Promoter Level 1" },
-        { value: "3", label: "Promoter Level 2" },
-        { value: "4", label: "Promoter Level 3" },
-        { value: "5", label: "Promoter Level 4" },
+        { value: "0", label: "Promoter" },
+        { value: "1", label: "Promoter Level 1" },
+        { value: "2", label: "Promoter Level 2" },
+        { value: "3", label: "Promoter Level 3" },
+        { value: "4", label: "Promoter Level 4" },
     ],
     GIFT_DELIVERY_LEVEL: [
         { value: "1", label: "Pick from Shop" },

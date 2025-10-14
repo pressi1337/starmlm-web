@@ -13,6 +13,7 @@ import { MODAL_OPEN } from '@/constants/others';
 import PinFormModal from '@/components/FormModals/PinModal/PinFormModal';
 import ActivatePinFormModal from '@/components/FormModals/ActivatePinModal/ActivatePinFormModal';
 import {OPTIONS} from '@/constants/others';
+import PinConfirmationFormModal from '@/components/FormModals/PinConfirmationModal/PinConfirmationFormModal';
 
 export default function PinRequests() {
   const { user } = useAuth();
@@ -20,7 +21,8 @@ export default function PinRequests() {
   const Modal = searchParams.get("Modal") || undefined;
   const [filter, setFilter] = useState(defaultFilter);
   const { data: pinRequests, loading: pinRequestsLoading, setQuery } = useGetCall(SERVICE.GET_PIN_REQUESTS);
-  console.log(pinRequests);
+  const pinRequestConfirmationModal = pinRequests?.data?.[0]?.user?.promoter_status === 1;
+  console.log("pinRequests",pinRequests);
   const getLevelColor = (level: number) => {
     if (level === undefined || level === null) {
       return 'text-gray-600';
@@ -36,7 +38,7 @@ export default function PinRequests() {
   };
   const getLevelName = (level: number) => {
     if (level === undefined || level === null) {
-      return "Unknown Level";
+      return "Trainee";
     }
     const names = OPTIONS.PROMOTER_LEVEL;
     return names.find((name) => name.value === level.toString())?.label || `Level ${level}`;
@@ -61,7 +63,7 @@ export default function PinRequests() {
   };
   const PinRequestAPI = useCallback(() => {
     setQuery(filter);
-  }, [setQuery, filter]);
+  }, [filter]);
 
   useEffect(() => {
     PinRequestAPI();
@@ -69,7 +71,7 @@ export default function PinRequests() {
 
   const ActivatePinAPI = useCallback(() => {
     setQuery(filter);
-  }, [setQuery, filter]);
+  }, [filter]);
 
   useEffect(() => {
     ActivatePinAPI();
@@ -242,7 +244,7 @@ export default function PinRequests() {
                     </div>
                     <div>
                       <div className={`font-medium ${getLevelColor(request.level)}`}>
-                        Upgraded to {getLevelName(request.level)}
+                        Upgrade to {getLevelName(request.level)}
                       </div>
                       <div className="text-sm text-gray-600">
                         Requested on {new Date(request.pin_generated_at).toLocaleDateString()}
@@ -271,6 +273,12 @@ export default function PinRequests() {
       )}
       {Modal == MODAL_OPEN.ACTIVATE_PIN_MODAL && (
         <ActivatePinFormModal recoilApi={ActivatePinAPI}/>
+      )}
+      {pinRequestConfirmationModal && (
+        <PinConfirmationFormModal 
+          recoilApi={PinRequestAPI}
+          pinRequestId={pinRequests?.data?.[0]?.id}
+        />
       )}
     </div>
   );

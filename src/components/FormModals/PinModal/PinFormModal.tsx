@@ -7,7 +7,7 @@ import Modal from "@/components/ui/Modal";
 import Loader from "@/components/ui/Loader";
 import PinForm from "./PinForm";
 
-const PinFormModal = ({ recoilApi = () => {} }) => {
+const PinConfirmationForm = ({ recoilApi = () => {} }) => {
   const { searchParams, updateSearchParam } = useQueryParams();
   const Edit = searchParams.get("Edit") || undefined;
   const {
@@ -16,10 +16,8 @@ const PinFormModal = ({ recoilApi = () => {} }) => {
     error: RequestError,
   } = useActionCall(SERVICE.USER_PROMOTERS);
   const { data:PinRequests, loading, error } = useGetCall(SERVICE.GET_PIN_REQUESTS, {
-    avoidFetch: !Edit,
-    key: Edit,
+    avoidFetch: false,
   });
-
 
   const closeModal = () => {
     updateSearchParam({ deleteParams: ["Modal", "Edit", "Duplicate"] });
@@ -57,7 +55,7 @@ const PinFormModal = ({ recoilApi = () => {} }) => {
         <Loader />
       ) : (
         <PinForm
-          data={PinRequests ?? {}}
+          data={PinRequests?.data?.[0] ?? {}}
           onAction={onAction}
           RequestError={RequestError}
           onCloseModal={closeModal}
@@ -67,4 +65,4 @@ const PinFormModal = ({ recoilApi = () => {} }) => {
   );
 };
 
-export default PinFormModal;
+export default PinConfirmationForm;
