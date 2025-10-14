@@ -12,6 +12,7 @@ import {
   DollarSign,
   Gift
 } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 export default function UserOverview() {
   const { user } = useAuth();
@@ -181,9 +182,10 @@ export default function UserOverview() {
                   return (
                     <div key={option} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                        <img src={logo} alt="Logo" className="w-12 h-12" />
+                        {/* <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-yellow-600 rounded-lg flex items-center justify-center mr-3">
                           <ArrowUp className="w-5 h-5 text-white" />
-                        </div>
+                        </div> */}
                         <div>
                           <p className="font-medium text-gray-900">{levelNames[option]}</p>
                           <p className="text-sm text-gray-500">Unlock new earning opportunities</p>

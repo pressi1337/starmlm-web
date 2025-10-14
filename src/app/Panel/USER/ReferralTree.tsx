@@ -210,7 +210,7 @@ function ReferralPage() {
         <div className="p-6">
           {/* Root Node (Current User) */}
           <div className="mb-6">
-            <div className="flex items-center py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg">
+            <div className="flex items-center py-4 px-6 bg-gradient-to-r from-green-600 to-yellow-600 text-white rounded-lg">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-4">
                 <Crown className="w-6 h-6" />
               </div>

@@ -303,6 +303,8 @@ export const MODAL_OPEN: any = {
     TRAINING_VIDEO_MODAL: 'TRAINING_VIDEO_MODAL',
     PROMOTION_VIDEO_MODAL: 'PROMOTION_VIDEO_MODAL',
     PROMOTION_VIDEO_QUIZ_MODAL: 'PROMOTION_VIDEO_QUIZ_MODAL',
+    PIN_REQUEST_MODAL: 'PIN_REQUEST_MODAL',
+    ACTIVATE_PIN_MODAL: 'ACTIVATE_PIN_MODAL',
     YOUTUBE_MODAL: 'YOUTUBE_MODAL',
     USER_MODAL: 'USER_MODAL',
     BLOG_MODAL: 'Blog',
@@ -340,6 +342,17 @@ export const OPTIONS = {
     SESSION_TYPE: [
         { value: "1", label: "Morning Session" },
         { value: "2", label: "Evening Session" },
+    ],
+    PROMOTER_LEVEL: [
+        { value: "0", label: "Promoter" },
+        { value: "1", label: "Promoter Level 1" },
+        { value: "2", label: "Promoter Level 2" },
+        { value: "3", label: "Promoter Level 3" },
+        { value: "4", label: "Promoter Level 4" },
+    ],
+    GIFT_DELIVERY_LEVEL: [
+        { value: "1", label: "Pick from Shop" },
+        { value: "2", label: "Delivery" },
     ],
     VIDEO_ORDER: [{ value: "1", label: "1" },
     { value: "2", label: "2" },

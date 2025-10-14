@@ -16,6 +16,10 @@ export const SERVICE: any = {
     REFERRALS: 'referrals',
     PROFILE_UPDATE: "update-personal-details",
     CHANGE_PASSWORD: "changepassword",
+    USER_PROMOTERS: "user-promoters",
+    GET_PIN_REQUESTS: "user-promoters/list",
+    ACTIVATE_PIN: "activate-pin",
+    ACCEPT_TERMS: "term-accepted",
 
     //User Service endpoint
     DAILY_VIDEO_STATUS: 'daily-videos-status',

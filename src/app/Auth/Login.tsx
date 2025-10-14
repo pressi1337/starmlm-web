@@ -5,6 +5,7 @@ import { TrendingUp, User, Smartphone, Lock, Eye, EyeOff } from "lucide-react";
 import { useActionCall, useQueryParams } from "@/hooks";
 import { useFormik } from "formik";
 import { SERVICE } from "@/constants/services";
+import logo from '@/assets/logo.png';
 
 export default function Login() {
   const { login } = useAuth();
@@ -38,12 +39,13 @@ export default function Login() {
           to="/"
           className="flex justify-center items-center space-x-3 mb-6"
         >
-          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+          <img src={logo} alt="Logo" className="w-12 h-12" />
+          {/* <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-yellow-600 rounded-lg flex items-center justify-center">
             <TrendingUp className="w-7 h-7 text-white" />
-          </div>
-          <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          </div> */}
+          {/* <span className="text-3xl font-bold bg-gradient-to-r from-green-600 to-yellow-600 bg-clip-text text-transparent">
             Starup
-          </span>
+          </span> */}
         </Link>
         <h2 className="text-center text-3xl font-bold text-gray-900">
           Welcome Back
@@ -135,7 +137,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg"
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-green-600 to-yellow-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg"
               >
                 {loading ? (
                   <div className="flex items-center">

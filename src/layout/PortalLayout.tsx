@@ -98,7 +98,7 @@ const PortalLayout = () => {
               </Button>
 
               <div className="flex items-center space-x-2">
-                <div className="h-8 w-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="h-8 w-8 bg-gradient-to-r from-green-600 to-yellow-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">{role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN ? "AP" : "UP"}</span>
                 </div>
                 <h1 className="text-xl font-bold text-gray-800 dark:text-white">
@@ -148,7 +148,7 @@ const PortalLayout = () => {
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                      <AvatarFallback className="bg-gradient-to-r from-green-600 to-yellow-600 text-white">
                         {userObj?.name?.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
