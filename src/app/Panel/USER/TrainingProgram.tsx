@@ -18,14 +18,14 @@ import Swal from "sweetalert2";
 import DailyVideoWarning from "@/components/DailyVideoWarning";
 import QuizForm from "@/components/QuizeForm";
 import Lib from "@/utils/Lib";
+import Error500 from "@/components/ui/Error500";
 
 const TrainingProgramWatch = () => {
   const { data, loading, setQuery, error } = useGetCall(
     SERVICE.USER_TRAINING_CURRENCT
   );
-  const { Post: updateTraningStatus } = useActionCall(
-    SERVICE.TRAINING_STATUS_UPDATE
-  );
+  const { Post: updateTraningStatus, error: traningStatusUpdateError } =
+    useActionCall(SERVICE.TRAINING_STATUS_UPDATE);
 
   const playerRef = useRef<any>(null);
   const [playing, setPlaying] = useState(false);
@@ -70,9 +70,13 @@ const TrainingProgramWatch = () => {
     return <Loader />;
   }
 
-  // TODO UI change 500 error
-  if (error) {
-    return <h1>Something went Worng</h1>;
+  if (error || traningStatusUpdateError) {
+    return (
+      <Error500
+        title={traningStatusUpdateError ?? undefined}
+        description={traningStatusUpdateError ? "" : undefined}
+      />
+    );
   }
   // TODO UI change
   if (data?.data?.training_status === 2) {
@@ -128,7 +132,7 @@ const TrainingProgramWatch = () => {
       });
       await updateTraningStatus(
         {
-          status: 1,
+          status: data?.data?.training?.training_video?.quiz?.id ? 1 : 2,
         },
         ""
       );
@@ -268,9 +272,6 @@ const TrainingProgramWatch = () => {
                   data?.data?.training?.training_video?.video_path ??
                   data?.data?.training?.training_video?.youtube_link
                 }
-                // src={
-                //   "https://api.starupworld.com/storage/uploads/final/2e684244-ea94-40e7-9465-e558f1901200_videoplayback.mp4"
-                // }
                 width="100%"
                 height="100%"
                 controls={false}
@@ -349,14 +350,15 @@ const TrainingProgramWatch = () => {
                     {data?.data?.training?.training_video?.description}
                   </p>
 
-                  {data?.data?.training?.status == 1 && (
-                    <button
-                      onClick={handleTakeQuiz}
-                      className="flex px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/50 transition-all"
-                    >
-                      <MessageCircleQuestion className="mr-2" /> Take Quiz
-                    </button>
-                  )}
+                  {data?.data?.training?.status == 1 &&
+                    data?.data?.training?.training_video?.quiz?.id && (
+                      <button
+                        onClick={handleTakeQuiz}
+                        className="flex px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/50 transition-all"
+                      >
+                        <MessageCircleQuestion className="mr-2" /> Take Quiz
+                      </button>
+                    )}
                 </div>
 
                 {Boolean(data?.data?.training?.status) && (
