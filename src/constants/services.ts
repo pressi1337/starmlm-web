@@ -16,6 +16,8 @@ export const SERVICE: any = {
     GET_BANK_INFO: 'user-bank-detail',
     REFERRALS: 'referrals',
     PROFILE_UPDATE: "update-personal-details",
+    GET_BANK_DETAILS: "user-bank-detail",
+    BANK_DETAILS_UPDATE: "user-bank-detail/upsert",
     CHANGE_PASSWORD: "changepassword",
     USER_PROMOTERS: "user-promoters",
     ADMIN_PIN_REQUESTS: "user-promoters",
@@ -27,6 +29,8 @@ export const SERVICE: any = {
     ACCEPT_TERMS: "term-accepted",
     GET_SCRATCH: 'scratch-setup',
     WITHDRAW_UPDATE_STATUS: 'withdraw-status-update',
+    SCRATCH_CARDS: "get-scratch-cards",
+    SCRATCHED_STATUS_UPDATE: "scratched-status-update",
 
     //User Service endpoint
     DAILY_VIDEO_STATUS: 'daily-videos-status',

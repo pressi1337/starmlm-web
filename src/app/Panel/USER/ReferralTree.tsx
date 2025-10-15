@@ -33,7 +33,6 @@ function ReferralPage() {
       pageSize: 1000,
     },
   });
-
   const getReferalAPI = () => {
     setQuery({
       query: {
@@ -43,6 +42,13 @@ function ReferralPage() {
   };
 
   const [copiedLink, setCopiedLink] = useState(false);
+
+  // Mock data fallback for referral link
+  const mockReferralData = {
+    referralLink: profileData?.data?.referral_code ?
+      `${Lib.getBaseURL()}/register?referal_code=${profileData.data.referral_code}` :
+      `${Lib.getBaseURL()}/register?referal_code=demo`
+  };
 
   const copyReferralLink = async () => {
     try {
@@ -70,17 +76,46 @@ function ReferralPage() {
     }
   };
 
-  const getLevelColor = (level) => {
-    const colors = {
-      Promotor: "text-blue-600 bg-blue-100",
-      "Promotor 1": "text-green-600 bg-green-100",
-      "Promotor 2": "text-purple-600 bg-purple-100",
-      "Promotor 3": "text-yellow-600 bg-yellow-100",
-      "Promotor 4": "text-pink-600 bg-pink-100",
-    };
-    return colors[level] || "text-gray-600 bg-gray-100";
-  };
+  const getLevelColor = (level: string | number | null | undefined) => {
+    // Handle null, undefined, or empty values
+    if (!level && level !== 0) {
+      return "text-blue-600 bg-blue-100";
+    }
 
+    // Convert to string for consistent handling
+    const levelStr = String(level);
+
+    const colors: { [key: string]: string } = {
+      "0": "text-green-600 bg-green-100",      // Promoter
+      "1": "text-purple-600 bg-purple-100",    // Promoter Level 1
+      "2": "text-yellow-600 bg-yellow-100",    // Promoter Level 2
+      "3": "text-pink-600 bg-pink-100",        // Promoter Level 3
+      "4": "text-indigo-600 bg-indigo-100",    // Promoter Level 4
+      "5": "text-red-600 bg-red-100",         // Higher levels
+    };
+
+    return colors[levelStr] || "text-gray-600 bg-gray-100";
+  };
+  const getLevelName = (level: string | number | null | undefined) => {
+    // Handle null, undefined, or empty values
+    if (!level && level !== 0) {
+      return "Trainee";
+    }
+
+    // Convert to string for consistent handling
+    const levelStr = String(level);
+
+    const levelMap: { [key: string]: string } = {
+      "0": "Promoter",
+      "1": "Promoter Level 1",
+      "2": "Promoter Level 2",
+      "3": "Promoter Level 3",
+      "4": "Promoter Level 4",
+      "5": "Promoter Level 5",
+    };
+
+    return levelMap[levelStr] || `Level ${level}`;
+  };
   const getStatusColor = (status) => {
     return status === "active" ? "text-green-600" : "text-red-600";
   };
@@ -253,7 +288,7 @@ function ReferralPage() {
                     {profileData?.data?.username}
                   </span>
                   <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
-                    {profileData?.data?.current_promoter_level}
+                    {getLevelName(profileData?.data?.current_promoter_level)}
                   </span>
                   <span className="text-xs">You</span>
                 </div>
@@ -261,10 +296,10 @@ function ReferralPage() {
                   {profileData?.data?.mobile} • Network Leader
                 </div>
               </div>
-              <div className="text-right">
+              {/* <div className="text-right">
                 <div className="font-bold text-lg">₹0</div>
                 <div className="text-xs opacity-75">Referral Earnings</div>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -289,7 +324,7 @@ function ReferralPage() {
                               referalUser?.current_promoter_level
                             )}`}
                           >
-                            {referalUser?.current_promoter_level}
+                            {getLevelName(referalUser?.current_promoter_level ?? "")}
                           </span>
                           <span
                             className={`text-xs font-medium ${getStatusColor(
@@ -307,12 +342,12 @@ function ReferralPage() {
                         </div>
                       </div>
 
-                      <div className="text-right">
+                      {/* <div className="text-right">
                         <div className="font-medium text-gray-900">₹0</div>
                         <div className="text-xs text-gray-500">
                           Total Earnings
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>

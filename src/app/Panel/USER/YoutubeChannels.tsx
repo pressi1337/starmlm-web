@@ -8,14 +8,14 @@ import YoutubeFormModal from "@/components/FormModals/YoutubeModal/YoutubeFormMo
 import VideoModal from "@/components/VideoModal";
 import { SERVICE } from "@/constants/services";
 import Swal from "sweetalert2";
+import DailyVideoWarning from "@/components/DailyVideoWarning";
 
-export default function YoutubeChannels() {
+const YoutubeChannelsPage = () => {
   const { extractFilterOnQuery, updateSearchParam, searchParams } =
     useQueryParams();
   const { data: youtubeChannelsData, loading: youtubeChannelsLoading } =
     useGetCall(SERVICE.YOUTUBECHANNELS);
   const Modal = searchParams.get("Modal") || undefined;
-  console.log("youtubeChannelsData",youtubeChannelsData);
 
   const [filter, setFilter] = useState({
     filter: extractFilterOnQuery([]),
@@ -169,5 +169,13 @@ export default function YoutubeChannels() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function YoutubeChannels() {
+  return (
+    <DailyVideoWarning>
+      <YoutubeChannelsPage />
+    </DailyVideoWarning>
   );
 }

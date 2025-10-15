@@ -3,7 +3,7 @@ import {
   Play,
   CheckCircle,
   Clock,
-  Calendar,
+  AlertTriangle,
   AlertCircle,
   ArrowRight,
   Crown,
@@ -78,37 +78,31 @@ const TrainingProgramWatch = () => {
       />
     );
   }
-  // TODO UI change
   if (data?.data?.training_status === 2) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col  justify-center">
-          <Crown className="w-8 h-8  text-green-600 " />
-          <div>
-            <h3 className="text-lg  font-semibold text-green-900">
-              You Have Completed 7 Day's Traning Video
-            </h3>
-            <p className="text-green-700 ">Great job!</p>
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-screen flex items-center justify-center">
+        <div className="bg-green-50 border border-green-200 rounded-xl py-6 px-12 flex items-center">
+          <div className="max-w-4xl mx-auto flex flex-col items-center  justify-center gap-6">
+            <Crown className="w-8 h-8  text-green-600 " />
+            <div className="flex flex-col items-center gap-2">
+              <h3 className="text-lg font-semibold text-green-900">Congratulations!</h3>
+              <p className="text-green-700">You have completed all the training videos for the 7-day training program. Great job!</p>
+            </div>
           </div>
         </div>
       </div>
     );
   }
-
-  // TODO UI change
   if (!data?.data?.training?.id) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col  justify-center">
-          <CheckCircle className="w-8 h-8  text-green-600 " />
-          <div>
-            <h3 className="text-lg  font-semibold text-green-900">
-              Day {data?.data?.nextday - 1} Complete!
-            </h3>
-            <p className="text-green-700 ">
-              Great job! Come back tomorrow for Day {data?.data?.nextday}{" "}
-              training.
-            </p>
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-screen flex items-center justify-center">
+        <div className="bg-green-50 border border-green-200 rounded-xl py-6 px-12 flex items-center">
+          <div className="max-w-4xl mx-auto flex flex-col items-center  justify-center gap-6">
+            <Crown className="w-8 h-8  text-green-600 " />
+            <div className="flex flex-col items-center gap-2">
+              <h3 className="text-lg font-semibold text-green-900">Day {data?.data?.nextday - 1} training Complete!</h3>
+              <p className="text-green-700">Excellent progress! Get ready to continue your journey tomorrow with Day {data?.data?.nextday}.</p>
+            </div>
           </div>
         </div>
       </div>
