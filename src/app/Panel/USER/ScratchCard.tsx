@@ -15,7 +15,7 @@ interface ScratchCard {
   updated_at?: string;
 }
 
-export default function ScratchCard() {
+const ScratchCardPage = () => {
   const { extractFilterOnQuery, updateSearchParam, searchParams } = useQueryParams();
   const { data: scratchCardsData, loading: scratchCardsLoading, setQuery } = useGetCall(SERVICE.SCRATCH_CARDS);
   const {Post,Put,error: RequestError,}= useActionCall(SERVICE.SCRATCHED_STATUS_UPDATE);
@@ -177,10 +177,10 @@ export default function ScratchCard() {
   );
 };
 
-// export default function ScratchCard() {
-//   return (
-//     <DailyVideoWarning>
-//       <ScratchCardComponent />
-//     </DailyVideoWarning>
-//   );
-// }
+export default function ScratchCard() {
+  return (
+    <DailyVideoWarning>
+      <ScratchCardPage />
+    </DailyVideoWarning>
+  );
+}
