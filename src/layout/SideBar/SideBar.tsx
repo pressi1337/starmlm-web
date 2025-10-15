@@ -15,13 +15,14 @@ import {
   GraduationCap,
   Trophy,
   Youtube,
+  Banknote,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
-import logo from '@/assets/logo.png';
+import logo from "@/assets/logo.png";
 import {
   Tooltip,
   TooltipContent,
@@ -96,6 +97,14 @@ const Sidebar = ({
         icon: Users,
         color: "from-purple-500 to-violet-600",
       });
+      baseItems.push({
+        id: "withdraw-request",
+        label: "Withdraw Request",
+        path: "/portal/admin/withdraw-request",
+        icon: Banknote,
+        color: "from-purple-500 to-violet-600",
+      });
+
       baseItems.push({
         id: "pin-requests",
         label: "Pin Requests",

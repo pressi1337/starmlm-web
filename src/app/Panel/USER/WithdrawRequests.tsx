@@ -12,6 +12,7 @@ import {
   ArrowDownRight,
   Calendar,
   AlertCircle,
+  MessageCircle,
 } from "lucide-react";
 import UIHelpers from "@/utils/UIhelper";
 import { MODAL_OPEN, WIDTHDROW_STATUS } from "@/constants/others";
@@ -114,9 +115,10 @@ function WithdrawRequestsPage() {
             <Calendar className="w-4 h-4 mr-2 text-gray-400" />
             {UIHelpers.DateFormat(row.request_at)}
           </div>
-          {WIDTHDROW_STATUS[row.status] == "completed" && (
+          {["completed", "rejected"].includes(WIDTHDROW_STATUS[row.status]) && (
             <div className="text-xs text-gray-500">
-              Completed: {UIHelpers.DateFormat(row.updated_at)}
+              {WIDTHDROW_STATUS[row.status]}:{" "}
+              {UIHelpers.DateFormat(row.updated_at)}
             </div>
           )}
         </div>
@@ -124,9 +126,17 @@ function WithdrawRequestsPage() {
     },
     {
       title: "Status",
-      key: "earning_type",
       render: (index: any, row: any) => (
-        <> {getStatusBadge(WIDTHDROW_STATUS[row.status])}</>
+        <>
+          {" "}
+          {getStatusBadge(WIDTHDROW_STATUS[row.status])}
+          {row.status === 3 && (
+            <p className="text-sm text-gray-500 mt-2 flex item-center gap-1">
+              <MessageCircle size={16} />
+              {row.reason}
+            </p>
+          )}
+        </>
       ),
     },
     {

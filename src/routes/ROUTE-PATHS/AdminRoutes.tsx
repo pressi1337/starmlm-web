@@ -4,6 +4,7 @@ import { RouteObject } from "react-router-dom";
 import PortalLayout from "@/layout/PortalLayout";
 import Loadable from "@/components/ui/Loadable";
 import path from "path";
+import WithDrawRequest from "@/app/Panel/ADMIN/WithDrawRequest/WithDrawRequest";
 
 const AdminDashboard = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/Dashboard/Dashboard"))
@@ -71,6 +72,10 @@ const AdminRoutes = {
     {
       path: "profile-settings",
       element: <UserProfile />,
+    },
+    {
+      path: "withdraw-request",
+      element: <WithDrawRequest />,
     },
   ],
 };

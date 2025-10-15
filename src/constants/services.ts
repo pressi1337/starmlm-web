@@ -25,6 +25,8 @@ export const SERVICE: any = {
     GET_PIN_REQUESTS: "user-promoters/list",
     ACTIVATE_PIN: "activate-pin",
     ACCEPT_TERMS: "term-accepted",
+    GET_SCRATCH: 'scratch-setup',
+    WITHDRAW_UPDATE_STATUS: 'withdraw-status-update',
 
     //User Service endpoint
     DAILY_VIDEO_STATUS: 'daily-videos-status',
@@ -39,6 +41,7 @@ export const SERVICE: any = {
     TRAINING_STATUS_UPDATE: 'user-day-training-mark-as-completed',
     EARNINGS_HISTORY: 'earning-histories',
     WITHDRAW_HISTRY: 'withdraw-histories',
-    WITHDRAW_REQUEST: 'withdraws'
+    WITHDRAW_REQUEST: 'withdraws',
+
 
 }
