@@ -10,19 +10,15 @@ import InputTextArea from "@/components/ui/InputTextArea";
 export const VALIDATION_SCHEMA = Yup.object().shape({
   pin: Yup.string().required("Required Pin*"),
   gift_delivery_type: Yup.string().required("Required Gift Delivery Type*"),
+  wh_number: Yup.string().required("Required Mobile Number*"),
   direct_pick_date: Yup.string().when("gift_delivery_type", {
-    is: "2",
+    is: "1",
     then: (schema) => schema.required("Required Direct Pick Date*"),
     otherwise: (schema) => schema.optional(),
   }),
   gift_delivery_address: Yup.string().when("gift_delivery_type", {
     is: "2",
     then: (schema) => schema.required("Required Gift Delivery Address*"),
-    otherwise: (schema) => schema.optional(),
-  }),
-  wh_number: Yup.string().when("gift_delivery_type", {
-    is: "2",
-    then: (schema) => schema.required("Required Mobile Number*"),
     otherwise: (schema) => schema.optional(),
   }),
 });
@@ -40,7 +36,7 @@ const ActivatePinForm = ({
       pin: data?.pin ?? "",
       gift_delivery_type: data?.gift_delivery_type ?? "",
       gift_delivery_address: data?.gift_delivery_address ?? "",
-      wh_number: data?.wh_number ?? "",
+      wh_number: data?.user?.mobile ?? "",
     },
     onSubmit: async (values: any) => {
       onAction(values);
@@ -50,7 +46,7 @@ const ActivatePinForm = ({
     validateOnBlur: true,
     validationSchema: VALIDATION_SCHEMA,
   });
-
+console.log("values", values);
   useMemo(() => {
     if (RequestError && Object.keys(RequestError).length) {
       setErrors(RequestError);
@@ -60,7 +56,7 @@ const ActivatePinForm = ({
   const minSelectableDate = useMemo(() => {
     const today = new Date();
     const minDate = new Date(today);
-    minDate.setDate(today.getDate() + 46); // 46 days from today
+    minDate.setDate(today.getDate() + 25); // 25 days from today
     return minDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
   }, []);
 
@@ -76,6 +72,14 @@ const ActivatePinForm = ({
         disabled
         readOnly
       />
+      <InputText
+        name="wh_number"
+        label="Mobile Number *"
+        placeholder="Enter Mobile Number"
+        onChange={handleChange}
+        error={errors}
+        value={values}
+      />
        <SelectInput
           name="gift_delivery_type"
           label="Gift Delivery Type *"
@@ -86,8 +90,17 @@ const ActivatePinForm = ({
           value={values}
         />
         {values.gift_delivery_type === "2" && (
-          <>
-            <InputText
+            <InputTextArea
+              name="gift_delivery_address"
+              label="Gift Delivery Address *"
+              placeholder="Enter Gift Delivery Address"
+              onChange={handleChange}
+              error={errors}
+              value={values}
+            />
+        )}
+        {values.gift_delivery_type === "1" && (
+          <InputText
               name="direct_pick_date"
               label="Direct Pick Date *"
               type="date"
@@ -97,23 +110,6 @@ const ActivatePinForm = ({
               value={values}
               minDate={minSelectableDate}
             />
-            <InputTextArea
-              name="gift_delivery_address"
-              label="Gift Delivery Address *"
-              placeholder="Enter Gift Delivery Address"
-              onChange={handleChange}
-              error={errors}
-              value={values}
-            />
-            <InputText
-              name="wh_number"
-              label="Mobile Number *"
-              placeholder="Enter Mobile Number"
-              onChange={handleChange}
-              error={errors}
-              value={values}
-            />
-          </>
         )}
       <div className="flex justify-end space-x-3 pt-4">
         <Btn title="Cancel" onClick={onCloseModal} uiType="secondary" />
