@@ -16,18 +16,32 @@ import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
 
 export default function PROMOTIONVIDEOS() {
-    const getStatusBadge = (status) => {
+  const getStatusBadge = (status) => {
     const badges = {
-      0: { color: 'bg-yellow-100 text-yellow-800', icon: Clock, text: 'Pending Review' },
-      1: { color: 'bg-green-100 text-green-800', icon: CheckCircle, text: 'Pin Generated' },
-      2: { color: 'bg-blue-100 text-blue-800', icon: CheckCircle, text: 'Pin Activated' },
-      3: { color: 'bg-red-100 text-red-800', icon: CircleX, text: 'Rejected' },
+      0: {
+        color: "bg-yellow-100 text-yellow-800",
+        icon: Clock,
+        text: "Pending Review",
+      },
+      1: {
+        color: "bg-green-100 text-green-800",
+        icon: CheckCircle,
+        text: "Pin Generated",
+      },
+      2: {
+        color: "bg-blue-100 text-blue-800",
+        icon: CheckCircle,
+        text: "Pin Activated",
+      },
+      3: { color: "bg-red-100 text-red-800", icon: CircleX, text: "Rejected" },
     };
     const badge = badges[status] || badges[0];
     const Icon = badge.icon;
-    
+
     return (
-      <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${badge.color}`}>
+      <span
+        className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${badge.color}`}
+      >
         <Icon className="w-4 h-4 mr-1" />
         {badge.text}
       </span>
@@ -39,14 +53,16 @@ export default function PROMOTIONVIDEOS() {
       key: "id",
       sortable: true,
       render: (index: any, row: any) => {
-        console.log("roedatata",row);
+        console.log("roedatata", row);
         return (
           <div className="flex items-center">
             <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-yellow-600 rounded-full flex items-center justify-center">
               <User className="w-5 h-5 text-white" />
             </div>
             <div className="ml-4">
-              <div className="text-sm font-medium text-gray-900">{row?.user?.first_name}</div>
+              <div className="text-sm font-medium text-gray-900">
+                {row?.user?.first_name}
+              </div>
               <div className="text-sm text-gray-500 flex items-center">
                 <Smartphone className="w-3 h-3 mr-1" />
                 {row?.user?.mobile}
@@ -61,7 +77,12 @@ export default function PROMOTIONVIDEOS() {
       key: "level_upgrade",
       render: (index: any, row: any) => (
         <div>
-          <div className={`text-sm font-medium text-gray-900 ${OPTIONS.PROMOTER_LEVEL[row.level].color}`} title={row.level}>
+          <div
+            className={`text-sm font-medium text-gray-900 ${
+              OPTIONS.PROMOTER_LEVEL[row.level].color
+            }`}
+            title={row.level}
+          >
             {OPTIONS.PROMOTER_LEVEL[row.level].label}
           </div>
         </div>
@@ -111,15 +132,16 @@ export default function PROMOTIONVIDEOS() {
               Generate Pin
             </button>
           )}
-          {![1, 3, 4].includes(row?.user?.promoter_status) && row?.status === 0 && (
-            <button
-              className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              onClick={() => handleReject(row.id)}
-            >
-              <XCircle className="w-3 h-3 mr-1" />
-              Reject
-            </button>
-          )}
+          {![1, 3, 4].includes(row?.user?.promoter_status) &&
+            row?.status === 0 && (
+              <button
+                className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                onClick={() => handleReject(row.id)}
+              >
+                <XCircle className="w-3 h-3 mr-1" />
+                Reject
+              </button>
+            )}
         </div>
       ),
     },
@@ -333,7 +355,9 @@ export default function PROMOTIONVIDEOS() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Pin Requests</h1>
-            <p className="mt-2 text-gray-600">Manage user level upgrade requests and pin generation</p>
+            <p className="mt-2 text-gray-600">
+              Manage user level upgrade requests and pin generation
+            </p>
           </div>
         </div>
       </div>
@@ -394,7 +418,7 @@ export default function PROMOTIONVIDEOS() {
         </div>
       </div>
 
-       {/* Filters and Search */}
+      {/* Filters and Search */}
       <FilterTab
         filter={filter}
         setFilter={setFilter}
@@ -407,7 +431,7 @@ export default function PROMOTIONVIDEOS() {
           loading={loading}
           filter={filter}
           setFilter={setFilter}
-          totalCount={data?.total || 0}
+          totalCount={data?.pageInfo?.total_records || 0}
           searchPlaceholder="Search training videos..."
           showSearch={true}
           showPagination={true}

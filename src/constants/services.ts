@@ -13,6 +13,7 @@ export const SERVICE: any = {
     PROMOTIONVIDEOS: "promotion-videos",
     PROMOTIONVIDEOQUIZES: "promotion-video-quizzes",
     GET_PROFILE: "auth-user",
+    GET_BANK_INFO: 'user-bank-detail',
     REFERRALS: 'referrals',
     PROFILE_UPDATE: "update-personal-details",
     CHANGE_PASSWORD: "changepassword",
@@ -37,5 +38,7 @@ export const SERVICE: any = {
     USER_TRAINING_CURRENCT: 'user-training-current',
     TRAINING_STATUS_UPDATE: 'user-day-training-mark-as-completed',
     EARNINGS_HISTORY: 'earning-histories',
+    WITHDRAW_HISTRY: 'withdraw-histories',
+    WITHDRAW_REQUEST: 'withdraws'
 
 }

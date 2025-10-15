@@ -314,7 +314,9 @@ export const MODAL_OPEN: any = {
     BANNER_MODAL: 'Banner',
     INVITE_MODAL: 'Invite',
     ENQURIES: 'Enquire',
-    COUPONS: 'Coupons'
+    COUPONS: 'Coupons',
+    WITHDRAW_REQUEST: 'WITHDRAW_REQUEST',
+    REFERAL_MODAL: 'REFERAL_MODAL',
 }
 
 export const URL_QUERY: any = {
@@ -344,11 +346,11 @@ export const OPTIONS = {
         { value: "2", label: "Evening Session" },
     ],
     PROMOTER_LEVEL: [
-        { value: "0", label: "Promoter", color:"text-blue-600" },
-        { value: "1", label: "Promoter Level 1", color:"text-green-600" },
-        { value: "2", label: "Promoter Level 2", color:"text-purple-600" },
-        { value: "3", label: "Promoter Level 3", color:"text-yellow-600" },
-        { value: "4", label: "Promoter Level 4", color:"text-pink-600" },
+        { value: "0", label: "Promoter", color: "text-blue-600" },
+        { value: "1", label: "Promoter Level 1", color: "text-green-600" },
+        { value: "2", label: "Promoter Level 2", color: "text-purple-600" },
+        { value: "3", label: "Promoter Level 3", color: "text-yellow-600" },
+        { value: "4", label: "Promoter Level 4", color: "text-pink-600" },
     ],
     GIFT_DELIVERY_LEVEL: [
         { value: "1", label: "Direct" },
@@ -365,7 +367,12 @@ export const OPTIONS = {
         { value: "Tamil", label: "Tamil" },
         { value: "Telugu", label: "Telugu" },
         { value: "English", label: "English" }
-    ]
+    ],
+    WALLET_TYPE: [
+        { label: 'Main Wallet ', value: '1' },
+        { label: 'Scratch Wallet', value: '2' },
+        { label: 'Grow Wallet', value: '3' },
+    ],
 
 
 }
@@ -379,4 +386,12 @@ export const ROLE: any = {
 export const LANG: any = {
     EN: 1,
     TN: 2
+}
+
+
+export const WIDTHDROW_STATUS = {
+    0: 'pending',
+    1: 'processing',
+    2: 'completed',
+    3: 'rejected'
 }
