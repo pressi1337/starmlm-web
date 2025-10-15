@@ -21,15 +21,16 @@ export default function TrainingVideos() {
         console.log(row);
         return (
           <div className="flex items-center">
-            <a href={
-                  row?.video_path
-                    ? Lib.CloudPath(row?.video_path)
-                    : row?.youtube_link
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center"
-              >
+            <a
+              href={
+                row?.video_path
+                  ? Lib.CloudPath(row?.video_path)
+                  : row?.youtube_link
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center"
+            >
               <div className="w-12 h-12 bg-gradient-to-r from-green-600 to-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold">{row.day}</span>
               </div>
@@ -39,7 +40,6 @@ export default function TrainingVideos() {
                 </div>
               </div>
             </a>
-
           </div>
         );
       },
@@ -127,10 +127,12 @@ export default function TrainingVideos() {
       key: "video_path",
       render: (index: any, row: any) => (
         <div className="flex items-center justify-start space-x-2">
-          <a 
-            href={row?.video_path
-              ? Lib.CloudPath(row?.video_path)
-              : row?.youtube_link || "#"}
+          <a
+            href={
+              row?.video_path
+                ? Lib.CloudPath(row?.video_path)
+                : row?.youtube_link || "#"
+            }
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-900 p-1"
@@ -295,7 +297,7 @@ export default function TrainingVideos() {
           loading={loading}
           filter={filter}
           setFilter={setFilter}
-          totalCount={data?.total || 0}
+          totalRecords={data?.pageInfo?.total_records ?? 0}
           searchPlaceholder="Search training videos..."
           showSearch={true}
           showPagination={true}
@@ -304,11 +306,12 @@ export default function TrainingVideos() {
 
       {/* Training Video Form Modal */}
 
-      {Modal == MODAL_OPEN.TRAINING_VIDEO_MODAL && <TrainingVideoFormModal  recoilApi={TrainingVideoAPI}/>}
-      {Modal == MODAL_OPEN.TRAINING_VIDEO_QUIZ_MODAL && TrainingVideoId && (
-        <TraningQuizFormModal recoilApi={TrainingVideoAPI}/>
+      {Modal == MODAL_OPEN.TRAINING_VIDEO_MODAL && (
+        <TrainingVideoFormModal recoilApi={TrainingVideoAPI} />
       )}
-
+      {Modal == MODAL_OPEN.TRAINING_VIDEO_QUIZ_MODAL && TrainingVideoId && (
+        <TraningQuizFormModal recoilApi={TrainingVideoAPI} />
+      )}
     </div>
   );
 }

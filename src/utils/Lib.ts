@@ -169,6 +169,11 @@ const Lib = {
     getBaseURL() {
         const baseUrl = `${window.location.protocol}//${window.location.host}`;
         return baseUrl
+    },
+
+    maskLast4Digits(num: string | number) {
+        const str = String(num);
+        return `**${str.slice(-4)}`;
     }
 
 }

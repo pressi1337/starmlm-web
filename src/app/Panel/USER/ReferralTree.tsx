@@ -1,30 +1,46 @@
 import React, { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 import {
   Users,
   Share2,
-  Copy,
   Crown,
   TrendingUp,
   User,
-  ChevronDown,
-  ChevronRight,
   Gift,
   Link as LinkIcon,
+  Plus,
 } from "lucide-react";
 import Lib from "@/utils/Lib";
-import { useGetCall } from "@/hooks";
+import { useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
 import Loader from "@/components/ui/Loader";
 import DailyVideoWarning from "@/components/DailyVideoWarning";
+import { MODAL_OPEN } from "@/constants/others";
+import ReferalAddModal from "@/components/FormModals/ReferalAddModal/ReferalAddModal";
 
 function ReferralPage() {
+  const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
+  const Modal = searchParams.get("Modal") || undefined;
+
   const { loading: profileLoading, data: profileData } = useGetCall(
     SERVICE.GET_PROFILE
   );
-  const { loading: referalLoading, data: referalData } = useGetCall(
-    SERVICE.REFERRALS
-  );
+  const {
+    loading: referalLoading,
+    data: referalData,
+    setQuery,
+  } = useGetCall(SERVICE.REFERRALS, {
+    query: {
+      pageSize: 1000,
+    },
+  });
+
+  const getReferalAPI = () => {
+    setQuery({
+      query: {
+        pageSize: 1000,
+      },
+    });
+  };
 
   const [copiedLink, setCopiedLink] = useState(false);
 
@@ -76,10 +92,27 @@ function ReferralPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Referral Network</h1>
-        <p className="mt-2 text-gray-600">
-          Manage your referral network and track your team's performance
-        </p>
+        <div className="flex justify-between items-center">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Referral Network
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Manage your referral network and track your team's performance
+            </p>
+          </div>
+          <button
+            onClick={() =>
+              updateSearchParam({
+                options: { Modal: MODAL_OPEN.REFERAL_MODAL },
+              })
+            }
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Referal
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -360,6 +393,10 @@ function ReferralPage() {
           </div>
         </div>
       </div>
+
+      {Modal == MODAL_OPEN.REFERAL_MODAL && (
+        <ReferalAddModal recoilApi={getReferalAPI} />
+      )}
     </div>
   );
 }
