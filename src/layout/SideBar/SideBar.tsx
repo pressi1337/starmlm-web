@@ -15,6 +15,11 @@ import {
   GraduationCap,
   Trophy,
   Youtube,
+  Pin,
+  CreditCard,
+  Banknote,
+  BanknoteArrowUp,
+  GitPullRequestCreateArrow,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -100,7 +105,7 @@ const Sidebar = ({
         id: "pin-requests",
         label: "Pin Requests",
         path: "/portal/admin/pin-requests",
-        icon: Settings,
+        icon: Pin,
         color: "from-teal-500 to-cyan-600",
       });
       baseItems.push({
@@ -151,21 +156,28 @@ const Sidebar = ({
           id: "pin-management",
           label: "My Pins",
           path: "/portal/user/pin-requests",
-          icon: Settings,
+          icon: Pin,
           color: "from-teal-500 to-cyan-600",
         },
         {
           id: "earnings-history",
           label: "Earnings History",
           path: "/portal/user/earnings-history",
-          icon: Settings,
+          icon: Banknote,
           color: "from-sky-500 to-blue-600",
         },
         {
           id: "withdraw-requests",
           label: "Withdraw Requests",
           path: "/portal/user/withdraw-requests",
-          icon: Settings,
+          icon: GitPullRequestCreateArrow,
+          color: "from-sky-500 to-blue-600",
+        },
+        {
+          id: "scratch-card",
+          label: "Scratch Card",
+          path: "/portal/user/scratch-card",
+          icon: CreditCard,
           color: "from-sky-500 to-blue-600",
         }
       );
