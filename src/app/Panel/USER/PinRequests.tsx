@@ -22,8 +22,7 @@ function PinRequestsPage() {
   } = useGetCall(SERVICE.GET_PIN_REQUESTS);
   const pinRequestConfirmationModal =
     pinRequests?.data?.[0]?.user?.promoter_status === 1;
-  console.log("pinRequests", pinRequests);
-  const getLevelColor = (level: number) => {
+    const getLevelColor = (level: number) => {
     if (level === undefined || level === null) {
       return "text-gray-600";
     }
@@ -136,7 +135,6 @@ function PinRequestsPage() {
               (() => {
                 const latestData = pinRequests.data[0];
                 if (!latestData) return null;
-                console.log("latestData", latestData);
                 // If level 3 — show "Maximum Level Reached"
                 if (latestData?.user?.current_promoter_level === 4) {
                   return (

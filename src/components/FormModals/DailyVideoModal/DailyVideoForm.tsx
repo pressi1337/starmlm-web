@@ -82,7 +82,6 @@ const DailyVideoForm = ({
       setErrors(RequestError);
     }
   }, [RequestError]);
-  console.log({ values, errors });
   return (
     <div className="max-h-[70vh] overflow-y-auto">
       <form className="space-y-4" onSubmit={handleSubmit}>

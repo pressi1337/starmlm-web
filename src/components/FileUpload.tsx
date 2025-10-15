@@ -25,7 +25,6 @@ export default function FileUpload({
 
   const uploadFileInChunks = async (rawFile: any) => {
     setFileName(rawFile?.name);
-    console.log(rawFile?.name);
     setProgress(0);
     setUploaded(true);
     setUploading(true);

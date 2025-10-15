@@ -84,7 +84,6 @@ const useActionCall = (url: string): ActionCallResponse => {
                             }
                         }
 
-                        console.log({ err })
                         setError(err)
                         // toast.error(jData.message)
                         return;
@@ -228,7 +227,6 @@ const useActionCall = (url: string): ActionCallResponse => {
                             }
                         }
 
-                        console.log({ err })
                         setError(err)
                         // toast.error(jData.message)
                         return;

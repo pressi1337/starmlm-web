@@ -1,7 +1,7 @@
 import { SERVICE } from "@/constants/services";
 import { useGetCall } from "@/hooks";
 import Loader from "./ui/Loader";
-import { ArrowDown, Clock, Wallet } from "lucide-react";
+import { ArrowDown, Clock, CreditCard, Wallet, WalletCards } from "lucide-react";
 
 const UserFinanceWidget = () => {
   const { data: profileInfo, loading } = useGetCall(SERVICE.GET_PROFILE);
@@ -32,7 +32,7 @@ const UserFinanceWidget = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex items-center">
           <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-            <ArrowDown className="w-6 h-6 text-white" />
+            <CreditCard className="w-6 h-6 text-white" />
           </div>
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-500">Scratch Wallet</p>
@@ -50,7 +50,7 @@ const UserFinanceWidget = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex items-center">
           <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
-            <Clock className="w-6 h-6 text-white" />
+            <WalletCards className="w-6 h-6 text-white" />
           </div>
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-500">Grow Wallet</p>

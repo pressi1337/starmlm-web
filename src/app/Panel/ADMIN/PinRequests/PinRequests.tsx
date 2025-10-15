@@ -53,7 +53,6 @@ export default function PROMOTIONVIDEOS() {
       key: "id",
       sortable: true,
       render: (index: any, row: any) => {
-        console.log("roedatata", row);
         return (
           <div className="flex items-center">
             <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-yellow-600 rounded-full flex items-center justify-center">

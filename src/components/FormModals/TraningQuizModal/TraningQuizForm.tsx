@@ -173,7 +173,6 @@ const TraningQuizForm = ({
     }
   }, [RequestError, setErrors]);
 
-  console.log({ values, errors });
   return (
     <form onSubmit={handleSubmit}>
       {values.questions.map((question, qIndex) => (
