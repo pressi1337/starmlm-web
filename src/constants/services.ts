@@ -27,6 +27,8 @@ export const SERVICE: any = {
     GET_PIN_REQUESTS: "user-promoters/list",
     ACTIVATE_PIN: "activate-pin",
     ACCEPT_TERMS: "term-accepted",
+    SCRATCH_CARDS: "get-scratch-cards",
+    SCRATCHED_STATUS_UPDATE: "scratched-status-update",
 
     //User Service endpoint
     DAILY_VIDEO_STATUS: 'daily-videos-status',

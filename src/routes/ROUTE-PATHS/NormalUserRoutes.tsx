@@ -35,6 +35,9 @@ const YoutubeChannels = Loadable(
 const Profile = Loadable(
   lazy(() => import("@/app/Panel/USER/UserDashboard/ProfileSettings/Profile"))
 );
+const ScratchCard = Loadable(
+  lazy(() => import("@/app/Panel/USER/ScratchCard"))
+);
 const NormalUserRoutes = {
   path: "portal/user",
   element: <PortalLayout />,
@@ -79,6 +82,10 @@ const NormalUserRoutes = {
     {
       path: "profile-settings",
       element: <Profile />,
+    },
+    {
+      path: "scratch-card",
+      element: <ScratchCard />,
     },
   ],
 };
