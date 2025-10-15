@@ -225,44 +225,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-
-      {/* Modals */}
-      <div className="mt-8 bg-white shadow-sm rounded-xl border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">System Status</h3>
-        </div>
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">
-                  Video Streaming
-                </p>
-                <p className="text-xs text-gray-500">All systems operational</p>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">
-                  User Authentication
-                </p>
-                <p className="text-xs text-gray-500">All systems operational</p>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">
-                  Payment Processing
-                </p>
-                <p className="text-xs text-gray-500">Minor delays expected</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       {Modal === MODAL_OPEN.DAILY_VIDEO_MODAL && <DailyVideoFormModal />}
       {Modal === MODAL_OPEN.TRAINING_VIDEO_MODAL && <TrainingVideoFormModal />}
       {Modal === MODAL_OPEN.PROMOTION_VIDEO_MODAL && <PromotionVideoFormModal />}

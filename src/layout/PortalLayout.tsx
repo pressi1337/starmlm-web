@@ -97,7 +97,7 @@ const PortalLayout = () => {
                 <Menu className="h-5 w-5" />
               </Button>
 
-              <div className="flex items-center space-x-2">
+              <div className="items-center space-x-2 hidden md:flex">
                 <div className="h-8 w-8 bg-gradient-to-r from-green-600 to-yellow-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">{role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN ? "AP" : "UP"}</span>
                 </div>
