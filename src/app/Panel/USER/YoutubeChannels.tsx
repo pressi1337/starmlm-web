@@ -15,7 +15,6 @@ export default function YoutubeChannels() {
   const { data: youtubeChannelsData, loading: youtubeChannelsLoading } =
     useGetCall(SERVICE.YOUTUBECHANNELS);
   const Modal = searchParams.get("Modal") || undefined;
-  console.log("youtubeChannelsData",youtubeChannelsData);
 
   const [filter, setFilter] = useState({
     filter: extractFilterOnQuery([]),

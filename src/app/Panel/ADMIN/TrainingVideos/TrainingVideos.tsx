@@ -18,7 +18,6 @@ export default function TrainingVideos() {
       key: "id",
       sortable: true,
       render: (index: any, row: any) => {
-        console.log(row);
         return (
           <div className="flex items-center">
             <a

@@ -46,7 +46,6 @@ const ActivatePinForm = ({
     validateOnBlur: true,
     validationSchema: VALIDATION_SCHEMA,
   });
-console.log("values", values);
   useMemo(() => {
     if (RequestError && Object.keys(RequestError).length) {
       setErrors(RequestError);

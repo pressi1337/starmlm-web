@@ -22,7 +22,6 @@ export default function Login() {
       password: "",
     },
     onSubmit: async (values) => {
-      console.log({ values });
       let response: any = await Post(values, "Login successfull");
       if (response) {
         login(response.data.access_token);
