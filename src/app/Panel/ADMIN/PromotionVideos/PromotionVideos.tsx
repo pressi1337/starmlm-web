@@ -321,7 +321,7 @@ export default function PROMOTIONVIDEOS() {
           loading={loading}
           filter={filter}
           setFilter={setFilter}
-          totalCount={data?.pageInfo?.total_records || 0}
+          totalRecords={data?.pageInfo?.total_records || 0}
           searchPlaceholder="Search training videos..."
           showSearch={true}
           showPagination={true}
