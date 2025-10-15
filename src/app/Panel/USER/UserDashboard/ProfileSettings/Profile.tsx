@@ -33,7 +33,13 @@ export const USER_VALIDATION_SCHEMA = Yup.object().shape({
   pin_code: Yup.string().required("Required Pin Code*"),
   language: Yup.string().required("Required Language*"),
 });
-
+export const BANK_VALIDATION_SCHEMA = Yup.object().shape({
+  bank_name: Yup.string().required("Required Bank Name*"),
+  branch_name: Yup.string().required("Required Branch Name*"),
+  ifsc_code: Yup.string().required("Required IFSC Code*"),
+  acc_no: Yup.string().required("Required Account Number*"),
+  acc_name: Yup.string().required("Required Account Name*"),
+});
 export const PASSWORD_VALIDATION_SCHEMA = Yup.object().shape({
   current_password: Yup.string().required("Password is required*"),
   new_password: Yup.string()
@@ -59,11 +65,25 @@ const Profile = () => {
     loading: profileUploadingLoading,
   } = useActionCall(SERVICE.PROFILE_UPDATE);
 
+  const {
+    loading: bankloading,
+    setQuery: setBankQuery,
+    data: bankData,
+  } = useGetCall(SERVICE.GET_BANK_DETAILS);
+
+  const {
+    Post: updateBank,
+    error: bankRequestError,
+    loading: bankUploadingLoading,
+  } = useActionCall(SERVICE.BANK_DETAILS_UPDATE);
+
+  
   const { Patch: updatePassword, loading: passwordUploadingLoading } =
     useActionCall(SERVICE.CHANGE_PASSWORD);
 
   const isProfileLocked = profileData?.data?.is_profile_updated === 1;
-  const uploading = profileUploadingLoading || false;
+  const isBankLocked = bankData?.data?.is_editable === 1;
+  const uploading = profileUploadingLoading || bankUploadingLoading || false;
 
   const {
     values: profileValues,
@@ -99,6 +119,33 @@ const Profile = () => {
   });
 
   const {
+    values: bankValues,
+    handleChange: handleBankChange,
+    errors: bankErros,
+    handleSubmit: handleBankSubmit,
+    setErrors: setBankError,
+  } = useFormik({
+    initialValues: {
+      bank_name: bankData?.data?.bank_name ?? "",
+      branch_name: bankData?.data?.branch_name ?? "",
+      ifsc_code: bankData?.data?.ifsc_code ?? "",
+      acc_no: bankData?.data?.acc_no ?? "",
+      acc_name: bankData?.data?.acc_name ?? ""
+    },
+    onSubmit: async (values: any) => {
+      let response = await updateBank(values);
+      if (response) {
+        setBankQuery({});
+      }
+    },
+
+    validateOnChange: false,
+    validateOnBlur: true,
+    validationSchema: BANK_VALIDATION_SCHEMA,
+    enableReinitialize: true,
+  });
+
+  const {
     values: passwordValues,
     handleChange: handleChangePassword,
     errors: passwordErrors,
@@ -122,6 +169,12 @@ const Profile = () => {
       setProfileError(RequestError);
     }
   }, [RequestError]);
+
+  useMemo(() => {
+    if (bankRequestError && Object.keys(bankRequestError).length) {
+      setBankError(bankRequestError);
+    }
+  }, [bankRequestError]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -326,6 +379,108 @@ const Profile = () => {
                       title="Save Changes"
                       type="button"
                       onClick={handleProfileSubmit}
+                      className="w-fit px-6 mt-4"
+                      isLoading={uploading}
+                    />
+                  }
+                </CardContent>
+              </Card>
+
+              {/* Bank Informations */}
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <User className="w-5 h-5 text-primary" />
+                    <CardTitle>Bank Informations</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Update your bank details and information
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  { isBankLocked &&
+                    <div className="text-sm text-yellow-600 bg-yellow-50 px-4 py-2 rounded-md mt-4">
+                      Your profile has been locked and cannot be edited. Please contact support if you need to make changes.
+                    </div>
+                  }
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <InputText
+                        name="acc_no"
+                        label="Account Number *"
+                        placeholder="Enter Account Number"
+                        onChange={isBankLocked ? undefined : handleBankChange}
+                        error={isBankLocked ? {} : bankErros}
+                        value={bankValues}
+                        disabled={isBankLocked}
+                        readOnly={isBankLocked}
+                        
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <InputText
+                        name="acc_name"
+                        label="Account Name *"
+                        placeholder="Enter Account Name"
+                        onChange={isBankLocked ? undefined : handleBankChange}
+                        error={isBankLocked ? {} : bankErros}
+                        value={bankValues}
+                        disabled={isBankLocked}
+                        readOnly={isBankLocked}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <InputText
+                        name="bank_name"
+                        label="Bank Name *"
+                        type="text"
+                        placeholder="Enter Bank Name"
+                        onChange={isBankLocked ? undefined : handleBankChange}
+                        error={isBankLocked ? {} : bankErros}
+                        value={bankValues}
+                        disabled={isBankLocked}
+                        readOnly={isBankLocked}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <InputText
+                        type="text"
+                        name="ifsc_code"
+                        label="IFSC Code *"
+                        placeholder="Enter IFSC Code"
+                        onChange={isBankLocked ? undefined : handleBankChange}
+                        error={isBankLocked ? {} : bankErros}
+                        value={bankValues}
+                        disabled={isBankLocked}
+                        readOnly={isBankLocked}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <InputText
+                        name="branch_name"
+                        label="Branch Name *"
+                        type="text"
+                        placeholder="Enter Branch Name"
+                        onChange={isBankLocked ? undefined : handleBankChange}
+                        error={isBankLocked ? {} : bankErros}
+                        value={bankValues}
+                        disabled={isBankLocked}
+                        readOnly={isBankLocked}
+                      />
+                    </div>
+                    
+                  </div>
+                 
+                      
+                  {!isBankLocked && 
+                    <Btn
+                      title="Save Changes"
+                      type="button"
+                      onClick={handleBankSubmit}
                       className="w-fit px-6 mt-4"
                       isLoading={uploading}
                     />
