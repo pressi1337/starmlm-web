@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Play, Users, TrendingUp, Award, ArrowRight } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import banner from '@/assets/starbanner.png';
 
 export default function WelcomePage() {
   return (
@@ -42,8 +43,7 @@ export default function WelcomePage() {
                 </span>
               </h1>
               <p className="mt-6 text-lg text-gray-600 sm:max-w-xl sm:mx-auto lg:mx-0">
-                Join our comprehensive training platform designed to help you master promotional strategies, 
-                earn rewards, and build a successful career in digital marketing.
+                Empower your professional journey alongside thousands of promoters who have realized success with us.
               </p>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
                 <Link
@@ -59,8 +59,8 @@ export default function WelcomePage() {
               <div className="relative mx-auto w-full rounded-2xl shadow-2xl lg:max-w-md">
                 <img
                   className="w-full rounded-2xl"
-                  src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg"
-                  alt="Training Platform"
+                  src={banner}
+                  alt=""
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 rounded-2xl"></div>
               </div>

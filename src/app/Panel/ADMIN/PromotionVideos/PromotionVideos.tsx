@@ -290,9 +290,7 @@ export default function PROMOTIONVIDEOS() {
               </div>
             </div>
             <div className="text-gray-900 font-medium">12:00 AM - 12:00 PM</div>
-            <div className="text-sm text-gray-600">
-              Up to 4 videos with quizzes
-            </div>
+            
           </div>
           <div className="bg-white rounded-lg p-4 shadow-sm">
             <div className="flex items-center mb-2">
@@ -302,9 +300,7 @@ export default function PROMOTIONVIDEOS() {
               </div>
             </div>
             <div className="text-gray-900 font-medium">12:00 PM - 12:00 AM</div>
-            <div className="text-sm text-gray-600">
-              Up to 4 videos with quizzes
-            </div>
+            
           </div>
         </div>
       </div>
