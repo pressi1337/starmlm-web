@@ -38,7 +38,7 @@ const PinConfirmationFormModal = ({ recoilApi = () => {}, pinRequestId }) => {
 
   return (
     <Modal
-      title={`${Edit ? "Edit" : "Pin Confirmation"}`}
+      title={`${Edit ? "Edit" : "Term Confirmation"}`}
       onClose={closeModal}
     >
       <PinConfirmationForm

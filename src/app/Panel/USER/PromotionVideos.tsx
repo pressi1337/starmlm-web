@@ -91,16 +91,25 @@ function PromotionVideosPage() {
   }
 
   if (error || quizeUpdateError || confirmError) {
+    const title = error || quizeUpdateError || confirmError || "Something went wrong!";
+    let description = "";
+    if (error) {
+      description =
+        "No promotion data is available at the moment. Please check back later or adjust your filters.";
+    } else if (quizeUpdateError) {
+      description = quizeUpdateError;
+    } else if (confirmError) {
+      description = confirmError;
+    } else {
+      description =
+        "An unexpected error occurred. Please try refreshing the page or come back later.";
+    }
+    const colorCode = error ? "yellow-700" : "red-700";
     return (
       <Error500
-        title={
-          quizeUpdateError
-            ? quizeUpdateError
-            : confirmError
-            ? confirmError
-            : undefined
-        }
-        description={""}
+        title={title}
+        description={description}
+        colorCode={colorCode}
       />
     );
   }
