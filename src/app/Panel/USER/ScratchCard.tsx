@@ -5,6 +5,7 @@ import { MODAL_OPEN } from "@/constants/others";
 import { SERVICE } from "@/constants/services";
 import DailyVideoWarning from "@/components/DailyVideoWarning";
 import { useToast } from "@/hooks/use-toast";
+import TrainingVideoWarning from "@/components/TrainingVideoWarning";
 
 interface ScratchCard {
   id: number;
@@ -180,7 +181,9 @@ const ScratchCardPage = () => {
 export default function ScratchCard() {
   return (
     <DailyVideoWarning>
-      <ScratchCardPage />
+      <TrainingVideoWarning>
+        <ScratchCardPage />
+      </TrainingVideoWarning>
     </DailyVideoWarning>
   );
 }

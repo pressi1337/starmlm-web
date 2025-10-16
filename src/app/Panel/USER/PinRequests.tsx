@@ -9,6 +9,7 @@ import ActivatePinFormModal from "@/components/FormModals/ActivatePinModal/Activ
 import { OPTIONS } from "@/constants/others";
 import PinConfirmationFormModal from "@/components/FormModals/PinConfirmationModal/PinConfirmationFormModal";
 import DailyVideoWarning from "@/components/DailyVideoWarning";
+import TrainingVideoWarning from "@/components/TrainingVideoWarning";
 
 function PinRequestsPage() {
   const { user } = useAuth();
@@ -44,6 +45,26 @@ function PinRequestsPage() {
       names.find((name) => name.value === level.toString())?.label ||
       `Level ${level}`
     );
+  };
+
+  const getDateToShow = (item) => {
+    if (item.activated_at) {
+      return item.activated_at;
+    } else if (item.pin_generated_at) {
+      return item.pin_generated_at;
+    } else {
+      return item.created_at;
+    }
+  };
+
+  const getDateLabel = (item) => {
+    if (item.activated_at) {
+      return "Activated on ";
+    } else if (item.pin_generated_at) {
+      return "Requested on ";
+    } else {
+      return "Created on ";
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -174,21 +195,23 @@ function PinRequestsPage() {
                         </div>
                       </div>
                     </div>
-                    {pinRequests?.data[0]?.user?.promoter_status == "" ||
-                      (pinRequests?.data[0]?.user?.promoter_status === 4 && (
-                        <button
-                          onClick={() =>
-                            updateSearchParam({
-                              options: {
-                                Modal: MODAL_OPEN.PIN_REQUEST_MODAL,
-                              },
-                            })
-                          }
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                          Request Level Upgrade
-                        </button>
-                      ))}
+                  {(() => {
+                    const promoterStatus = pinRequests?.data[0]?.user?.promoter_status;
+                    return (promoterStatus === null || promoterStatus === "" || promoterStatus === 4) && (
+                      <button
+                        onClick={() =>
+                          updateSearchParam({
+                            options: {
+                              Modal: MODAL_OPEN.PIN_REQUEST_MODAL,
+                            },
+                          })
+                        }
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        Request Level Upgrade
+                      </button>
+                    );
+                  })()}
                   </div>
                 );
               })()
@@ -244,8 +267,8 @@ function PinRequestsPage() {
                         Upgrade to {getLevelName(pin.level)}
                       </div>
                       <div className="text-sm text-gray-600">
-                        Requested on{" "}
-                        {new Date(pin.pin_generated_at).toLocaleDateString()}
+                        {getDateLabel(pin)}
+                        {new Date(getDateToShow(pin)).toLocaleDateString()}
                       </div>
                     </div>
                     <button
@@ -296,10 +319,8 @@ function PinRequestsPage() {
                         Upgrade to {getLevelName(request.level)}
                       </div>
                       <div className="text-sm text-gray-600">
-                        Requested on{" "}
-                        {new Date(
-                          request.pin_generated_at
-                        ).toLocaleDateString()}
+                        {getDateLabel(request)}
+                        {new Date(getDateToShow(request)).toLocaleDateString()}
                       </div>
                     </div>
                   </div>
@@ -341,7 +362,9 @@ function PinRequestsPage() {
 export default function PinRequests() {
   return (
     <DailyVideoWarning>
-      <PinRequestsPage />
+      <TrainingVideoWarning>
+        <PinRequestsPage />
+      </TrainingVideoWarning>
     </DailyVideoWarning>
   );
 }

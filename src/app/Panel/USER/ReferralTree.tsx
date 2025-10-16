@@ -16,6 +16,7 @@ import Loader from "@/components/ui/Loader";
 import DailyVideoWarning from "@/components/DailyVideoWarning";
 import { MODAL_OPEN } from "@/constants/others";
 import ReferalAddModal from "@/components/FormModals/ReferalAddModal/ReferalAddModal";
+import TrainingVideoWarning from "@/components/TrainingVideoWarning";
 
 function ReferralPage() {
   const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
@@ -336,9 +337,7 @@ function ReferralPage() {
                         </div>
                         <div className="text-sm text-gray-600">
                           {referalUser.mobile} • Joined{" "}
-                          {new Date(
-                            referalUser.created_at_formatted
-                          ).toLocaleDateString()}
+                          {referalUser.created_at_formatted}
                         </div>
                       </div>
 
@@ -438,8 +437,10 @@ function ReferralPage() {
 
 export default function ReferralTree() {
   return (
-    <DailyVideoWarning>
-      <ReferralPage />
+   <DailyVideoWarning>
+      <TrainingVideoWarning>
+        <ReferralPage />
+      </TrainingVideoWarning>
     </DailyVideoWarning>
   );
 }
