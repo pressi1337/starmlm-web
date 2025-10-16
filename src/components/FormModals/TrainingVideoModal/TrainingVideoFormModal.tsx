@@ -5,7 +5,7 @@ import Lib from "@/utils/Lib";
 
 import Modal from "@/components/ui/Modal";
 import Loader from "@/components/ui/Loader";
-import DailyVideoForm from "./TrainingVideoForm";
+import TrainingVideoForm from "./TrainingVideoForm";
 
 const TrainingVideoFormModal = ({ recoilApi = () => {} }) => {
   const { searchParams, updateSearchParam } = useQueryParams();
@@ -57,7 +57,7 @@ const TrainingVideoFormModal = ({ recoilApi = () => {} }) => {
       {loading ? (
         <Loader />
       ) : (
-        <DailyVideoForm
+        <TrainingVideoForm
           data={data?.data ?? {}}
           onAction={onAction}
           RequestError={RequestError}

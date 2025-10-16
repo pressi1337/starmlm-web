@@ -61,28 +61,6 @@ export default function TrainingVideos() {
       ),
     },
     {
-      title: "Day",
-      key: "day",
-      sortable: true,
-      render: (index: any, row: any) => {
-        const dayMap: { [key: string]: string } = {
-          "1": "Monday",
-          "2": "Tuesday",
-          "3": "Wednesday",
-          "4": "Thursday",
-          "5": "Friday",
-          "6": "Saturday",
-          "7": "Sunday",
-        };
-        return (
-          <div className="flex items-center text-sm text-gray-900">
-            <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-            {dayMap[row.day] || row.day}
-          </div>
-        );
-      },
-    },
-    {
       title: "Quiz",
       key: "quiz",
       render: (index: any, row: any) => (
@@ -266,20 +244,20 @@ export default function TrainingVideos() {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg p-4 shadow-sm">
-            <div className="text-sm font-medium text-green-600">Days 1-2</div>
-            <div className="text-gray-900">Company Introduction & Plan</div>
+            <div className="text-sm font-medium text-green-600">Days 1</div>
+            <div className="text-gray-900">Welcome Video</div>
           </div>
           <div className="bg-white rounded-lg p-4 shadow-sm">
-            <div className="text-sm font-medium text-blue-600">Days 3-4</div>
-            <div className="text-gray-900">How to Work</div>
+            <div className="text-sm font-medium text-blue-600">Days 2-3</div>
+            <div className="text-gray-900">Company Plan Video</div>
           </div>
           <div className="bg-white rounded-lg p-4 shadow-sm">
-            <div className="text-sm font-medium text-purple-600">Days 5-7</div>
-            <div className="text-gray-900">Working Training</div>
+            <div className="text-sm font-medium text-purple-600">Days 4-5</div>
+            <div className="text-gray-900">How Work Video</div>
           </div>
           <div className="bg-white rounded-lg p-4 shadow-sm">
-            <div className="text-sm font-medium text-orange-600">Each Day</div>
-            <div className="text-gray-900">1 Quiz Question</div>
+            <div className="text-sm font-medium text-orange-600">Days 6-7</div>
+            <div className="text-gray-900">Demo Working </div>
           </div>
         </div>
       </div>

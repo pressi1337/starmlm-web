@@ -222,37 +222,38 @@ const TrainingProgramWatch = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Training Structure
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white rounded-lg p-4 shadow-sm">
                 <div className="text-sm font-medium text-blue-600">
-                  Days 1-2
+                  Days 1
                 </div>
                 <div className="text-gray-900 font-medium">
-                  Company Introduction
-                </div>
-                <div className="text-sm text-gray-600">
-                  Mission, values & business plan
+                  Welcome Video
                 </div>
               </div>
               <div className="bg-white rounded-lg p-4 shadow-sm">
                 <div className="text-sm font-medium text-green-600">
-                  Days 3-4
+                  Days 2-3
                 </div>
-                <div className="text-gray-900 font-medium">How to Work</div>
-                <div className="text-sm text-gray-600">
-                  Basic & advanced techniques
-                </div>
+                <div className="text-gray-900 font-medium">Company Plan Video</div>
               </div>
               <div className="bg-white rounded-lg p-4 shadow-sm">
                 <div className="text-sm font-medium text-purple-600">
-                  Days 5-7
+                  Days 4-5
                 </div>
                 <div className="text-gray-900 font-medium">
-                  Working Training
+                  How Work Video
                 </div>
-                <div className="text-sm text-gray-600">
-                  Practical skills & mastery
+                
+              </div>
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="text-sm font-medium text-purple-600">
+                  Days 6-7
                 </div>
+                <div className="text-gray-900 font-medium">
+                  Demo Working
+                </div>
+                
               </div>
             </div>
           </div>

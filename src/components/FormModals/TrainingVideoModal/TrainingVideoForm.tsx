@@ -14,7 +14,6 @@ import FileUpload from "@/components/FileUpload";
 export const VALIDATION_SCHEMA = Yup.object().shape({
   description: Yup.string().required("Required description*"),
   day: Yup.string().required("Required day*"),
-  session_type: Yup.string().required("Required session type*"),
   youtube_link: Yup.string()
     .nullable()
     .test(
@@ -63,11 +62,7 @@ const TrainingVideoForm = ({
       title: data?.title ?? "",
       description: data?.description ?? "",
       youtube_link: data?.youtube_link ?? "",
-      session_type: data?.session_type ?? "",
       day: data?.day ?? "",
-      // showing_date: data?.showing_date
-      //   ? moment(new Date(data?.showing_date)).format("YYYY-MM-DD")
-      //   : "",
       is_active: data?.is_active ?? 1,
     },
     onSubmit: async (values: any) => {
@@ -109,15 +104,6 @@ const TrainingVideoForm = ({
           label="Day *"
           placeholder="Select Day"
           options={OPTIONS.DAYS}
-          onChange={handleChange}
-          error={errors}
-          value={values}
-        />
-        <SelectInput
-          name="session_type"
-          label="Video Time Range *"
-          placeholder="Select a time range"
-          options={OPTIONS.SESSION_TYPE}
           onChange={handleChange}
           error={errors}
           value={values}

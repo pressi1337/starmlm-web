@@ -333,13 +333,13 @@ export const URL_QUERY: any = {
 
 export const OPTIONS = {
     DAYS: [
-        { label: 'Sunday', value: '0' },
-        { label: 'Monday', value: '1' },
-        { label: 'Tuesday', value: '2' },
-        { label: 'Wednesday', value: '3' },
-        { label: 'Thursday', value: '4' },
-        { label: 'Friday', value: '5' },
-        { label: 'Saturday', value: '6' },
+        { label: 'Day 1', value: '1' },
+        { label: 'Day 2', value: '2' },
+        { label: 'Day 3', value: '3' },
+        { label: 'Day 4', value: '4' },
+        { label: 'Day 5', value: '5' },
+        { label: 'Day 6', value: '6' },
+        { label: 'Day 7', value: '7' },
     ],
     SESSION_TYPE: [
         { value: "1", label: "Morning Session" },
