@@ -39,6 +39,10 @@ export const PASSWORD_VALIDATION_SCHEMA = Yup.object().shape({
       [Yup.ref("new_password"), null],
       "Confirm Passwords must match New Password"
     ),
+  });
+export const SCRATCH_REFERRAL_VALIDATION_SCHEMA = Yup.object().shape({
+  is_active: Yup.boolean().required("Is Active status is required*"),
+  referral_code: Yup.string().required("Referral Code is required*"),
 });
 const Profile = () => {
   const {
@@ -53,8 +57,21 @@ const Profile = () => {
     loading: profileUploadingLoading,
   } = useActionCall(SERVICE.PROFILE_UPDATE);
 
-  const { Patch: updatePassword, loading: passwordUploadingLoading } =
+  const {
+    Patch: updatePassword, loading: passwordUploadingLoading } =
     useActionCall(SERVICE.CHANGE_PASSWORD);
+
+  const {
+    loading: scratchReferralLoading,
+    setQuery: setScratchReferralQuery,
+    data: scratchReferralData,
+  } = useGetCall(SERVICE.GET_ADDITIONAL_SCRAT);
+
+  const {
+    Post: updateScratchReferral,
+    error: scratchReferralError,
+    loading: scratchReferralUploadingLoading,
+  } = useActionCall(SERVICE.ADDITIONAL_SCRAT_UPDATE);
 
   const {
     values: profileValues,
@@ -98,6 +115,31 @@ const Profile = () => {
     validateOnChange: false,
     validateOnBlur: true,
     validationSchema: PASSWORD_VALIDATION_SCHEMA,
+  });
+
+  const {
+    values: scratchReferralValues,
+    handleChange: handleScratchReferralChange,
+    errors: scratchReferralErrors,
+    handleSubmit: handleScratchReferralSubmit,
+    setErrors: setScratchReferralError,
+    setFieldValue: setScratchReferralFieldValue,
+  } = useFormik({
+    initialValues: {
+      is_active: scratchReferralData?.data?.is_active ?? false,
+      referral_code: scratchReferralData?.data?.referral_code ?? "",
+    },
+    onSubmit: async (values: any) => {
+      let response = await updateScratchReferral(values);
+      if (response) {
+        setScratchReferralQuery({});
+      }
+    },
+
+    validateOnChange: false,
+    validateOnBlur: true,
+    validationSchema: SCRATCH_REFERRAL_VALIDATION_SCHEMA,
+    enableReinitialize: true,
   });
 
   useMemo(() => {
@@ -253,6 +295,49 @@ const Profile = () => {
                   />
 
                   <Separator className="my-4" />
+                </CardContent>
+              </Card>
+
+              {/* Additional Scratch Referrals */}
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <User className="w-5 h-5 text-primary" />
+                    <CardTitle>Additional Scratch Referrals</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Manage your additional scratch referral settings
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="is_active"
+                      name="is_active"
+                      checked={scratchReferralValues.is_active || false}
+                      onChange={(e) => setScratchReferralFieldValue('is_active', e.target.checked)}
+                      className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                    />
+                    <Label htmlFor="is_active" className="text-sm font-medium">
+                      Is Active
+                    </Label>
+                  </div>
+                  <div className="space-y-2">
+                    <InputText
+                      name="referral_code"
+                      label="Referral Code *"
+                      placeholder="Enter Referral Code"
+                      onChange={handleScratchReferralChange}
+                      error={scratchReferralErrors}
+                      value={scratchReferralValues}
+                    />
+                  </div>
+                  <Btn
+                    title="Update Scratch Referrals"
+                    onClick={handleScratchReferralSubmit}
+                    isLoading={scratchReferralUploadingLoading}
+                  />
                 </CardContent>
               </Card>
             </div>
