@@ -15,6 +15,7 @@ export const SERVICE: any = {
     GET_PROFILE: "auth-user",
     GET_BANK_INFO: 'user-bank-detail',
     REFERRALS: 'referrals',
+    GET_ALL_REFERRALS: 'all-referrals',
     PROFILE_UPDATE: "update-personal-details",
     GET_BANK_DETAILS: "user-bank-detail",
     BANK_DETAILS_UPDATE: "user-bank-detail/upsert",

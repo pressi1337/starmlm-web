@@ -48,11 +48,12 @@ const UserForm = ({
       nationality: data?.nationality ?? "India",
       state: data?.state ?? "",
       city: data?.city ?? "",
+      language: data?.language ?? "",
       district: data?.district ?? "",
       pin_code: data?.pin_code ?? "",
       username: data?.username ?? "",
-      password: data?.password ?? "",
-      password_confirmation: data?.password_confirmation ?? "",
+      password: data?.pwd_text ?? "",
+      password_confirmation: data?.pwd_text ?? "",
       is_active: data?.is_active ?? 1,
     },
     onSubmit: async (values: any) => {
@@ -159,7 +160,7 @@ const UserForm = ({
         />
         <SelectInput
           name="language"
-          label="Select Mother tongue*"
+          label="Select mother tongue *"
           placeholder="Select Mother tongue"
           options={OPTIONS.LANG}
           onChange={handleChange}
@@ -176,26 +177,31 @@ const UserForm = ({
           error={errors}
           value={values}
         />
-        <InputText
-          name="password"
-          label="Password *"
-          type="password"
-          placeholder="Enter Password"
-          onChange={handleChange}
-          error={errors}
-          value={values}
-        />
+        {!data?.id && (
+          <InputText
+            name="password"
+            label="Password *"
+            type="password"
+            placeholder="Enter Password"
+            onChange={handleChange}
+            error={errors}
+            value={values}
+          />
+        )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <InputText
-          name="password_confirmation"
-          label="Confirm Passwor *"
-          type="password"
-          placeholder="Enter Password"
-          onChange={handleChange}
-          error={errors}
-          value={values}
-        />
+        {!data?.id && (
+          <InputText
+            name="password_confirmation"
+            label="Confirm Passwor *"
+            type="password"
+            placeholder="Enter Password"
+            onChange={handleChange}
+            error={errors}
+            value={values}
+          />
+        )}
+
         <CheckboxInput
           label="Is Active?"
           name="is_active"

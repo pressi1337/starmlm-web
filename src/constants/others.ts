@@ -395,3 +395,11 @@ export const WIDTHDROW_STATUS = {
     2: 'completed',
     3: 'rejected'
 }
+
+export const PROMOTER_LEVEL = {
+    0: 'promotor',
+    1: 'promotor1',
+    2: 'promotor2',
+    3: 'promotor3',
+    4: 'promotor4'
+}

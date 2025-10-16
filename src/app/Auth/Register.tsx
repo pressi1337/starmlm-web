@@ -63,6 +63,7 @@ export default function Register() {
       username: "",
       password: "",
       password_confirmation: "",
+      language: "",
       referral_code: referalCode,
     },
     onSubmit: async (values: any) => {
@@ -203,8 +204,8 @@ export default function Register() {
               />
               <SelectInput
                 name="language"
-                label="Select Mother thought*"
-                placeholder="Select Mother thought"
+                label="Select Mother tongue*"
+                placeholder="Select Mother tongue"
                 options={OPTIONS.LANG}
                 onChange={handleChange}
                 error={errors}
