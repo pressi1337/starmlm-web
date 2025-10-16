@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { AlertTriangle } from "lucide-react"; // Using Heroicons for the refresh icon
+import { AlertTriangle, Info } from "lucide-react";
 
-export default function Error500({
-  title = "Something Went Wrong...",
-  description = "Unfortunately, we're unable to load the content right now.",
-}) {
+export default function Error500({title,description, colorCode}) {
   return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-8 max-w-xl text-center shadow-sm">
+        <div className={`${colorCode == 'red-700' ? 'bg-red-50' : 'bg-yellow-50'} border ${colorCode == 'red-700' ? 'border-red-200' : 'border-yellow-200'}  rounded-lg p-8 max-w-xl text-center shadow-sm`}>
           <div className="flex justify-center mb-3">
-            <AlertTriangle className="w-8 h-8 text-red-700" />
+            <Info className={`w-8 h-8 text-${colorCode}`} />
+            {/* <AlertTriangle className="w-8 h-8 text-red-700" /> */}
           </div>
-          <h3 className="text-2xl font-semibold text-red-700 mb-2">
-            {title || 'Something went wrong!'}
+          <h3 className={`text-2xl font-semibold text-${colorCode} mb-2`}>
+            {title}
           </h3>
-          <p className="text-red-600">
-            {description || 'An unexpected error occurred. Please try refreshing the page or come back later.'}
+          <p className={`text-${colorCode}`}>
+            {description}
           </p>
         </div>
       </div>

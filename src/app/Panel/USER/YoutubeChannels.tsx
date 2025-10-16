@@ -49,21 +49,6 @@ const YoutubeChannelsPage = () => {
         </div>
       </div>
 
-      {/* Featured Channel Banner */}
-      <div className="bg-gradient-to-r from-red-600 to-pink-600 rounded-2xl p-8 text-white mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">Official PromoHub Channel</h2>
-            <p className="text-lg opacity-90 mb-4">
-              Get the latest updates, tutorials, and success stories from our community
-            </p>
-          </div>
-          <div className="text-right">
-            <Youtube className="w-16 h-16 mb-4 opacity-80" />
-          </div>
-        </div>
-      </div>
-
       {/* Channel Categories */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

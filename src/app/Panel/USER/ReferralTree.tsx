@@ -288,19 +288,22 @@ function ReferralPage() {
                   <span className="font-bold text-lg">
                     {profileData?.data?.username}
                   </span>
-                  <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
+                  {/* <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
                     {getLevelName(profileData?.data?.current_promoter_level)}
-                  </span>
+                  </span> */}
                   <span className="text-xs">You</span>
                 </div>
                 <div className="text-sm opacity-90">
                   {profileData?.data?.mobile} • Network Leader
                 </div>
               </div>
-              {/* <div className="text-right">
-                <div className="font-bold text-lg">₹0</div>
-                <div className="text-xs opacity-75">Referral Earnings</div>
-              </div> */}
+              <div className="text-right">
+                {/* <div className="font-bold text-lg">₹0</div> */}
+                <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
+                  {getLevelName(profileData?.data?.current_promoter_level)}
+                </span>
+                {/* <div className="text-xs opacity-75">Referral Earnings</div> */}
+              </div>
             </div>
           </div>
 
@@ -320,13 +323,7 @@ function ReferralPage() {
                           <span className="font-medium text-gray-900">
                             {referalUser?.username}
                           </span>
-                          <span
-                            className={`px-2 py-1 text-xs font-medium rounded-full ${getLevelColor(
-                              referalUser?.current_promoter_level
-                            )}`}
-                          >
-                            {getLevelName(referalUser?.current_promoter_level ?? "")}
-                          </span>
+                         
                           <span
                             className={`text-xs font-medium ${getStatusColor(
                               referalUser?.is_active ? "active" : "inactive"
@@ -341,12 +338,19 @@ function ReferralPage() {
                         </div>
                       </div>
 
-                      {/* <div className="text-right">
-                        <div className="font-medium text-gray-900">₹0</div>
-                        <div className="text-xs text-gray-500">
+                      <div className="text-right">
+                         <span
+                            className={`px-2 py-1 text-xs font-medium rounded-full ${getLevelColor(
+                              referalUser?.current_promoter_level
+                            )}`}
+                          >
+                            {getLevelName(referalUser?.current_promoter_level ?? "")}
+                          </span>
+                        {/* <div className="font-medium text-gray-900">₹0</div> */}
+                        {/* <div className="text-xs text-gray-500">
                           Total Earnings
-                        </div>
-                      </div> */}
+                        </div> */}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -438,9 +442,7 @@ function ReferralPage() {
 export default function ReferralTree() {
   return (
    <DailyVideoWarning>
-      <TrainingVideoWarning>
         <ReferralPage />
-      </TrainingVideoWarning>
     </DailyVideoWarning>
   );
 }
