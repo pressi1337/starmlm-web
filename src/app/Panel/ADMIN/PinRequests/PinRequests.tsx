@@ -14,6 +14,7 @@ import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
+import CopyClipBoard from "@/components/CopyClip";
 
 export default function PROMOTIONVIDEOS() {
   const getStatusBadge = (status) => {
@@ -94,6 +95,17 @@ export default function PROMOTIONVIDEOS() {
         <div>
           <div className="text-sm font-medium text-gray-900">
             {row?.created_at_formatted}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "PIN",
+      key: "pin",
+      render: (index: any, row: any) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900">
+            {row?.pin ? <CopyClipBoard text={row?.pin} /> : "-"}
           </div>
         </div>
       ),
