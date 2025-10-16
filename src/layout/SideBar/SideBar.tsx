@@ -18,7 +18,6 @@ import {
   Banknote,
   Pin,
   CreditCard,
-  Banknote,
   BanknoteArrowUp,
   GitPullRequestCreateArrow,
 } from "lucide-react";
