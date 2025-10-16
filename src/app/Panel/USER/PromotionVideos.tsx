@@ -24,6 +24,7 @@ import DailyVideoWarning from "@/components/DailyVideoWarning";
 import QuizForm from "@/components/QuizeForm";
 import Lib from "@/utils/Lib";
 import Error500 from "@/components/ui/Error500";
+import TrainingVideoWarning from "@/components/TrainingVideoWarning";
 
 function PromotionVideosPage() {
   const { data, loading, setQuery, error } = useGetCall(
@@ -398,7 +399,9 @@ function PromotionVideosPage() {
 export default function PromotionVideos() {
   return (
     <DailyVideoWarning>
-      <PromotionVideosPage />
+      <TrainingVideoWarning>
+        <PromotionVideosPage />
+      </TrainingVideoWarning>
     </DailyVideoWarning>
   );
 }

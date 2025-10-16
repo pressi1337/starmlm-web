@@ -19,6 +19,7 @@ import UIHelpers from "@/utils/UIhelper";
 import FilterTab from "@/components/FilterTab";
 import UserFinanceWidget from "@/components/UserFinanceWidget";
 import DailyVideoWarning from "@/components/DailyVideoWarning";
+import TrainingVideoWarning from "@/components/TrainingVideoWarning";
 
 const getWalletColor = (wallet) => {
   if (wallet < 5) {
@@ -171,7 +172,9 @@ function EarningsHistoryPage() {
 export default function EarningsHistory() {
   return (
     <DailyVideoWarning>
-      <EarningsHistoryPage />
+      <TrainingVideoWarning>
+        <EarningsHistoryPage />
+      </TrainingVideoWarning>
     </DailyVideoWarning>
   );
 }

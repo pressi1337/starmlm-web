@@ -26,6 +26,7 @@ import Lib from "@/utils/Lib";
 import FilterTab from "@/components/FilterTab";
 import { Dialog } from "@/components/ui/dialog";
 import DailyVideoWarning from "@/components/DailyVideoWarning";
+import TrainingVideoWarning from "@/components/TrainingVideoWarning";
 
 const getStatusBadge = (status) => {
   const badges = {
@@ -263,7 +264,9 @@ function WithdrawRequestsPage() {
 export default function WithdrawRequests() {
   return (
     <DailyVideoWarning>
-      <WithdrawRequestsPage />
+      <TrainingVideoWarning>
+        <WithdrawRequestsPage />
+      </TrainingVideoWarning>
     </DailyVideoWarning>
   );
 }
