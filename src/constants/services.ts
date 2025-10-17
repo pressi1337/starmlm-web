@@ -35,6 +35,7 @@ export const SERVICE: any = {
     SCRATCH_CARDS: "get-scratch-cards",
     SCRATCHED_STATUS_UPDATE: "scratched-status-update",
     USER_DASHBOARD: "user-dashboard",
+    ADMIN_DASHBOARD: "admin-dashboard",
 
     //User Service endpoint
     DAILY_VIDEO_STATUS: 'daily-videos-status',
@@ -49,7 +50,7 @@ export const SERVICE: any = {
     TRAINING_STATUS_UPDATE: 'user-day-training-mark-as-completed',
     EARNINGS_HISTORY: 'earning-histories',
     WITHDRAW_HISTRY: 'withdraw-histories',
-    WITHDRAW_REQUEST: 'withdraws',
+    WITHDRAW_REQUEST: 'withdraws'
 
 
 }

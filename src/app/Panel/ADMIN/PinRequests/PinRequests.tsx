@@ -62,7 +62,7 @@ export default function PROMOTIONVIDEOS() {
             </div>
             <div className="ml-4">
               <div className="text-sm font-medium text-gray-900">
-                {row?.user?.first_name}
+                {row?.user?.username}
               </div>
               <div className="text-sm text-gray-500 flex items-center">
                 <Smartphone className="w-3 h-3 mr-1" />
@@ -202,6 +202,9 @@ export default function PROMOTIONVIDEOS() {
     SERVICE.ADMIN_PIN_REQUESTS
   );
 
+  // Fetch admin dashboard data for stats
+  const { data: adminDashboardData, loading: adminDashboardLoading } = useGetCall(SERVICE.ADMIN_DASHBOARD);
+
   const { loading: raiseTermLoading, Post: RaiseTerm } = useActionCall(
     SERVICE.RIASE_TERM
   );
@@ -213,40 +216,6 @@ export default function PROMOTIONVIDEOS() {
   const { loading: rejectLoading, Post: Reject } = useActionCall(
     SERVICE.REJECT_REQUEST
   );
-
-  const getStatsCounts = () => {
-    if (!data?.data || !Array.isArray(data.data)) {
-      return {
-        pending: 0,
-        approved: 0,
-        activated: 0,
-        rejected: 0,
-      };
-    }
-
-    return data.data.reduce(
-      (acc, item) => {
-        switch (item.status) {
-          case "pending":
-            acc.pending++;
-            break;
-          case "approved":
-            acc.approved++;
-            break;
-          case "activated":
-            acc.activated++;
-            break;
-          case "rejected":
-            acc.rejected++;
-            break;
-        }
-        return acc;
-      },
-      { pending: 0, approved: 0, activated: 0, rejected: 0 }
-    );
-  };
-
-  const stats = getStatsCounts();
 
   const PinRequestApi = () => {
     setQuery(filter);
@@ -397,7 +366,7 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Pending</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {stats.pending}
+                {adminDashboardLoading ? '...' : adminDashboardData?.data?.pending_promoters || 0}
               </p>
             </div>
           </div>
@@ -410,7 +379,7 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Approved</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {stats.approved}
+                {adminDashboardLoading ? '...' : adminDashboardData?.data?.approved_promoters || 0}
               </p>
             </div>
           </div>
@@ -423,7 +392,7 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Activated</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {stats.activated}
+                {adminDashboardLoading ? '...' : adminDashboardData?.data?.activated_promoters || 0}
               </p>
             </div>
           </div>
@@ -436,7 +405,7 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Rejected</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {stats.rejected}
+                {adminDashboardLoading ? '...' : adminDashboardData?.data?.rejected_promoters || 0}
               </p>
             </div>
           </div>
