@@ -131,10 +131,10 @@ function ReferralPage() {
         <div className="flex justify-between items-center">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">
-              Referral Network
+              Prmooters Network
             </h1>
             <p className="mt-2 text-gray-600">
-              Manage your referral network and track your team's performance
+              Manage your promoters network and track your team's performance
             </p>
           </div>
           <button
