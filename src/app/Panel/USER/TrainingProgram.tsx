@@ -19,6 +19,7 @@ import DailyVideoWarning from "@/components/DailyVideoWarning";
 import QuizForm from "@/components/QuizeForm";
 import Lib from "@/utils/Lib";
 import Error500 from "@/components/ui/Error500";
+import { LANG } from "@/constants/others";
 
 const TrainingProgramWatch = () => {
   const { data, loading, setQuery, error } = useGetCall(
@@ -33,6 +34,7 @@ const TrainingProgramWatch = () => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [takeQuiz, setTakeQuiz] = useState(false);
+  const [takeQuizLang, setTakeQuizLang] = useState(LANG.TN);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -85,8 +87,13 @@ const TrainingProgramWatch = () => {
           <div className="max-w-4xl mx-auto flex flex-col items-center  justify-center gap-6">
             <Crown className="w-8 h-8  text-green-600 " />
             <div className="flex flex-col items-center gap-2">
-              <h3 className="text-lg font-semibold text-green-900">Congratulations!</h3>
-              <p className="text-green-700">You have completed all the training videos for the 7-day training program. Great job!</p>
+              <h3 className="text-lg font-semibold text-green-900">
+                Congratulations!
+              </h3>
+              <p className="text-green-700">
+                You have completed all the training videos for the 7-day
+                training program. Great job!
+              </p>
             </div>
           </div>
         </div>
@@ -100,8 +107,13 @@ const TrainingProgramWatch = () => {
           <div className="max-w-4xl mx-auto flex flex-col items-center  justify-center gap-6">
             <Crown className="w-8 h-8  text-green-600 " />
             <div className="flex flex-col items-center gap-2">
-              <h3 className="text-lg font-semibold text-green-900">Day {data?.data?.nextday - 1} training Complete!</h3>
-              <p className="text-green-700">Excellent progress! Get ready to continue your journey tomorrow with Day {data?.data?.nextday}.</p>
+              <h3 className="text-lg font-semibold text-green-900">
+                Day {data?.data?.nextday - 1} training Complete!
+              </h3>
+              <p className="text-green-700">
+                Excellent progress! Get ready to continue your journey tomorrow
+                with Day {data?.data?.nextday}.
+              </p>
             </div>
           </div>
         </div>
@@ -139,19 +151,29 @@ const TrainingProgramWatch = () => {
       icon: "info",
       title: `Read Instructions`,
       html: `
-   <ul>
-    <li>* Each question has 30 seconds to answer.</li>
-    <li>* Once submitted, you cannot return to previous questions.</li>
-    <li>* Unanswered questions after 30 seconds will auto-skip.</li>
-    <li>* No pausing or refreshing during the quiz.</li>
-   </ul>
-  `,
-      confirmButtonText: "Take Quiz",
+        <ul>
+         <li>* Each question has 30 seconds to answer.</li>
+         <li>* Once submitted, you cannot return to previous questions.</li>
+         <li>* Unanswered questions after 30 seconds will auto-skip.</li>
+         <li>* No pausing or refreshing during the quiz.</li>
+        </ul>
+       `,
+      showCancelButton: true,
+      confirmButtonText: "Take Quiz in English",
+      cancelButtonText: "Take Quiz in Tamil",
+      reverseButtons: true, // Puts the buttons in a specific order (optional)
       customClass: {
         confirmButton:
           "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
+        cancelButton:
+          "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
       },
     }).then((result) => {
+      if (result.isConfirmed) {
+        setTakeQuizLang(LANG.EN);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        setTakeQuizLang(LANG.TA);
+      }
       setTakeQuiz(true);
     });
   };
@@ -185,7 +207,8 @@ const TrainingProgramWatch = () => {
             data?.data?.training?.training_video?.title
           }`}
           quizQuestion={Lib.transformQuestionsFromResponse(
-            data?.data?.training?.training_video?.quiz?.questions
+            data?.data?.training?.training_video?.quiz?.questions,
+            takeQuizLang
           )}
           handleQuizSubmit={handleQuizSubmit}
         />
@@ -224,36 +247,28 @@ const TrainingProgramWatch = () => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white rounded-lg p-4 shadow-sm">
-                <div className="text-sm font-medium text-blue-600">
-                  Days 1
-                </div>
-                <div className="text-gray-900 font-medium">
-                  Welcome Video
-                </div>
+                <div className="text-sm font-medium text-blue-600">Days 1</div>
+                <div className="text-gray-900 font-medium">Welcome Video</div>
               </div>
               <div className="bg-white rounded-lg p-4 shadow-sm">
                 <div className="text-sm font-medium text-green-600">
                   Days 2-3
                 </div>
-                <div className="text-gray-900 font-medium">Company Plan Video</div>
+                <div className="text-gray-900 font-medium">
+                  Company Plan Video
+                </div>
               </div>
               <div className="bg-white rounded-lg p-4 shadow-sm">
                 <div className="text-sm font-medium text-purple-600">
                   Days 4-5
                 </div>
-                <div className="text-gray-900 font-medium">
-                  How Work Video
-                </div>
-                
+                <div className="text-gray-900 font-medium">How Work Video</div>
               </div>
               <div className="bg-white rounded-lg p-4 shadow-sm">
                 <div className="text-sm font-medium text-purple-600">
                   Days 6-7
                 </div>
-                <div className="text-gray-900 font-medium">
-                  Demo Working
-                </div>
-                
+                <div className="text-gray-900 font-medium">Demo Working</div>
               </div>
             </div>
           </div>

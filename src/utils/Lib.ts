@@ -92,32 +92,50 @@ const Lib = {
         return OPTIONS.find((item: any) => item.value == value)
     },
     // Converts backend question array (alternating EN/TA) → formatted question list
-    transformQuestionsFromResponse(questions = []) {
-        const formattedQuestions = [];
+    transformQuestionsFromResponse(questions = [], lang = 2) {
+        let formattedQuestions = [];
 
-        for (let i = 0; i < questions.length; i += 2) {
-            const enQuestion = questions[i];
-            const taQuestion = questions[i + 1];
+        formattedQuestions = questions.filter(quizItem => quizItem.lang_type == lang).map(item => ({
+            id: item.id,
+            question: item?.question,
+            timeLimit: item?.time_limit ?? 30,
+            promotor: item?.promotor,
+            promotor1: item?.promotor1,
+            promotor2: item?.promotor2,
+            promotor3: item?.promotor3,
+            promotor4: item?.promotor4,
+            choices:
+                item?.choices?.map((choice: any, index: any) => ({
+                    id: choice?.id ?? "",
+                    choise: choice?.choice_value ?? "",
+                    isCorrect: choice?.is_correct ?? false,
+                })) ?? [],
 
-            formattedQuestions.push({
-                id: enQuestion?.id,
-                questionEn: enQuestion?.question ?? "",
-                questionTa: taQuestion?.question ?? "",
-                timeLimit: enQuestion?.time_limit ?? 0,
-                promotor: enQuestion?.promotor,
-                promotor1: enQuestion?.promotor1,
-                promotor2: enQuestion?.promotor2,
-                promotor3: enQuestion?.promotor3,
-                promotor4: enQuestion?.promotor4,
-                choices:
-                    enQuestion?.choices?.map((choice: any, index: any) => ({
-                        id: choice?.id ?? "",
-                        textEn: choice?.choice_value ?? "",
-                        textTa: taQuestion?.choices?.[index]?.choice_value ?? "",
-                        isCorrect: choice?.is_correct ?? false,
-                    })) ?? [],
-            });
-        }
+        }))
+
+        // for (let i = 0; i < questions.length; i += 2) {
+        //     const enQuestion = questions[i];
+        //     const taQuestion = questions[i + 1];
+
+        //     formattedQuestions.push({
+        //         id: enQuestion?.id,
+        //         question: enQuestion?.question ?? "",
+        //         questionTa: taQuestion?.question ?? "",
+        //         timeLimit: enQuestion?.time_limit ?? 0,
+        //         promotor: enQuestion?.promotor,
+        //         promotor1: enQuestion?.promotor1,
+        //         promotor2: enQuestion?.promotor2,
+        //         promotor3: enQuestion?.promotor3,
+        //         promotor4: enQuestion?.promotor4,
+        //         choices:
+        //             enQuestion?.choices?.map((choice: any, index: any) => ({
+        //                 id: choice?.id ?? "",
+        //                 textEn: choice?.choice_value ?? "",
+        //                 textTa: taQuestion?.choices?.[index]?.choice_value ?? "",
+        //                 isCorrect: choice?.is_correct ?? false,
+        //             })) ?? [],
+        //     });
+        // }
 
         return formattedQuestions;
     },

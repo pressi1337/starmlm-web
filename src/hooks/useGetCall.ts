@@ -89,7 +89,9 @@ const useGetCall = (services: string, initialOptions: OptionsProps = {}) => {
                     } else if (response.status === 500) {
                         throw new Error("Server Error, Please Try Later");
                     } else if (response.status === 400) {
-                        throw new Error("Record Not Found");
+
+                        const error: any = await response.json()
+                        throw new Error(error?.message ?? "Record Not Found");
                     } else {
                         throw new Error("Network Error");
                     }
