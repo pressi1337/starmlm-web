@@ -34,6 +34,7 @@ export const SERVICE: any = {
     WITHDRAW_UPDATE_STATUS: 'withdraw-status-update',
     SCRATCH_CARDS: "get-scratch-cards",
     SCRATCHED_STATUS_UPDATE: "scratched-status-update",
+    USER_DASHBOARD: "user-dashboard",
 
     //User Service endpoint
     DAILY_VIDEO_STATUS: 'daily-videos-status',
