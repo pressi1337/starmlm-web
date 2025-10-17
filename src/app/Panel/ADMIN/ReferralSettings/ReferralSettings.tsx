@@ -341,7 +341,7 @@ export default function ReferralSettings() {
                   Settings Saved Successfully
                 </h3>
                 <p className="mt-1 text-sm text-green-700">
-                  Your referral cashback settings have been updated.
+                  Your Promotion cashback settings have been updated.
                 </p>
               </div>
             </div>
@@ -408,7 +408,7 @@ export default function ReferralSettings() {
                 {/* Start Range */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    From (Referrals)
+                    From (Promotion)
                   </label>
                   <input
                     type="number"
@@ -440,7 +440,7 @@ export default function ReferralSettings() {
                 {/* End Range */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    To (Referrals)
+                    To (Promotion)
                   </label>
                   <input
                     type="number"
@@ -571,7 +571,7 @@ export default function ReferralSettings() {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900">
-              Referral Cashback Settings
+              Promotion Cashback Settings
             </h1>
             <p className="mt-2 text-base text-gray-600">
               Configure earning ranges for each promoter level

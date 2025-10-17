@@ -118,7 +118,7 @@ const Sidebar = ({
       });
       baseItems.push({
         id: "referral-settings",
-        label: "Referral Settings",
+        label: "Promotion Settings",
         path: "/portal/admin/referral-settings",
         icon: Settings,
         color: "from-sky-500 to-blue-600",
@@ -155,7 +155,7 @@ const Sidebar = ({
         },
         {
           id: "my-referrals",
-          label: "My Referrals",
+          label: "My Promoters",
           path: "/portal/user/referrals",
           icon: Users,
           color: "from-purple-500 to-violet-600",
