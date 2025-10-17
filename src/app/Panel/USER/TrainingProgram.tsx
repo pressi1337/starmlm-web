@@ -77,6 +77,7 @@ const TrainingProgramWatch = () => {
       <Error500
         title={traningStatusUpdateError ?? undefined}
         description={traningStatusUpdateError ? "" : undefined}
+        colorCode={"red-700"}
       />
     );
   }
@@ -182,7 +183,11 @@ const TrainingProgramWatch = () => {
     Swal.fire({
       icon: "success",
       title: "Quiz Completed!",
-      text: "Thank you for taking the quiz. Your responses have been submitted successfully.",
+      text: `Thank you for completing the quiz. ${Lib.checkQuizCorrect(
+        data?.data?.training?.training_video?.quiz?.questions,
+        payload,
+        takeQuizLang
+      )}, and your responses have been submitted successfully.`,
       confirmButtonText: "OK",
       customClass: {
         confirmButton:
@@ -191,7 +196,7 @@ const TrainingProgramWatch = () => {
     }).then((result) => {
       setQuery();
     });
-    setTakeQuiz(false);
+    setTakeQuiz(true);
     await updateTraningStatus(
       {
         status: 2,
@@ -276,12 +281,15 @@ const TrainingProgramWatch = () => {
           {/* Video Player Section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
             <div className="aspect-video bg-gray-900 relative">
-              {data?.data?.training?.training_video?.video_path || data?.data?.training?.training_video?.youtube_link ? (
+              {data?.data?.training?.training_video?.video_path ||
+              data?.data?.training?.training_video?.youtube_link ? (
                 <ReactPlayer
                   ref={playerRef}
                   src={
                     data?.data?.training?.training_video?.video_path
-                      ? Lib.CloudPath(data?.data?.training?.training_video?.video_path)
+                      ? Lib.CloudPath(
+                          data?.data?.training?.training_video?.video_path
+                        )
                       : data?.data?.training?.training_video?.youtube_link
                   }
                   width="100%"
@@ -292,7 +300,7 @@ const TrainingProgramWatch = () => {
                   onDurationChange={handleDurationChange}
                   onEnded={handlevideoWatchCompleted}
                   onError={(error) => {
-                    console.error('ReactPlayer Error:', error);
+                    console.error("ReactPlayer Error:", error);
                     // Handle video loading errors
                   }}
                 />
@@ -303,16 +311,18 @@ const TrainingProgramWatch = () => {
               )}
 
               {/* Custom Play Button Overlay */}
-              {!playing && (data?.data?.training?.training_video?.video_path || data?.data?.training?.training_video?.youtube_link) && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
-                  <button
-                    onClick={() => setPlaying(true)}
-                    className="flex items-center justify-center w-20 h-20 bg-blue-600 hover:bg-blue-700 rounded-full text-white transition-colors group"
-                  >
-                    <Play className="w-8 h-8 ml-1 group-hover:scale-110 transition-transform" />
-                  </button>
-                </div>
-              )}
+              {!playing &&
+                (data?.data?.training?.training_video?.video_path ||
+                  data?.data?.training?.training_video?.youtube_link) && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+                    <button
+                      onClick={() => setPlaying(true)}
+                      className="flex items-center justify-center w-20 h-20 bg-blue-600 hover:bg-blue-700 rounded-full text-white transition-colors group"
+                    >
+                      <Play className="w-8 h-8 ml-1 group-hover:scale-110 transition-transform" />
+                    </button>
+                  </div>
+                )}
             </div>
 
             {/* Custom Progress Bar */}

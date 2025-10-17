@@ -140,6 +140,28 @@ const Lib = {
         return formattedQuestions;
     },
 
+    checkQuizCorrect(questions = [], submitQuestion = [], lang = 2) {
+
+
+        const Q = this.transformQuestionsFromResponse(questions ?? [], lang)
+        let correctCount = 0;
+
+        submitQuestion.forEach(submission => {
+            const question = Q.find(q => q.id === submission.question_id);
+            if (question) {
+                const choice = question.choices.find(c => c.id === submission.choice_id);
+                if (choice && choice.isCorrect === 1) {
+                    correctCount++;
+                }
+            }
+        });
+
+        return `You scored ${correctCount} out of ${submitQuestion.length}`;
+
+
+
+    },
+
     // Converts formatted question list → payload for backend (both EN + TA)
     generateQuestionPayload(questions = []) {
         const payload = [];

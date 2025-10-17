@@ -68,8 +68,8 @@ const PromotionVideoForm = ({
       showing_date: data?.showing_date
         ? moment(new Date(data?.showing_date)).format("YYYY-MM-DD")
         : "",
-      session_type: data?.session_type ?? OPTIONS.SESSION_TYPE[0],
-      video_order: data?.video_order ?? OPTIONS.VIDEO_ORDER[0],
+      session_type: data?.session_type ?? "",
+      video_order: data?.video_order ?? "",
       is_active: data?.is_active ?? 1,
     },
     onSubmit: async (values: any) => {
