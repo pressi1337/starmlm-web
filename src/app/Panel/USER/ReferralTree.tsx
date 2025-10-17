@@ -34,6 +34,9 @@ function ReferralPage() {
       pageSize: 1000,
     },
   });
+
+  // Fetch user dashboard data for stats
+  const { data: userDashboardData, loading: userDashboardLoading } = useGetCall(SERVICE.USER_DASHBOARD);
   const getReferalAPI = () => {
     setQuery({
       query: {
@@ -121,7 +124,7 @@ function ReferralPage() {
     return status === "active" ? "text-green-600" : "text-red-600";
   };
 
-  if (profileLoading || referalLoading) {
+  if (profileLoading || referalLoading || userDashboardLoading) {
     return <Loader />;
   }
 
@@ -131,7 +134,7 @@ function ReferralPage() {
         <div className="flex justify-between items-center">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">
-              Prmooters Network
+              Promoters Network
             </h1>
             <p className="mt-2 text-gray-600">
               Manage your promoters network and track your team's performance
@@ -146,7 +149,7 @@ function ReferralPage() {
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Referal
+            Add Promoter
           </button>
         </div>
       </div>
@@ -163,7 +166,7 @@ function ReferralPage() {
                 Total Referrals
               </p>
               <p className="text-2xl font-bold text-gray-900">
-                {referalData?.pageInfo?.total_records}
+                {userDashboardLoading ? '...' : (userDashboardData?.data?.total_referrals || 0)}
               </p>
             </div>
           </div>
@@ -180,7 +183,7 @@ function ReferralPage() {
               </p>
               <p className="text-2xl font-bold text-gray-900">
                 {" "}
-                {referalData?.pageInfo?.total_records}
+                {userDashboardLoading ? '...' : (userDashboardData?.data?.active_referrals || 0)}
               </p>
             </div>
           </div>
@@ -195,7 +198,9 @@ function ReferralPage() {
               <p className="text-sm font-medium text-gray-500">
                 Total Earnings
               </p>
-              <p className="text-2xl font-bold text-gray-900">0</p>
+              <p className="text-2xl font-bold text-gray-900">
+                ₹{userDashboardLoading ? '...' : (userDashboardData?.data?.scratch_wallet || 0)}
+              </p>
             </div>
           </div>
         </div>
@@ -207,7 +212,9 @@ function ReferralPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Your Level</p>
-              <p className="text-lg font-bold text-gray-900">1</p>
+              <p className="text-lg font-bold text-gray-900">
+                {userDashboardLoading ? '...' : (userDashboardData?.data?.current_promoter_level || 0)}
+              </p>
             </div>
           </div>
         </div>
@@ -300,7 +307,7 @@ function ReferralPage() {
               <div className="text-right">
                 {/* <div className="font-bold text-lg">₹0</div> */}
                 <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
-                  {getLevelName(profileData?.data?.current_promoter_level)}
+                  {getLevelName(userDashboardData?.data?.current_promoter_level)}
                 </span>
                 {/* <div className="text-xs opacity-75">Referral Earnings</div> */}
               </div>
