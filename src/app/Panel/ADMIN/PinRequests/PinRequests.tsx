@@ -15,6 +15,7 @@ import DataTable from "@/components/DataTable";
 import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
 import CopyClipBoard from "@/components/CopyClip";
+import AdminPinFormModal from "@/components/FormModals/AdminGeneratePinModal/AdminPinFormModal";
 
 export default function PROMOTIONVIDEOS() {
   const getStatusBadge = (status) => {
@@ -41,7 +42,7 @@ export default function PROMOTIONVIDEOS() {
 
     return (
       <span
-        className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${badge.color}`}
+        className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full whitespace-nowrap ${badge.color}`}
       >
         <Icon className="w-4 h-4 mr-1" />
         {badge.text}
@@ -78,7 +79,7 @@ export default function PROMOTIONVIDEOS() {
       render: (index: any, row: any) => (
         <div>
           <div
-            className={`text-sm font-medium text-gray-900 ${
+            className={`text-sm font-medium text-gray-900 whitespace-nowrap ${
               OPTIONS.PROMOTER_LEVEL[row.level].color
             }`}
             title={row.level}
@@ -93,8 +94,19 @@ export default function PROMOTIONVIDEOS() {
       key: "request_date",
       render: (index: any, row: any) => (
         <div>
-          <div className="text-sm font-medium text-gray-900">
+          <div className="text-sm font-medium text-gray-900 whitespace-nowrap">
             {row?.created_at_formatted}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Activated Date",
+      key: "activated_date",
+      render: (index: any, row: any) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900 whitespace-nowrap">
+            {row?.activated_at}
           </div>
         </div>
       ),
@@ -122,13 +134,35 @@ export default function PROMOTIONVIDEOS() {
       ),
     },
     {
+      title: "Pick Date",
+      key: "pick_date",
+      render: (index: any, row: any) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900 whitespace-nowrap">
+            {row?.direct_pick_date ?? "-"}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Delivery Address",
+      key: "delivery_address",
+      render: (index: any, row: any) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900 whitespace-normal">
+            {row?.gift_delivery_address ?? "-"}
+          </div>
+        </div>
+      ),
+    },
+    {
       title: "Action",
       key: "action",
       render: (index: any, row: any) => (
         <div className="flex items-center justify-start space-x-2">
           {row?.user?.promoter_status === 0 && row?.status === 0 && (
             <button
-              className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="whitespace-nowrap inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               onClick={() => handleRaiseTerm(row.id)}
             >
               <HeartHandshake className="w-3 h-3 mr-1" />
@@ -137,8 +171,8 @@ export default function PROMOTIONVIDEOS() {
           )}
           {row?.user?.promoter_status === 2 && row?.status === 0 && (
             <button
-              className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              onClick={() => handleGeneratePin(row.id)}
+              className="whitespace-nowrap inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              onClick={() => handleGeneratePin(row)}
             >
               Generate Pin
             </button>
@@ -164,7 +198,6 @@ export default function PROMOTIONVIDEOS() {
   const { loading, setQuery, data } = useGetCall(SERVICE.ADMIN_PIN_REQUESTS, {
     avoidFetch: true,
   });
-
   const { loading: deleteLoading, Delete: DeleteTrainingVideo } = useActionCall(
     SERVICE.ADMIN_PIN_REQUESTS
   );
@@ -215,12 +248,12 @@ export default function PROMOTIONVIDEOS() {
 
   const stats = getStatsCounts();
 
-  const PromotionVideoAPI = () => {
+  const PinRequestApi = () => {
     setQuery(filter);
   };
 
   useEffect(() => {
-    PromotionVideoAPI();
+    PinRequestApi();
   }, [filter]);
 
   const ConfirmDeleteModal = async (value: string) => {
@@ -254,7 +287,7 @@ export default function PROMOTIONVIDEOS() {
         if (result.isConfirmed) {
           const resp = await DeleteTrainingVideo(value);
           if (resp) {
-            PromotionVideoAPI();
+            PinRequestApi();
             Swal.fire({
               icon: "success",
               title: "Deleted!",
@@ -274,7 +307,7 @@ export default function PROMOTIONVIDEOS() {
     try {
       const response = await RaiseTerm({ id: userPromoterId });
       if (response) {
-        PromotionVideoAPI();
+        PinRequestApi();
         Swal.fire({
           icon: "success",
           title: "Success!",
@@ -300,41 +333,22 @@ export default function PROMOTIONVIDEOS() {
     }
   };
 
-  const handleGeneratePin = async (userPromoterId: number) => {
-    try {
-      const response = await GeneratePin({ id: userPromoterId });
-      if (response) {
-        PromotionVideoAPI();
-        Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: "Pin generated successfully.",
-          confirmButtonText: "OK",
-          customClass: {
-            confirmButton:
-              "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
-          },
-        });
+  const handleGeneratePin = (rowData: any) => {
+    // Show modal for pin generation confirmation with complete user data
+    updateSearchParam({
+      options: {
+        Modal: "GeneratePin",
+        pinRequestId: rowData.id.toString(),
+        userData: JSON.stringify(rowData)
       }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "Failed to generate pin. Please try again.",
-        confirmButtonText: "OK",
-        customClass: {
-          confirmButton:
-            "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
-        },
-      });
-    }
+    });
   };
 
   const handleReject = async (userPromoterId: number) => {
     try {
       const response = await Reject({ id: userPromoterId });
       if (response) {
-        PromotionVideoAPI();
+        PinRequestApi();
         Swal.fire({
           icon: "success",
           title: "Success!",
@@ -448,6 +462,14 @@ export default function PROMOTIONVIDEOS() {
           showPagination={true}
         />
       </div>
+      {/* Modal Rendering */}
+      {Modal === "GeneratePin" && (
+        <AdminPinFormModal
+          pinRequestId={parseInt(searchParams.get("pinRequestId") || "0")}
+          allPinRequestsData={data}
+          recoilApi={PinRequestApi}
+        />
+      )}
     </div>
   );
 }

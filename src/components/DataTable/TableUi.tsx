@@ -9,6 +9,7 @@ const classes = {
     [&_table]:w-full
     [&_.rc-table-row:hover]:bg-gray-50
     [&_.rc-table-cell]:align-top
+    [&_.rc-table-cell]:whitespace-nowrap
     [&_thead]:bg-gray-50
     [&_thead_th]:px-6
     [&_thead_th]:py-3
