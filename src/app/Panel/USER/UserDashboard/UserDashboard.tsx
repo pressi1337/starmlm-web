@@ -11,9 +11,12 @@ import {
   Crown,
   ArrowUp,
   DollarSign,
-  Gift
+  Gift,
+  IndianRupee
 } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import { useGetCall } from '@/hooks';
+import { SERVICE } from "@/constants/services";
 
 export default function UserDashboard() {
   const { user } = useAuth();
@@ -23,6 +26,8 @@ export default function UserDashboard() {
                   currentTime.getHours() < 18 ? 'Good Afternoon' : 'Good Evening';
 
   const totalEarnings = user?.earnings?.cash + user?.earnings?.grow + user?.earnings?.scratch;
+  const {data: userData} = useGetCall(SERVICE.USER_DASHBOARD);
+  console.log("userData", userData);
 
   const getLevelColor = (role) => {
     const colors = {
@@ -64,6 +69,9 @@ export default function UserDashboard() {
                   day: 'numeric' 
                 })}
               </p>
+            </div>
+            <div className="text-right">
+              <Crown className="w-6 h-6 mr-2" />
               <div className="flex items-center mt-4">
                 <Clock className="w-5 h-5 mr-2" />
                 <span className="text-lg">
@@ -73,9 +81,7 @@ export default function UserDashboard() {
                   })}
                 </span>
               </div>
-            </div>
-            <div className="text-right">
-              <div className="flex items-center justify-end mb-2">
+              {/* <div className="flex items-center justify-end mb-2">
                 <Crown className="w-6 h-6 mr-2" />
                 <span className="text-2xl font-bold">{user?.level}</span>
               </div>
@@ -87,7 +93,7 @@ export default function UserDashboard() {
                   className="bg-white h-2 rounded-full transition-all duration-500" 
                   style={{ width: `${(user?.trainingDay / 7) * 100}%` }}
                 ></div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -98,31 +104,11 @@ export default function UserDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Total Earnings</p>
-              <p className="text-2xl font-bold text-gray-900">₹{totalEarnings}</p>
-              <p className="text-xs text-green-600 flex items-center mt-1">
-                <TrendingUp className="w-3 h-3 mr-1" />
-                +12% from last month
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
               <p className="text-sm font-medium text-gray-500">Cash Wallet</p>
-              <p className="text-2xl font-bold text-gray-900">₹{user?.earnings?.cash}</p>
-              <p className="text-xs text-blue-600 flex items-center mt-1">
-                <DollarSign className="w-3 h-3 mr-1" />
-                Available for withdrawal
-              </p>
+              <p className="text-2xl font-bold text-gray-900">₹{userData?.data?.cash_wallet}</p>
             </div>
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-blue-600" />
+              <IndianRupee className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </div>
@@ -131,11 +117,7 @@ export default function UserDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500">Grow Wallet</p>
-              <p className="text-2xl font-bold text-gray-900">₹{user?.earnings?.grow}</p>
-              <p className="text-xs text-purple-600 flex items-center mt-1">
-                <TrendingUp className="w-3 h-3 mr-1" />
-                Investment earnings
-              </p>
+              <p className="text-2xl font-bold text-gray-900">₹{userData?.data?.grow_wallet}</p>
             </div>
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-purple-600" />
@@ -147,11 +129,7 @@ export default function UserDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500">Scratch Cards</p>
-              <p className="text-2xl font-bold text-gray-900">₹{user?.earnings?.scratch}</p>
-              <p className="text-xs text-orange-600 flex items-center mt-1">
-                <Gift className="w-3 h-3 mr-1" />
-                Bonus rewards
-              </p>
+              <p className="text-2xl font-bold text-gray-900">₹{userData?.data?.scratch_wallet}</p>
             </div>
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
               <Gift className="w-6 h-6 text-orange-600" />
@@ -247,33 +225,6 @@ export default function UserDashboard() {
                 <span className="text-xs text-yellow-600 font-medium">Available</span>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
-        </div>
-        <div className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
-              <Award className="w-8 h-8 text-gray-400 mb-2" />
-              <span className="text-sm font-medium text-gray-900">View Earnings</span>
-            </button>
-            <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors">
-              <Users className="w-8 h-8 text-gray-400 mb-2" />
-              <span className="text-sm font-medium text-gray-900">Invite Friends</span>
-            </button>
-            <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors">
-              <Wallet className="w-8 h-8 text-gray-400 mb-2" />
-              <span className="text-sm font-medium text-gray-900">Withdraw</span>
-            </button>
-            <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors">
-              <Crown className="w-8 h-8 text-gray-400 mb-2" />
-              <span className="text-sm font-medium text-gray-900">Upgrade Level</span>
-            </button>
           </div>
         </div>
       </div>
