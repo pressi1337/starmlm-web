@@ -284,26 +284,33 @@ function PromotionVideosPage() {
             {/* Video Player Section */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
               <div className="aspect-video bg-gray-900 relative">
-                <ReactPlayer
-                  ref={playerRef}
-                  src={
-                    data?.data?.promotion_video?.video_path ??
-                    data?.data?.promotion_video?.youtube_link
-                  }
-                  // src={
-                  //   "https://api.starupworld.com/storage/uploads/final/2e684244-ea94-40e7-9465-e558f1901200_videoplayback.mp4"
-                  // }
-                  width="100%"
-                  height="100%"
-                  controls={false}
-                  playing={playing}
-                  onTimeUpdate={handleProgress}
-                  onDurationChange={handleDurationChange}
-                  onEnded={handlevideoWatchCompleted}
-                />
-
+                {data?.data?.promotion_video?.video_path || data?.data?.promotion_video?.youtube_link ? (
+                  <ReactPlayer
+                    ref={playerRef}
+                    src={
+                      data?.data?.promotion_video?.video_path
+                        ? Lib.CloudPath(data?.data?.promotion_video?.video_path)
+                        : data?.data?.promotion_video?.youtube_link
+                    }
+                    width="100%"
+                    height="100%"
+                    controls={false}
+                    playing={playing}
+                    onTimeUpdate={handleProgress}
+                    onDurationChange={handleDurationChange}
+                    onEnded={handlevideoWatchCompleted}
+                    onError={(error) => {
+                      console.error('ReactPlayer Error:', error);
+                      // Handle video loading errors
+                    }}
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-white text-lg">
+                    No video source available
+                  </div>
+                )}
                 {/* Custom Play Button Overlay */}
-                {!playing && (
+                {!playing && (data?.data?.promotion_video?.video_path || data?.data?.promotion_video?.youtube_link) && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
                     <button
                       onClick={() => setPlaying(true)}

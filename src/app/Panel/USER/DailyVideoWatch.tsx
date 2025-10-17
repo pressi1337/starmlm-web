@@ -6,6 +6,7 @@ import Loader from "@/components/ui/Loader";
 import ReactPlayer from "react-player";
 import UIHelpers from "@/utils/UIhelper";
 import Swal from "sweetalert2";
+import Lib from "@/utils/Lib";
 
 interface DailyVideoWatchProps {
   onVideoWatched: () => void;
@@ -128,20 +129,34 @@ export default function DailyVideoWatch({
       {/* Video Player Section */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
         <div className="aspect-video bg-gray-900 relative">
-          <ReactPlayer
-            ref={playerRef}
-            src={data?.data?.video_path ?? data?.data?.youtube_link}
-            width="100%"
-            height="100%"
-            controls={false}
-            playing={playing}
-            onTimeUpdate={handleProgress}
-            onDurationChange={handleDurationChange}
-            onEnded={handlevideoWatchCompleted}
-          />
+          {data?.data?.video_path || data?.data?.youtube_link ? (
+            <ReactPlayer
+              ref={playerRef}
+              src={
+                data?.data?.video_path
+                  ? Lib.CloudPath(data?.data?.video_path)
+                  : data?.data?.youtube_link
+              }
+              width="100%"
+              height="100%"
+              controls={false}
+              playing={playing}
+              onTimeUpdate={handleProgress}
+              onDurationChange={handleDurationChange}
+              onEnded={handlevideoWatchCompleted}
+              onError={(error) => {
+                console.error('ReactPlayer Error:', error);
+                // Handle video loading errors
+              }}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-white text-lg">
+              No video source available
+            </div>
+          )}
 
           {/* Custom Play Button Overlay */}
-          {!playing && (
+          {!playing && (data?.data?.video_path || data?.data?.youtube_link) && (
             <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
               <button
                 onClick={() => setPlaying(true)}
