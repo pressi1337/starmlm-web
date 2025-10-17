@@ -25,6 +25,7 @@ import QuizForm from "@/components/QuizeForm";
 import Lib from "@/utils/Lib";
 import Error500 from "@/components/ui/Error500";
 import TrainingVideoWarning from "@/components/TrainingVideoWarning";
+import { LANG } from "@/constants/others";
 
 function PromotionVideosPage() {
   const { data, loading, setQuery, error } = useGetCall(
@@ -49,6 +50,7 @@ function PromotionVideosPage() {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [takeQuiz, setTakeQuiz] = useState(false);
+  const [takeQuizLang, setTakeQuizLang] = useState(LANG.TN);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -91,7 +93,8 @@ function PromotionVideosPage() {
   }
 
   if (error || quizeUpdateError || confirmError) {
-    const title = error || quizeUpdateError || confirmError || "Something went wrong!";
+    const title =
+      error || quizeUpdateError || confirmError || "Something went wrong!";
     let description = "";
     if (error) {
       description =
@@ -106,11 +109,7 @@ function PromotionVideosPage() {
     }
     const colorCode = error ? "yellow-700" : "red-700";
     return (
-      <Error500
-        title={title}
-        description={description}
-        colorCode={colorCode}
-      />
+      <Error500 title={title} description={description} colorCode={colorCode} />
     );
   }
 
@@ -121,8 +120,13 @@ function PromotionVideosPage() {
           <div className="flex items-center justify-center mb-4">
             <XCircle className="w-12 h-12 text-red-600" aria-hidden="true" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Session Expired</h3>
-          <p className="text-sm text-gray-600 mb-6">Your session has expired. Please sign in again to continue where you left off.</p>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            Session Expired
+          </h3>
+          <p className="text-sm text-gray-600 mb-6">
+            Your session has expired. Please sign in again to continue where you
+            left off.
+          </p>
           {/* <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
               <LogIn className="w-4 h-4" />Sign in
@@ -131,7 +135,10 @@ function PromotionVideosPage() {
               <RefreshCw className="w-4 h-4" />Try again
             </button>
           </div> */}
-          <p className="text-xs text-gray-400 mt-4">If you continue to experience issues, clear your browser cookies or contact support.</p>
+          <p className="text-xs text-gray-400 mt-4">
+            If you continue to experience issues, clear your browser cookies or
+            contact support.
+          </p>
         </div>
       </div>
     );
@@ -165,12 +172,22 @@ function PromotionVideosPage() {
       <li>* No pausing or refreshing during the quiz.</li>
      </ul>
     `,
-      confirmButtonText: "Take Quiz",
+      showCancelButton: true,
+      confirmButtonText: "Take Quiz in English",
+      cancelButtonText: "Take Quiz in Tamil",
+      reverseButtons: true, // Puts the buttons in a specific order (optional)
       customClass: {
         confirmButton:
           "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
+        cancelButton:
+          "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
       },
     }).then((result) => {
+      if (result.isConfirmed) {
+        setTakeQuizLang(LANG.EN);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        setTakeQuizLang(LANG.TA);
+      }
       setTakeQuiz(true);
     });
   };
@@ -225,7 +242,8 @@ function PromotionVideosPage() {
         <QuizForm
           title={`${data?.data?.promotion_video?.title}`}
           quizQuestion={Lib.transformQuestionsFromResponse(
-            data?.data?.promotion_video?.quiz?.questions
+            data?.data?.promotion_video?.quiz?.questions,
+            takeQuizLang
           )}
           handleQuizSubmit={handleQuizSubmit}
         />
