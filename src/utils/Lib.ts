@@ -2,7 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Cloud } from "lucide-react";
+export const STORAGE_BASE_URL = import.meta.env.VITE_STORAGE ?? "";
 
 const Lib = {
 
@@ -82,7 +82,7 @@ const Lib = {
     },
     CloudPath(fileName: string) {
 
-        return `https://api.starupworld.com/storage/uploads/final/${fileName}`
+        return `${STORAGE_BASE_URL}/storage/uploads/final/${fileName}`
     },
     getFileName(uniqueFilename = '') {
         let filename = uniqueFilename.split("_");
