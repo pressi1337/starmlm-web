@@ -19,6 +19,8 @@ export const SERVICE: any = {
     PROFILE_UPDATE: "update-personal-details",
     GET_BANK_DETAILS: "user-bank-detail",
     BANK_DETAILS_UPDATE: "user-bank-detail/upsert",
+    GET_ADMIN_BANK_DETAILS: "admin-bank-details",
+    ADMIN_BANK_DETAILS_UPDATE: "admin-bank-details/upsert",
     GET_ADDITIONAL_SCRAT: "additional-scratch-referrals",
     ADDITIONAL_SCRAT_UPDATE: "additional-scratch-referrals/upsert",
     CHANGE_PASSWORD: "changepassword",

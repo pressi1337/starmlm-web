@@ -20,6 +20,7 @@ import {
   CreditCard,
   BanknoteArrowUp,
   GitPullRequestCreateArrow,
+  Phone,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -187,6 +188,13 @@ const Sidebar = ({
           path: "/portal/user/scratch-card",
           icon: CreditCard,
           color: "from-sky-500 to-blue-600",
+        },
+        {
+          id: "contact-us",
+          label: "Contact Us",
+          path: "/portal/user/contact-us",
+          icon: Phone,
+          color: "from-green-500 to-emerald-600",
         }
       );
     }

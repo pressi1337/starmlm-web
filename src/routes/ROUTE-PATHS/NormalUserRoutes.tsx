@@ -38,6 +38,9 @@ const Profile = Loadable(
 const ScratchCard = Loadable(
   lazy(() => import("@/app/Panel/USER/ScratchCard"))
 );
+const ContactUs = Loadable(
+  lazy(() => import("@/app/Panel/USER/ContactUs"))
+);
 const NormalUserRoutes = {
   path: "portal/user",
   element: <PortalLayout />,
@@ -86,6 +89,10 @@ const NormalUserRoutes = {
     {
       path: "scratch-card",
       element: <ScratchCard />,
+    },
+    {
+      path: "contact-us",
+      element: <ContactUs />,
     },
   ],
 };
