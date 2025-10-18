@@ -50,8 +50,8 @@ function ReferralPage() {
   // Mock data fallback for referral link
   const mockReferralData = {
     referralLink: profileData?.data?.referral_code ?
-      `${Lib.getBaseURL()}/register?referal_code=${profileData.data.referral_code}` :
-      `${Lib.getBaseURL()}/register?referal_code=demo`
+      `${Lib.getBaseURL()}/register?promoter_code=${profileData.data.referral_code}` :
+      `${Lib.getBaseURL()}/register?promoter_code=demo`
   };
 
   const copyReferralLink = async () => {
@@ -163,7 +163,7 @@ function ReferralPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">
-                Total Referrals
+                Total Promoters
               </p>
               <p className="text-2xl font-bold text-gray-900">
                 {userDashboardLoading ? '...' : (userDashboardData?.data?.total_referrals || 0)}
@@ -225,7 +225,7 @@ function ReferralPage() {
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-medium text-gray-900 flex items-center">
             <LinkIcon className="w-5 h-5 mr-2" />
-            Your Referral Link
+            Your Promoter Link
           </h3>
         </div>
         <div className="p-6">
@@ -234,7 +234,7 @@ function ReferralPage() {
               <div className="flex items-center p-3 bg-gray-50 rounded-lg border">
                 <input
                   type="text"
-                  value={`${Lib.getBaseURL()}/register?referal_code=${
+                  value={`${Lib.getBaseURL()}/register?promoter_code=${
                     profileData?.data?.referral_code
                   }`}
                   readOnly
@@ -266,10 +266,10 @@ function ReferralPage() {
               How to Earn More:
             </h4>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Share your referral link with friends and family</li>
-              <li>• Earn cashback for each successful referral</li>
-              <li>• Higher levels unlock better referral rewards</li>
-              <li>• Active referrals contribute to your monthly earnings</li>
+              <li>• Share your promoter link with friends and family</li>
+              <li>• Earn cashback for each successful promoter</li>
+              <li>• Higher levels unlock better promoter rewards</li>
+              <li>• Active promoters contribute to your monthly earnings</li>
             </ul>
           </div>
         </div>
@@ -280,7 +280,7 @@ function ReferralPage() {
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-medium text-gray-900 flex items-center">
             <Users className="w-5 h-5 mr-2" />
-            Referral Genealogy Tree
+            Promoter Genealogy Tree
           </h3>
         </div>
         <div className="p-6">
@@ -367,10 +367,10 @@ function ReferralPage() {
             <div className="text-center py-12">
               <Users className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No Referrals Yet
+                No Promoters Yet
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                Start sharing your referral link to build your network!
+                Start sharing your promoter link to build your network!
               </p>
               <div className="mt-6">
                 <button
@@ -378,7 +378,7 @@ function ReferralPage() {
                   className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                 >
                   <Share2 className="w-4 h-4 mr-2" />
-                  Share Referral Link
+                  Share Promoter Link
                 </button>
               </div>
             </div>
@@ -389,7 +389,7 @@ function ReferralPage() {
       {/* Referral Tips */}
       <div className="mt-8 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Referral Success Tips
+          Promoter Success Tips
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-3">
