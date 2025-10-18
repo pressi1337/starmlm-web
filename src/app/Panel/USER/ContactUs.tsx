@@ -1,10 +1,9 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CopyIcon, Phone, Building2, CreditCard, Hash, User } from "lucide-react";
+import { Phone, Building2, CreditCard, Hash, User } from "lucide-react";
 import { useGetCall } from "@/hooks";
 import { SERVICE } from "@/constants/services";
 import Loader from "@/components/ui/Loader";
-import CopyClipBoard from "@/components/CopyClip";
 
 const ContactUs = () => {
   const {
@@ -52,9 +51,6 @@ const ContactUs = () => {
               <span className="font-mono text-lg font-semibold">
                 {bankDetails.account_number || "N/A"}
               </span>
-              {bankDetails.account_number && (
-                <CopyClipBoard text={bankDetails.account_number} />
-              )}
             </div>
           </div>
 
@@ -71,9 +67,6 @@ const ContactUs = () => {
               <span className="font-medium">
                 {bankDetails.account_holder_name || "N/A"}
               </span>
-              {bankDetails.account_holder_name && (
-                <CopyClipBoard text={bankDetails.account_holder_name} />
-              )}
             </div>
           </div>
 
@@ -90,9 +83,6 @@ const ContactUs = () => {
               <span className="font-mono text-lg font-semibold uppercase">
                 {bankDetails.ifsc_code || "N/A"}
               </span>
-              {bankDetails.ifsc_code && (
-                <CopyClipBoard text={bankDetails.ifsc_code} />
-              )}
             </div>
           </div>
 
@@ -109,9 +99,6 @@ const ContactUs = () => {
               <span className="font-medium">
                 {bankDetails.bank_name || "N/A"}
               </span>
-              {bankDetails.bank_name && (
-                <CopyClipBoard text={bankDetails.bank_name} />
-              )}
             </div>
           </div>
 
@@ -128,9 +115,6 @@ const ContactUs = () => {
               <span className="font-medium">
                 {bankDetails.branch_name || "N/A"}
               </span>
-              {bankDetails.branch_name && (
-                <CopyClipBoard text={bankDetails.branch_name} />
-              )}
             </div>
           </div>
 
@@ -147,9 +131,6 @@ const ContactUs = () => {
               <span className="font-mono text-lg font-semibold">
                 {bankDetails.whatsapp_number || "N/A"}
               </span>
-              {bankDetails.whatsapp_number && (
-                <CopyClipBoard text={bankDetails.whatsapp_number} />
-              )}
             </div>
           </div>
         </CardContent>
