@@ -224,7 +224,7 @@ function PromotionVideosPage() {
 
   const handleConfirmAndClose = async () => {
     const response = await updateQuizeConfirm({
-      user_promoter_session_id: data?.data?.promotion_video?.id,
+      user_promoter_session_id: data?.data?.user_promoter_session?.id,
     });
     if (response) {
       Swal.fire(
