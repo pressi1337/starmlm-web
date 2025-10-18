@@ -13,6 +13,7 @@ import {
   Star,
   XCircle,
   LogIn,
+  Crown,
 } from "lucide-react";
 import { SERVICE } from "@/constants/services";
 import { useActionCall, useGetCall } from "@/hooks";
@@ -115,30 +116,16 @@ function PromotionVideosPage() {
 
   if (!error && !data?.data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-        <div className="max-w-xl w-full bg-white border border-red-100 rounded-2xl shadow-sm p-8 text-center">
-          <div className="flex items-center justify-center mb-4">
-            <XCircle className="w-12 h-12 text-red-600" aria-hidden="true" />
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-screen flex items-center justify-center">
+        <div className="bg-green-50 border border-green-200 rounded-xl py-6 px-12 flex items-center">
+          <div className="max-w-4xl mx-auto flex flex-col items-center  justify-center gap-6">
+            <Crown className="w-8 h-8  text-green-600 " />
+            <div className="flex flex-col items-center gap-2">
+              <h3 className="text-lg font-semibold text-green-900">
+                Your session for today is complete.
+              </h3>
+            </div>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            Session Expired
-          </h3>
-          <p className="text-sm text-gray-600 mb-6">
-            Your session has expired. Please sign in again to continue where you
-            left off.
-          </p>
-          {/* <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-300">
-              <LogIn className="w-4 h-4" />Sign in
-            </button>
-            <button className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white text-sm font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200">
-              <RefreshCw className="w-4 h-4" />Try again
-            </button>
-          </div> */}
-          <p className="text-xs text-gray-400 mt-4">
-            If you continue to experience issues, clear your browser cookies or
-            contact support.
-          </p>
         </div>
       </div>
     );
@@ -302,7 +289,8 @@ function PromotionVideosPage() {
             {/* Video Player Section */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
               <div className="aspect-video bg-gray-900 relative">
-                {data?.data?.promotion_video?.video_path || data?.data?.promotion_video?.youtube_link ? (
+                {data?.data?.promotion_video?.video_path ||
+                data?.data?.promotion_video?.youtube_link ? (
                   <ReactPlayer
                     ref={playerRef}
                     src={
@@ -318,7 +306,7 @@ function PromotionVideosPage() {
                     onDurationChange={handleDurationChange}
                     onEnded={handlevideoWatchCompleted}
                     onError={(error) => {
-                      console.error('ReactPlayer Error:', error);
+                      console.error("ReactPlayer Error:", error);
                       // Handle video loading errors
                     }}
                   />
@@ -328,16 +316,18 @@ function PromotionVideosPage() {
                   </div>
                 )}
                 {/* Custom Play Button Overlay */}
-                {!playing && (data?.data?.promotion_video?.video_path || data?.data?.promotion_video?.youtube_link) && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
-                    <button
-                      onClick={() => setPlaying(true)}
-                      className="flex items-center justify-center w-20 h-20 bg-blue-600 hover:bg-blue-700 rounded-full text-white transition-colors group"
-                    >
-                      <Play className="w-8 h-8 ml-1 group-hover:scale-110 transition-transform" />
-                    </button>
-                  </div>
-                )}
+                {!playing &&
+                  (data?.data?.promotion_video?.video_path ||
+                    data?.data?.promotion_video?.youtube_link) && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+                      <button
+                        onClick={() => setPlaying(true)}
+                        className="flex items-center justify-center w-20 h-20 bg-blue-600 hover:bg-blue-700 rounded-full text-white transition-colors group"
+                      >
+                        <Play className="w-8 h-8 ml-1 group-hover:scale-110 transition-transform" />
+                      </button>
+                    </div>
+                  )}
               </div>
 
               {/* Custom Progress Bar */}

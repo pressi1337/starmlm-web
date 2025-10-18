@@ -73,7 +73,7 @@ const UIHelpers = {
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength) + "...";
   },
-  DateFormat(date: string, FORMAT_TYPE = "YYYY-MM-DD") {
+  DateFormat(date: string, FORMAT_TYPE = "DD-MM-YYYY") {
     return date ? moment(new Date(date)).format(FORMAT_TYPE) : null;
   },
 };

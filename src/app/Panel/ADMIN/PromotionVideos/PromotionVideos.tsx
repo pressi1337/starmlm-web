@@ -80,6 +80,7 @@ export default function PROMOTIONVIDEOS() {
     {
       title: "Date",
       key: "showing_date",
+      dataIndex: "showing_date",
       sortable: true,
       render: (index: any, row: any) => {
         return (
@@ -290,7 +291,6 @@ export default function PROMOTIONVIDEOS() {
               </div>
             </div>
             <div className="text-gray-900 font-medium">12:00 AM - 12:00 PM</div>
-            
           </div>
           <div className="bg-white rounded-lg p-4 shadow-sm">
             <div className="flex items-center mb-2">
@@ -300,7 +300,6 @@ export default function PROMOTIONVIDEOS() {
               </div>
             </div>
             <div className="text-gray-900 font-medium">12:00 PM - 12:00 AM</div>
-            
           </div>
         </div>
       </div>
@@ -313,14 +312,27 @@ export default function PROMOTIONVIDEOS() {
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <DataTable
           columns={Columns}
-          data={data?.data || []}
-          loading={loading}
-          filter={filter}
-          setFilter={setFilter}
-          totalRecords={data?.pageInfo?.total_records || 0}
-          searchPlaceholder="Search training videos..."
-          showSearch={true}
-          showPagination={true}
+          data={data?.data ?? []}
+          pageSize={filter.pageSize}
+          currentPage={filter.pageNo}
+          totalRecords={data?.pageInfo?.total_records ?? 0}
+          onPageChange={(page: any) =>
+            setFilter((prv) => ({ ...prv, pageNo: page }))
+          }
+          sortBy={filter.sortBy}
+          sortDir={filter.sortDir}
+          setSort={(sortData: any) => {
+            setFilter((prv) => ({
+              ...prv,
+              sortBy: sortData.key ?? "",
+              sortDir: sortData.sort ?? "",
+            }));
+          }}
+          enableSerial={true}
+          isLoading={loading}
+          setPageSize={(pageSize: number) => {
+            setFilter((prv) => ({ ...prv, pageNo: 1, pageSize: pageSize }));
+          }}
         />
       </div>
 

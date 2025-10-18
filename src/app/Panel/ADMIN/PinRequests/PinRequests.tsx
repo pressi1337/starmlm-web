@@ -16,6 +16,7 @@ import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
 import CopyClipBoard from "@/components/CopyClip";
 import AdminPinFormModal from "@/components/FormModals/AdminGeneratePinModal/AdminPinFormModal";
+import UIHelpers from "@/utils/UIhelper";
 
 export default function PROMOTIONVIDEOS() {
   const getStatusBadge = (status) => {
@@ -91,22 +92,37 @@ export default function PROMOTIONVIDEOS() {
     },
     {
       title: "Request Date",
-      key: "request_date",
+      key: "created_at",
+      sortable: true,
+
       render: (index: any, row: any) => (
         <div>
           <div className="text-sm font-medium text-gray-900 whitespace-nowrap">
-            {row?.created_at_formatted}
+            {UIHelpers.DateFormat(row?.created_at)}
           </div>
         </div>
       ),
     },
     {
       title: "Activated Date",
-      key: "activated_date",
+      key: "activated_at",
+      sortable: true,
       render: (index: any, row: any) => (
         <div>
           <div className="text-sm font-medium text-gray-900 whitespace-nowrap">
-            {row?.activated_at}
+            {UIHelpers.DateFormat(row?.activated_at)}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Pin Generated Date",
+      key: "pin_generated_at",
+      sortable: true,
+      render: (index: any, row: any) => (
+        <div>
+          <div className="text-sm font-medium text-gray-900 whitespace-nowrap">
+            {UIHelpers.DateFormat(row?.pin_generated_at)}
           </div>
         </div>
       ),
@@ -203,7 +219,8 @@ export default function PROMOTIONVIDEOS() {
   );
 
   // Fetch admin dashboard data for stats
-  const { data: adminDashboardData, loading: adminDashboardLoading } = useGetCall(SERVICE.ADMIN_DASHBOARD);
+  const { data: adminDashboardData, loading: adminDashboardLoading } =
+    useGetCall(SERVICE.ADMIN_DASHBOARD);
 
   const { loading: raiseTermLoading, Post: RaiseTerm } = useActionCall(
     SERVICE.RIASE_TERM
@@ -308,8 +325,8 @@ export default function PROMOTIONVIDEOS() {
       options: {
         Modal: "GeneratePin",
         pinRequestId: rowData.id.toString(),
-        userData: JSON.stringify(rowData)
-      }
+        userData: JSON.stringify(rowData),
+      },
     });
   };
 
@@ -366,7 +383,9 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Pending</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading ? '...' : adminDashboardData?.data?.pending_promoters || 0}
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.pending_promoters || 0}
               </p>
             </div>
           </div>
@@ -379,7 +398,9 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Approved</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading ? '...' : adminDashboardData?.data?.approved_promoters || 0}
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.approved_promoters || 0}
               </p>
             </div>
           </div>
@@ -392,7 +413,9 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Activated</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading ? '...' : adminDashboardData?.data?.activated_promoters || 0}
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.activated_promoters || 0}
               </p>
             </div>
           </div>
@@ -405,7 +428,9 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Rejected</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading ? '...' : adminDashboardData?.data?.rejected_promoters || 0}
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.rejected_promoters || 0}
               </p>
             </div>
           </div>
@@ -416,19 +441,38 @@ export default function PROMOTIONVIDEOS() {
       <FilterTab
         filter={filter}
         setFilter={setFilter}
-        TABLE_FILTER={["SEARCH"]}
+        TABLE_FILTER={[
+          "SEARCH",
+          "PROMOTER_LEVEL_PIN",
+          "PIN_STATUS",
+          "FROM_DATE_PIN",
+          "TO_DATE_PIN",
+        ]}
       />
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <DataTable
           columns={Columns}
-          data={data?.data || []}
-          loading={loading}
-          filter={filter}
-          setFilter={setFilter}
-          totalRecords={data?.pageInfo?.total_records || 0}
-          searchPlaceholder="Search training videos..."
-          showSearch={true}
-          showPagination={true}
+          data={data?.data ?? []}
+          pageSize={filter.pageSize}
+          currentPage={filter.pageNo}
+          totalRecords={data?.pageInfo?.total_records ?? 0}
+          onPageChange={(page: any) =>
+            setFilter((prv) => ({ ...prv, pageNo: page }))
+          }
+          sortBy={filter.sortBy}
+          sortDir={filter.sortDir}
+          setSort={(sortData: any) => {
+            setFilter((prv) => ({
+              ...prv,
+              sortBy: sortData.key ?? "",
+              sortDir: sortData.sort ?? "",
+            }));
+          }}
+          enableSerial={true}
+          isLoading={loading}
+          setPageSize={(pageSize: number) => {
+            setFilter((prv) => ({ ...prv, pageNo: 1, pageSize: pageSize }));
+          }}
         />
       </div>
       {/* Modal Rendering */}

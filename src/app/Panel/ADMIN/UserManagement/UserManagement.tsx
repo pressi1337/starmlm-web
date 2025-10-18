@@ -223,7 +223,8 @@ export default function UserManagement() {
   });
 
   // Fetch admin dashboard data for stats
-  const { data: adminDashboardData, loading: adminDashboardLoading } = useGetCall(SERVICE.ADMIN_DASHBOARD);
+  const { data: adminDashboardData, loading: adminDashboardLoading } =
+    useGetCall(SERVICE.ADMIN_DASHBOARD);
 
   // const { loading: deleteLoading, Delete: DeleteTrainingVideo } = useActionCall(
   //   SERVICE.TRAININGVIDEOS
@@ -320,7 +321,9 @@ export default function UserManagement() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Users</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading ? '...' : adminDashboardData?.data?.total_users || 0}
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.total_users || 0}
               </p>
             </div>
           </div>
@@ -333,7 +336,9 @@ export default function UserManagement() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Active Users</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading ? '...' : adminDashboardData?.data?.total_active_users || 0}
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.total_active_users || 0}
               </p>
             </div>
           </div>
@@ -346,7 +351,9 @@ export default function UserManagement() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">New This Day</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading ? '...' : adminDashboardData?.data?.new_users_today || 0}
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.new_users_today || 0}
               </p>
             </div>
           </div>
@@ -361,7 +368,9 @@ export default function UserManagement() {
                 New This Month
               </p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading ? '...' : adminDashboardData?.data?.new_users_this_month || 0}
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.new_users_this_month || 0}
               </p>
             </div>
           </div>
@@ -371,19 +380,32 @@ export default function UserManagement() {
       <FilterTab
         filter={filter}
         setFilter={setFilter}
-        TABLE_FILTER={["SEARCH"]}
+        TABLE_FILTER={["SEARCH", "PROMOTER_LEVEL", "FROM_DATE", "TO_DATE"]}
       />
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <DataTable
           columns={Columns}
-          data={data?.data || []}
-          loading={loading}
-          filter={filter}
-          setFilter={setFilter}
+          data={data?.data ?? []}
+          pageSize={filter.pageSize}
+          currentPage={filter.pageNo}
           totalRecords={data?.pageInfo?.total_records ?? 0}
-          searchPlaceholder="Search training videos..."
-          showSearch={true}
-          showPagination={true}
+          onPageChange={(page: any) =>
+            setFilter((prv) => ({ ...prv, pageNo: page }))
+          }
+          sortBy={filter.sortBy}
+          sortDir={filter.sortDir}
+          setSort={(sortData: any) => {
+            setFilter((prv) => ({
+              ...prv,
+              sortBy: sortData.key ?? "",
+              sortDir: sortData.sort ?? "",
+            }));
+          }}
+          enableSerial={true}
+          isLoading={loading}
+          setPageSize={(pageSize: number) => {
+            setFilter((prv) => ({ ...prv, pageNo: 1, pageSize: pageSize }));
+          }}
         />
       </div>
 
