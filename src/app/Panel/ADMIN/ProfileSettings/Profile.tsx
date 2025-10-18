@@ -21,6 +21,7 @@ import Lib from "@/utils/Lib";
 import { useFormik } from "formik";
 import Btn from "@/components/ui/Btn";
 import { useEffect, useMemo } from "react";
+import PasswordInput from "@/components/ui/PasswordInput";
 
 export const USER_VALIDATION_SCHEMA = Yup.object().shape({
   first_name: Yup.string().required("Required First Name*"),
@@ -255,36 +256,33 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <InputText
+                    <PasswordInput
                       name="current_password"
                       label="Current Password *"
-                      type="password"
                       placeholder="Enter Current Password"
+                      value={passwordValues}
                       onChange={handleChangePassword}
                       error={passwordErrors}
-                      value={passwordValues}
                     />
                   </div>
                   <div className="space-y-2">
-                    <InputText
+                    <PasswordInput
                       name="new_password"
                       label="Password *"
-                      type="password"
                       placeholder="Enter New Password"
+                      value={passwordValues}
                       onChange={handleChangePassword}
                       error={passwordErrors}
-                      value={passwordValues}
                     />
                   </div>
                   <div className="space-y-2">
-                    <InputText
+                    <PasswordInput
                       name="password_confirmation"
                       label="Password *"
-                      type="password"
                       placeholder="Enter Confirm Password"
+                      value={passwordValues}
                       onChange={handleChangePassword}
                       error={passwordErrors}
-                      value={passwordValues}
                     />
                   </div>
 

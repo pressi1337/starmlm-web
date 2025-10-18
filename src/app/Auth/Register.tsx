@@ -10,6 +10,7 @@ import UserForm from "@/components/FormModals/UserModal/UserForm";
 import InputText from "@/components/ui/InputText";
 import Btn from "@/components/ui/Btn";
 import SelectInput from "@/components/ui/SelectInput";
+import PasswordInput from "@/components/ui/PasswordInput";
 import { OPTIONS } from "@/constants/others";
 import { DISTRICTS_OPTIONS, STATE_OPTIONS } from "@/constants/state";
 import { TrendingUp } from "lucide-react";
@@ -221,25 +222,23 @@ export default function Register() {
                 error={errors}
                 value={values}
               />
-              <InputText
+              <PasswordInput
                 name="password"
                 label="Password *"
-                type="password"
                 placeholder="Enter Password"
+                value={values}
                 onChange={handleChange}
                 error={errors}
-                value={values}
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <InputText
+              <PasswordInput
                 name="password_confirmation"
-                label="Confirm Passwor *"
-                type="password"
+                label="Confirm Password *"
                 placeholder="Enter Password"
+                value={values}
                 onChange={handleChange}
                 error={errors}
-                value={values}
               />
 
               <InputText
