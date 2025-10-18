@@ -153,9 +153,9 @@ const TrainingProgramWatch = () => {
       title: `Read Instructions`,
       html: `
         <ul>
-         <li>* Each question has 30 seconds to answer.</li>
+         <li>* Each question has 55 seconds to answer.</li>
          <li>* Once submitted, you cannot return to previous questions.</li>
-         <li>* Unanswered questions after 30 seconds will auto-skip.</li>
+         <li>* Unanswered questions after 55 seconds will auto-skip.</li>
          <li>* No pausing or refreshing during the quiz.</li>
         </ul>
        `,
