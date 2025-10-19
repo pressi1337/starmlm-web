@@ -46,7 +46,7 @@ export default function FileUpload({
 
       try {
         let response = await fetch(
-          `${VITE_BASE_URL}/upload`,
+          `${VITE_BASE_URL}upload`,
           {
             method: "POST",
             headers: {
