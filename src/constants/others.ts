@@ -373,6 +373,10 @@ export const OPTIONS = {
         { label: 'Scratch Wallet', value: '2' },
         { label: 'Grow Wallet', value: '3' },
     ],
+    PIN_STATUS: [{ value: "0", label: "Pending" },
+    { value: "1", label: "Approved" },
+    { value: "2", label: "Activated" },
+    { value: "3", label: "Rejected" },],
 
 
 }

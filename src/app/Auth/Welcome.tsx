@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Play, Users, TrendingUp, Award, ArrowRight } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import banner from '@/assets/starbanner.png';
+import bgBanner from '@/assets/starup_bg.png';
 
 export default function WelcomePage() {
   return (
@@ -32,17 +33,17 @@ export default function WelcomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative bg-cover bg-center bg-no-repeat overflow-hidden" style={{backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${bgBanner})`, backgroundSize: 'cover', backgroundPosition: 'center'}}>        
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
+              <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
                 <span className="block">Transform Your</span>
                 <span className="block bg-gradient-to-r from-green-600 to-yellow-600 bg-clip-text text-transparent">
                   Promotion Journey
                 </span>
               </h1>
-              <p className="mt-6 text-lg text-gray-600 sm:max-w-xl sm:mx-auto lg:mx-0">
+              <p className="mt-6 text-lg text-white sm:max-w-xl sm:mx-auto lg:mx-0">
                 Empower your professional journey alongside thousands of promoters who have realized success with us.
               </p>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
@@ -116,7 +117,7 @@ export default function WelcomePage() {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">Earn Rewards</h3>
                 <p className="text-gray-600">
-                  Multiple earning opportunities through quizzes and referrals
+                  Multiple earning opportunities through quizzes and promotion
                 </p>
               </div>
             </div>

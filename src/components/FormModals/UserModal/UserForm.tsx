@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import { useMemo } from "react";
 import InputText from "@/components/ui/InputText";
 import SelectInput from "@/components/ui/SelectInput";
+import PasswordInput from "@/components/ui/PasswordInput";
 import moment from "moment";
 import Btn from "@/components/ui/Btn";
 import CheckboxInput from "@/components/ui/CheckboxInput";
@@ -177,30 +178,34 @@ const UserForm = ({
           error={errors}
           value={values}
         />
-        <InputText
-          name="password"
-          label="Password"
-          type="password"
-          placeholder={data?.id ? "••••••••" : "Enter Password"}
-          onChange={!data?.id ? handleChange : undefined}
-          error={!data?.id ? errors : undefined}
-          value={values}
-          readOnly={!!data?.id}
-          className={data?.id ? 'opacity-75 cursor-not-allowed' : ''}
-        />
+
+     
+          <PasswordInput
+            name="password"
+            label="Password *"
+            placeholder="Enter Password"
+            value={values}
+            readOnly={!!data?.id}
+            onChange={handleChange}
+            error={errors}
+            className={data?.id ? 'opacity-75 cursor-not-allowed' : ''}
+          />
+       
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <InputText
-          name="password_confirmation"
-          label="Confirm Password"
-          type="password"
-          placeholder={data?.id ? "••••••••" : "Confirm Password"}
-          onChange={!data?.id ? handleChange : undefined}
-          error={!data?.id ? errors : undefined}
-          value={values}
-          readOnly={!!data?.id}
-          className={data?.id ? 'opacity-75 cursor-not-allowed' : ''}
-        />
+        
+          <PasswordInput
+            name="password_confirmation"
+            label="Confirm Password *"
+            placeholder="Enter Password"
+            value={values}
+            readOnly={!!data?.id}
+            onChange={handleChange}
+            error={errors}
+            className={data?.id ? 'opacity-75 cursor-not-allowed' : ''}
+          />
+  
+
 
         <CheckboxInput
           label="Is Active?"

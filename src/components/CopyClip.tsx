@@ -20,7 +20,7 @@ const CopyClipBoard = ({ text }) => {
   };
   return (
     <CopyToClipboard text={text} onCopy={handleCopied}>
-      <span className="flex gap-1">
+      <span className="flex gap-1 cursor-pointer">
         {text} <CopyIcon size={16} />
       </span>
     </CopyToClipboard>

@@ -33,17 +33,15 @@ export default function Dashboard() {
   const { updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
 
-  // Fetch counts for each module
-  const { data: dailyVideosData, loading: dailyVideosLoading } = useGetCall(SERVICE.DAILYVIDEOS);
-  const { data: trainingVideosData, loading: trainingVideosLoading } = useGetCall(SERVICE.TRAININGVIDEOS);
-  const { data: promotionVideosData, loading: promotionVideosLoading } = useGetCall(SERVICE.PROMOTIONVIDEOS);
-  const { data: youtubeChannelsData, loading: youtubeChannelsLoading } = useGetCall(SERVICE.YOUTUBECHANNELS);
-  const isLoading = dailyVideosLoading || trainingVideosLoading || promotionVideosLoading || youtubeChannelsLoading;
+  // Fetch admin dashboard data
+  const { data: adminDashboardData, loading: adminDashboardLoading } = useGetCall(SERVICE.ADMIN_DASHBOARD);
+
+  const isLoading = adminDashboardLoading;
 
   const stats: StatCard[] = [
     {
       name: "Daily Videos",
-      value: isLoading ? '...' : dailyVideosData?.pageInfo?.total_records || 0,
+      value: isLoading ? '...' : adminDashboardData?.data?.total_daily_videos || 0,
       icon: Video,
       color: "bg-blue-500",
       change: "",
@@ -51,7 +49,7 @@ export default function Dashboard() {
     },
     {
       name: "Training Videos",
-      value: isLoading ? '...' : trainingVideosData?.pageInfo?.total_records || 0,
+      value: isLoading ? '...' : adminDashboardData?.data?.total_training_videos || 0,
       icon: Trophy,
       color: "bg-green-500",
       change: "",
@@ -59,7 +57,7 @@ export default function Dashboard() {
     },
     {
       name: "Promotion Videos",
-      value: isLoading ? '...' : promotionVideosData?.pageInfo?.total_records || 0,
+      value: isLoading ? '...' : adminDashboardData?.data?.total_promotion_videos || 0,
       icon: Award,
       color: "bg-purple-500",
       change: "",
@@ -67,7 +65,7 @@ export default function Dashboard() {
     },
     {
       name: "YouTube Channels",
-      value: isLoading ? '...' : youtubeChannelsData?.pageInfo?.total_records || 0,
+      value: isLoading ? '...' : adminDashboardData?.data?.total_youtube_channels || 0,
       icon: Users,
       color: "bg-red-500",
       change: "",
@@ -75,26 +73,17 @@ export default function Dashboard() {
     },
   ];
 
-  const recentActivities: Activity[] = [
-    {
-      id: 1,
-      action: "New user registered",
-      user: "john_doe",
-      time: "2 hours ago",
-    },
-    {
-      id: 2,
-      action: "Pin request submitted",
-      user: "jane_smith",
-      time: "4 hours ago",
-    },
-    {
-      id: 3,
-      action: "Daily video uploaded",
-      user: "admin",
-      time: "6 hours ago",
-    },
-  ];
+  const recentActivities: Activity[] = adminDashboardData?.data?.recent_users?.map((user: any) => ({
+    id: user.id,
+    action: "New user registered",
+    user: user.username || 'Unknown User',
+    time: new Date(user.created_at).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  })) || [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

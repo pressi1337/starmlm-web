@@ -19,6 +19,8 @@ export const SERVICE: any = {
     PROFILE_UPDATE: "update-personal-details",
     GET_BANK_DETAILS: "user-bank-detail",
     BANK_DETAILS_UPDATE: "user-bank-detail/upsert",
+    GET_ADMIN_BANK_DETAILS: "admin-bank-details",
+    ADMIN_BANK_DETAILS_UPDATE: "admin-bank-details/upsert",
     GET_ADDITIONAL_SCRAT: "additional-scratch-referrals",
     ADDITIONAL_SCRAT_UPDATE: "additional-scratch-referrals/upsert",
     CHANGE_PASSWORD: "changepassword",
@@ -34,6 +36,8 @@ export const SERVICE: any = {
     WITHDRAW_UPDATE_STATUS: 'withdraw-status-update',
     SCRATCH_CARDS: "get-scratch-cards",
     SCRATCHED_STATUS_UPDATE: "scratched-status-update",
+    USER_DASHBOARD: "user-dashboard",
+    ADMIN_DASHBOARD: "admin-dashboard",
 
     //User Service endpoint
     DAILY_VIDEO_STATUS: 'daily-videos-status',
@@ -48,7 +52,7 @@ export const SERVICE: any = {
     TRAINING_STATUS_UPDATE: 'user-day-training-mark-as-completed',
     EARNINGS_HISTORY: 'earning-histories',
     WITHDRAW_HISTRY: 'withdraw-histories',
-    WITHDRAW_REQUEST: 'withdraws',
+    WITHDRAW_REQUEST: 'withdraws'
 
 
 }

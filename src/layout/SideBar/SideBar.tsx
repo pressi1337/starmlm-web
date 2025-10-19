@@ -20,6 +20,7 @@ import {
   CreditCard,
   BanknoteArrowUp,
   GitPullRequestCreateArrow,
+  Phone,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -118,7 +119,7 @@ const Sidebar = ({
       });
       baseItems.push({
         id: "referral-settings",
-        label: "Referral Settings",
+        label: "Promotion Settings",
         path: "/portal/admin/referral-settings",
         icon: Settings,
         color: "from-sky-500 to-blue-600",
@@ -155,7 +156,7 @@ const Sidebar = ({
         },
         {
           id: "my-referrals",
-          label: "My Referrals",
+          label: "My Promoters",
           path: "/portal/user/referrals",
           icon: Users,
           color: "from-purple-500 to-violet-600",
@@ -187,6 +188,13 @@ const Sidebar = ({
           path: "/portal/user/scratch-card",
           icon: CreditCard,
           color: "from-sky-500 to-blue-600",
+        },
+        {
+          id: "contact-us",
+          label: "Contact Us",
+          path: "/portal/user/contact-us",
+          icon: Phone,
+          color: "from-green-500 to-emerald-600",
         }
       );
     }

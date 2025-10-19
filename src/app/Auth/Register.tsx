@@ -10,6 +10,7 @@ import UserForm from "@/components/FormModals/UserModal/UserForm";
 import InputText from "@/components/ui/InputText";
 import Btn from "@/components/ui/Btn";
 import SelectInput from "@/components/ui/SelectInput";
+import PasswordInput from "@/components/ui/PasswordInput";
 import { OPTIONS } from "@/constants/others";
 import { DISTRICTS_OPTIONS, STATE_OPTIONS } from "@/constants/state";
 import { TrendingUp } from "lucide-react";
@@ -41,7 +42,7 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
 export default function Register() {
   const { searchParams, navigate } = useQueryParams();
 
-  const referalCode = searchParams.get("referal_code");
+  const referalCode = searchParams.get("promoter_code");
   const [loading, setLoading] = useState(true);
 
   const {
@@ -102,12 +103,12 @@ export default function Register() {
           to="/"
           className="flex justify-center items-center space-x-3 mb-6"
         >
-          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-            <TrendingUp className="w-7 h-7 text-white" />
-          </div>
-          <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Starup
-          </span>
+          
+          <img
+            src="/src/assets/logo.png"
+            alt="Starup Logo"
+            className="h-8 w-auto"
+          />
         </Link>
         <h2 className="text-center text-3xl font-bold text-gray-900">
           Register
@@ -221,30 +222,28 @@ export default function Register() {
                 error={errors}
                 value={values}
               />
-              <InputText
+              <PasswordInput
                 name="password"
                 label="Password *"
-                type="password"
                 placeholder="Enter Password"
+                value={values}
                 onChange={handleChange}
                 error={errors}
-                value={values}
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <InputText
+              <PasswordInput
                 name="password_confirmation"
-                label="Confirm Passwor *"
-                type="password"
+                label="Confirm Password *"
                 placeholder="Enter Password"
+                value={values}
                 onChange={handleChange}
                 error={errors}
-                value={values}
               />
 
               <InputText
                 name="referral_code"
-                label="Referal Code *"
+                label="Promoter Code *"
                 placeholder="Enter Password"
                 onChange={handleChange}
                 error={errors}

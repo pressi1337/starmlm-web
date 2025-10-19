@@ -17,7 +17,7 @@ const UserFinanceWidget = () => {
             <Wallet className="w-6 h-6 text-white" />
           </div>
           <div className="ml-4">
-            <p className="text-sm font-medium text-gray-500">Main Wallet</p>
+            <p className="text-sm font-medium text-gray-500">Cash Wallet</p>
             <p className="text-2xl font-bold text-gray-900">
               ₹{" "}
               {Math.abs(

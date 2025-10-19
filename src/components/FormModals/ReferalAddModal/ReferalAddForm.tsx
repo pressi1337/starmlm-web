@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import { useMemo } from "react";
 import InputText from "@/components/ui/InputText";
 import SelectInput from "@/components/ui/SelectInput";
+import PasswordInput from "@/components/ui/PasswordInput";
 import moment from "moment";
 import Btn from "@/components/ui/Btn";
 import CheckboxInput from "@/components/ui/CheckboxInput";
@@ -32,6 +33,7 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
     .required("Password confirmation is required*")
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
+
 const ReferalAddForm = ({
   data = {},
   onAction = (values: any) => {},
@@ -176,25 +178,23 @@ const ReferalAddForm = ({
           error={errors}
           value={values}
         />
-        <InputText
+        <PasswordInput
           name="password"
           label="Password *"
-          type="password"
           placeholder="Enter Password"
+          value={values}
           onChange={handleChange}
           error={errors}
-          value={values}
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <InputText
+        <PasswordInput
           name="password_confirmation"
-          label="Confirm Passwor *"
-          type="password"
+          label="Confirm Password *"
           placeholder="Enter Password"
+          value={values}
           onChange={handleChange}
           error={errors}
-          value={values}
         />
       </div>
 

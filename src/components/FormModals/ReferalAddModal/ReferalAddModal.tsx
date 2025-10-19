@@ -51,7 +51,7 @@ const ReferalAddModal = ({ recoilApi = () => {} }) => {
 
   return (
     <Modal
-      title={`${Edit ? "Edit" : "Add"} Referal `}
+      title={`${Edit ? "Edit" : "Add"} Promoter `}
       modalSize="lg"
       onClose={closeModal}
     >

@@ -222,6 +222,10 @@ export default function UserManagement() {
     avoidFetch: true,
   });
 
+  // Fetch admin dashboard data for stats
+  const { data: adminDashboardData, loading: adminDashboardLoading } =
+    useGetCall(SERVICE.ADMIN_DASHBOARD);
+
   // const { loading: deleteLoading, Delete: DeleteTrainingVideo } = useActionCall(
   //   SERVICE.TRAININGVIDEOS
   // );
@@ -316,7 +320,11 @@ export default function UserManagement() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Users</p>
-              <p className="text-2xl font-semibold text-gray-900">0</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.total_users || 0}
+              </p>
             </div>
           </div>
         </div>
@@ -327,18 +335,26 @@ export default function UserManagement() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Active Users</p>
-              <p className="text-2xl font-semibold text-gray-900">0</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.total_active_users || 0}
+              </p>
             </div>
           </div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
-              <Crown className="w-6 h-6 text-white" />
+              <Users className="w-6 h-6 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Promoters</p>
-              <p className="text-2xl font-semibold text-gray-900">0</p>
+              <p className="text-sm font-medium text-gray-500">New This Day</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.new_users_today || 0}
+              </p>
             </div>
           </div>
         </div>
@@ -351,7 +367,11 @@ export default function UserManagement() {
               <p className="text-sm font-medium text-gray-500">
                 New This Month
               </p>
-              <p className="text-2xl font-semibold text-gray-900">0</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {adminDashboardLoading
+                  ? "..."
+                  : adminDashboardData?.data?.new_users_this_month || 0}
+              </p>
             </div>
           </div>
         </div>
@@ -360,19 +380,32 @@ export default function UserManagement() {
       <FilterTab
         filter={filter}
         setFilter={setFilter}
-        TABLE_FILTER={["SEARCH"]}
+        TABLE_FILTER={["SEARCH", "PROMOTER_LEVEL", "FROM_DATE", "TO_DATE"]}
       />
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <DataTable
           columns={Columns}
-          data={data?.data || []}
-          loading={loading}
-          filter={filter}
-          setFilter={setFilter}
+          data={data?.data ?? []}
+          pageSize={filter.pageSize}
+          currentPage={filter.pageNo}
           totalRecords={data?.pageInfo?.total_records ?? 0}
-          searchPlaceholder="Search training videos..."
-          showSearch={true}
-          showPagination={true}
+          onPageChange={(page: any) =>
+            setFilter((prv) => ({ ...prv, pageNo: page }))
+          }
+          sortBy={filter.sortBy}
+          sortDir={filter.sortDir}
+          setSort={(sortData: any) => {
+            setFilter((prv) => ({
+              ...prv,
+              sortBy: sortData.key ?? "",
+              sortDir: sortData.sort ?? "",
+            }));
+          }}
+          enableSerial={true}
+          isLoading={loading}
+          setPageSize={(pageSize: number) => {
+            setFilter((prv) => ({ ...prv, pageNo: 1, pageSize: pageSize }));
+          }}
         />
       </div>
 

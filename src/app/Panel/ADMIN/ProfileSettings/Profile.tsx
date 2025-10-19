@@ -21,6 +21,7 @@ import Lib from "@/utils/Lib";
 import { useFormik } from "formik";
 import Btn from "@/components/ui/Btn";
 import { useEffect, useMemo } from "react";
+import PasswordInput from "@/components/ui/PasswordInput";
 
 export const USER_VALIDATION_SCHEMA = Yup.object().shape({
   first_name: Yup.string().required("Required First Name*"),
@@ -40,10 +41,19 @@ export const PASSWORD_VALIDATION_SCHEMA = Yup.object().shape({
       "Confirm Passwords must match New Password"
     ),
   });
+export const ADMIN_BANK_VALIDATION_SCHEMA = Yup.object().shape({
+  account_number: Yup.string().required("Account Number is required*"),
+  account_holder_name: Yup.string().required("Account Holder Name is required*"),
+  ifsc_code: Yup.string().required("IFSC Code is required*"),
+  bank_name: Yup.string().required("Bank Name is required*"),
+  branch_name: Yup.string().required("Branch Name is required*"),
+  whatsapp_number: Yup.string().required("WhatsApp Number is required*"),
+});
 export const SCRATCH_REFERRAL_VALIDATION_SCHEMA = Yup.object().shape({
   is_active: Yup.boolean().required("Is Active status is required*"),
   referral_code: Yup.string().required("Referral Code is required*"),
 });
+
 const Profile = () => {
   const {
     loading,
@@ -52,14 +62,61 @@ const Profile = () => {
   } = useGetCall(SERVICE.GET_PROFILE);
 
   const {
+    loading: bankloading,
+    setQuery: setBankQuery,
+    data: bankData,
+  } = useGetCall(SERVICE.GET_ADMIN_BANK_DETAILS);
+
+  const {
+    Post: updateAdminBank,
+    error: adminBankRequestError,
+    loading: adminBankUploadingLoading,
+  } = useActionCall(SERVICE.ADMIN_BANK_DETAILS_UPDATE);
+
+  const {
+    values: adminBankValues,
+    handleChange: handleAdminBankChange,
+    errors: adminBankErrors,
+    handleSubmit: handleAdminBankSubmit,
+    setErrors: setAdminBankError,
+  } = useFormik({
+    initialValues: {
+      account_number: bankData?.data?.account_number ?? "",
+      account_holder_name: bankData?.data?.account_holder_name ?? "",
+      ifsc_code: bankData?.data?.ifsc_code ?? "",
+      bank_name: bankData?.data?.bank_name ?? "",
+      branch_name: bankData?.data?.branch_name ?? "",
+      whatsapp_number: bankData?.data?.whatsapp_number ?? "",
+    },
+    onSubmit: async (values: any) => {
+      let response = await updateAdminBank(values);
+      if (response) {
+        setBankQuery({});
+      }
+    },
+
+    validateOnChange: false,
+    validateOnBlur: true,
+    validationSchema: ADMIN_BANK_VALIDATION_SCHEMA,
+    enableReinitialize: true,
+  });
+
+  useMemo(() => {
+    if (adminBankRequestError && Object.keys(adminBankRequestError).length) {
+      setAdminBankError(adminBankRequestError);
+    }
+  }, [adminBankRequestError]);
+
+  const {
     Patch: updateProfile,
     error: RequestError,
     loading: profileUploadingLoading,
   } = useActionCall(SERVICE.PROFILE_UPDATE);
 
   const {
-    Patch: updatePassword, loading: passwordUploadingLoading } =
-    useActionCall(SERVICE.CHANGE_PASSWORD);
+    Patch: updatePassword,
+    loading: passwordUploadingLoading,
+  } = useActionCall(SERVICE.CHANGE_PASSWORD);
 
   const {
     loading: scratchReferralLoading,
@@ -255,36 +312,33 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <InputText
+                    <PasswordInput
                       name="current_password"
                       label="Current Password *"
-                      type="password"
                       placeholder="Enter Current Password"
+                      value={passwordValues}
                       onChange={handleChangePassword}
                       error={passwordErrors}
-                      value={passwordValues}
                     />
                   </div>
                   <div className="space-y-2">
-                    <InputText
+                    <PasswordInput
                       name="new_password"
                       label="Password *"
-                      type="password"
                       placeholder="Enter New Password"
+                      value={passwordValues}
                       onChange={handleChangePassword}
                       error={passwordErrors}
-                      value={passwordValues}
                     />
                   </div>
                   <div className="space-y-2">
-                    <InputText
+                    <PasswordInput
                       name="password_confirmation"
                       label="Password *"
-                      type="password"
                       placeholder="Enter Confirm Password"
+                      value={passwordValues}
                       onChange={handleChangePassword}
                       error={passwordErrors}
-                      value={passwordValues}
                     />
                   </div>
 
@@ -295,6 +349,93 @@ const Profile = () => {
                   />
 
                   <Separator className="my-4" />
+                </CardContent>
+              </Card>
+
+              {/* Bank Informations */}
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <User className="w-5 h-5 text-primary" />
+                    <CardTitle>Bank Informations</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Your bank details and information
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <InputText
+                        name="account_number"
+                        label="Account Number *"
+                        placeholder="Enter Account Number"
+                        onChange={handleAdminBankChange}
+                        error={adminBankErrors}
+                        value={adminBankValues}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <InputText
+                        name="account_holder_name"
+                        label="Account Holder Name *"
+                        placeholder="Enter Account Holder Name"
+                        onChange={handleAdminBankChange}
+                        error={adminBankErrors}
+                        value={adminBankValues}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <InputText
+                        name="ifsc_code"
+                        label="IFSC Code *"
+                        placeholder="Enter IFSC Code"
+                        onChange={handleAdminBankChange}
+                        error={adminBankErrors}
+                        value={adminBankValues}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <InputText
+                        name="bank_name"
+                        label="Bank Name *"
+                        placeholder="Enter Bank Name"
+                        onChange={handleAdminBankChange}
+                        error={adminBankErrors}
+                        value={adminBankValues}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <InputText
+                        name="branch_name"
+                        label="Branch Name *"
+                        placeholder="Enter Branch Name"
+                        onChange={handleAdminBankChange}
+                        error={adminBankErrors}
+                        value={adminBankValues}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <InputText
+                        name="whatsapp_number"
+                        label="WhatsApp Number *"
+                        placeholder="Enter WhatsApp Number"
+                        onChange={handleAdminBankChange}
+                        error={adminBankErrors}
+                        value={adminBankValues}
+                      />
+                    </div>
+                  </div>
+
+                  <Btn
+                    title="Save Bank Details"
+                    onClick={handleAdminBankSubmit}
+                    isLoading={adminBankUploadingLoading}
+                  />
                 </CardContent>
               </Card>
 

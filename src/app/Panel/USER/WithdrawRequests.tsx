@@ -217,14 +217,10 @@ function WithdrawRequestsPage() {
             </li>
             <li className="flex items-start">
               <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-              Processing time: 1-3 business days
+              30 days once withdrawal
             </li>
           </ul>
           <ul className="space-y-2 text-blue-800">
-            <li className="flex items-start">
-              <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-              Only cash wallet funds can be withdrawn
-            </li>
             <li className="flex items-start">
               <span className="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
               Ensure account details are accurate

@@ -11,9 +11,12 @@ import {
   Crown,
   ArrowUp,
   DollarSign,
-  Gift
+  Gift,
+  IndianRupee
 } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import { useGetCall } from '@/hooks';
+import { SERVICE } from "@/constants/services";
 
 export default function UserDashboard() {
   const { user } = useAuth();
@@ -23,6 +26,22 @@ export default function UserDashboard() {
                   currentTime.getHours() < 18 ? 'Good Afternoon' : 'Good Evening';
 
   const totalEarnings = user?.earnings?.cash + user?.earnings?.grow + user?.earnings?.scratch;
+  const {data: userData, loading: userDataLoading} = useGetCall(SERVICE.USER_DASHBOARD);
+
+  // Map API promoter level to role names
+  const getCurrentRole = (level) => {
+    const roleMap = {
+      null: 'trainee',
+      0: 'trainee',
+      1: 'promotor1',
+      2: 'promotor2',
+      3: 'promotor3',
+      4: 'promotor4'
+    };
+    return roleMap[level] || 'trainee';
+  };
+
+  const currentRole = getCurrentRole(userData?.data?.current_promoter_level);
 
   const getLevelColor = (role) => {
     const colors = {
@@ -35,22 +54,23 @@ export default function UserDashboard() {
     return colors[role] || 'from-gray-600 to-gray-700';
   };
 
-  const getUpgradeOptions = (currentRole) => {
+  const getUpgradeOptions = (currentLevel) => {
     const upgrades = {
-      promotor: ['promotor1'],
-      promotor1: ['promotor2'],
-      promotor2: ['promotor3', 'promotor4']
+      0: ['promotor'], // trainee -> promotor
+      1: ['promotor1'], // promotor -> promotor1
+      2: ['promotor2'], // promotor1 -> promotor2
+      3: ['promotor3', 'promotor4'] // promotor2 -> promotor3 or promotor4
     };
-    return upgrades[currentRole] || [];
+    return upgrades[currentLevel] || [];
   };
 
-  const upgradeOptions = getUpgradeOptions(user?.role);
+  const upgradeOptions = getUpgradeOptions(userData?.data?.current_promoter_level || 0);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Greeting Section */}
       <div className="mb-8">
-        <div className={`bg-gradient-to-r ${getLevelColor(user?.role)} rounded-2xl p-8 text-white`}>
+        <div className={`bg-gradient-to-r ${getLevelColor(currentRole)} rounded-2xl p-8 text-white`}>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-2">
@@ -64,6 +84,9 @@ export default function UserDashboard() {
                   day: 'numeric' 
                 })}
               </p>
+            </div>
+            <div className="text-right">
+              <Crown className="w-6 h-6 mr-2" />
               <div className="flex items-center mt-4">
                 <Clock className="w-5 h-5 mr-2" />
                 <span className="text-lg">
@@ -73,9 +96,7 @@ export default function UserDashboard() {
                   })}
                 </span>
               </div>
-            </div>
-            <div className="text-right">
-              <div className="flex items-center justify-end mb-2">
+              {/* <div className="flex items-center justify-end mb-2">
                 <Crown className="w-6 h-6 mr-2" />
                 <span className="text-2xl font-bold">{user?.level}</span>
               </div>
@@ -87,7 +108,7 @@ export default function UserDashboard() {
                   className="bg-white h-2 rounded-full transition-all duration-500" 
                   style={{ width: `${(user?.trainingDay / 7) * 100}%` }}
                 ></div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -98,31 +119,11 @@ export default function UserDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Total Earnings</p>
-              <p className="text-2xl font-bold text-gray-900">₹{totalEarnings}</p>
-              <p className="text-xs text-green-600 flex items-center mt-1">
-                <TrendingUp className="w-3 h-3 mr-1" />
-                +12% from last month
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
               <p className="text-sm font-medium text-gray-500">Cash Wallet</p>
-              <p className="text-2xl font-bold text-gray-900">₹{user?.earnings?.cash}</p>
-              <p className="text-xs text-blue-600 flex items-center mt-1">
-                <DollarSign className="w-3 h-3 mr-1" />
-                Available for withdrawal
-              </p>
+              <p className="text-2xl font-bold text-gray-900">₹{userDataLoading ? '...' : (userData?.data?.cash_wallet || 0)}</p>
             </div>
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-blue-600" />
+              <IndianRupee className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </div>
@@ -131,11 +132,7 @@ export default function UserDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500">Grow Wallet</p>
-              <p className="text-2xl font-bold text-gray-900">₹{user?.earnings?.grow}</p>
-              <p className="text-xs text-purple-600 flex items-center mt-1">
-                <TrendingUp className="w-3 h-3 mr-1" />
-                Investment earnings
-              </p>
+              <p className="text-2xl font-bold text-gray-900">₹{userDataLoading ? '...' : (userData?.data?.grow_wallet || 0)}</p>
             </div>
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-purple-600" />
@@ -147,67 +144,58 @@ export default function UserDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500">Scratch Cards</p>
-              <p className="text-2xl font-bold text-gray-900">₹{user?.earnings?.scratch}</p>
-              <p className="text-xs text-orange-600 flex items-center mt-1">
-                <Gift className="w-3 h-3 mr-1" />
-                Bonus rewards
-              </p>
+              <p className="text-2xl font-bold text-gray-900">₹{userDataLoading ? '...' : (userData?.data?.scratch_wallet || 0)}</p>
             </div>
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
               <Gift className="w-6 h-6 text-orange-600" />
             </div>
           </div>
         </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Total Referrals</p>
+              <p className="text-2xl font-bold text-gray-900">{userDataLoading ? '...' : (userData?.data?.total_referrals || 0)}</p>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <Users className="w-6 h-6 text-green-600" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Level Upgrade Section */}
+        {/* Current Promoter Level */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 flex items-center">
               <Crown className="w-5 h-5 mr-2" />
-              Level Upgrade Options
+              Current Promoter Level
             </h3>
           </div>
           <div className="p-6">
-            {upgradeOptions.length > 0 ? (
-              <div className="space-y-4">
-                {upgradeOptions.map((option) => {
-                  const levelNames = {
-                    promotor1: 'Promotor Level 1',
-                    promotor2: 'Promotor Level 2',
-                    promotor3: 'Promotor Level 3',
-                    promotor4: 'Promotor Level 4'
-                  };
-                  
-                  return (
-                    <div key={option} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
-                      <div className="flex items-center">
-                        <img src={logo} alt="Logo" className="w-12 h-12" />
-                        {/* <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-yellow-600 rounded-lg flex items-center justify-center mr-3">
-                          <ArrowUp className="w-5 h-5 text-white" />
-                        </div> */}
-                        <div>
-                          <p className="font-medium text-gray-900">{levelNames[option]}</p>
-                          <p className="text-sm text-gray-500">Unlock new earning opportunities</p>
-                        </div>
-                      </div>
-                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        Request Level Upgrade
-                      </button>
-                    </div>
-                  );
-                })}
+            <div className="text-center">
+              <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 ${getLevelColor(currentRole)}`}>
+                <Crown className="w-10 h-10 text-white" />
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <Crown className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">Maximum Level Reached</h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  You've reached the highest available level!
-                </p>
-              </div>
-            )}
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                {currentRole === 'trainee' ? 'Trainee' :
+                 currentRole === 'promotor' ? 'Promoter' :
+                 currentRole === 'promotor1' ? 'Promoter Level 1' :
+                 currentRole === 'promotor2' ? 'Promoter Level 2' :
+                 currentRole === 'promotor3' ? 'Promoter Level 3' :
+                 currentRole === 'promotor4' ? 'Promoter Level 4' : 'Unknown Level'}
+              </h3>
+              <p className="text-gray-500 mb-4">
+                {userData?.data?.current_promoter_level === 0 ? 'Start your journey as a trainee' :
+                 userData?.data?.current_promoter_level === 1 ? 'Basic promoter level' :
+                 userData?.data?.current_promoter_level === 2 ? 'Enhanced earning opportunities' :
+                 userData?.data?.current_promoter_level === 3 ? 'Advanced promoter benefits' :
+                 userData?.data?.current_promoter_level === 4 ? 'Maximum level achieved' : ''}
+              </p>
+              
+            </div>
           </div>
         </div>
 
@@ -216,64 +204,49 @@ export default function UserDashboard() {
           <div className="px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 flex items-center">
               <Calendar className="w-5 h-5 mr-2" />
-              Today's Activities
+               Activities
             </h3>
           </div>
           <div className="p-6">
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <div className={`flex items-center justify-between p-3 rounded-lg ${
+                userData?.data?.daily_video_watched === 1 ? 'bg-green-50' : 'bg-gray-50'
+              }`}>
                 <div className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                  <div className={`w-2 h-2 rounded-full mr-3 ${
+                    userData?.data?.daily_video_watched === 1 ? 'bg-green-500' : 'bg-gray-400'
+                  }`}></div>
                   <span className="text-sm font-medium text-gray-900">Daily Video Watched</span>
                 </div>
-                <span className="text-xs text-green-600 font-medium">Completed</span>
-              </div>
-              
-              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                  <span className="text-sm font-medium text-gray-900">Training Day {user?.trainingDay}</span>
-                </div>
-                <span className="text-xs text-blue-600 font-medium">
-                  {user?.trainingDay === 7 ? 'Completed' : 'In Progress'}
+                <span className={`text-xs font-medium ${
+                  userData?.data?.daily_video_watched === 1 ? 'text-green-600' : 'text-gray-500'
+                }`}>
+                  {userDataLoading ? '...' : (userData?.data?.daily_video_watched === 1 ? 'Completed' : 'Pending')}
                 </span>
               </div>
               
-              <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+              <div className={`flex items-center justify-between p-3 rounded-lg ${
+                userData?.data?.training_status === 2 ? 'bg-green-50' : 'bg-blue-50'
+              }`}>
                 <div className="flex items-center">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full mr-3"></div>
-                  <span className="text-sm font-medium text-gray-900">Promotion Videos</span>
+                  <div className={`w-2 h-2 rounded-full mr-3 ${
+                    userData?.data?.training_status === 2 ? 'bg-green-500' : 'bg-blue-500'
+                  }`}></div>
+                  <span className="text-sm font-medium text-gray-900">Training Status</span>
                 </div>
-                <span className="text-xs text-yellow-600 font-medium">Available</span>
+                <span className={`text-xs font-medium ${
+                  userData?.data?.training_status === 2 ? 'text-green-600' : 'text-blue-600'
+                }`}>
+                  {userDataLoading ? '...' : (
+                    userData?.data?.training_status === 0 ? 'Pending' :
+                    userData?.data?.training_status === 1 ? 'In Progress' :
+                    userData?.data?.training_status === 2 ? 'Completed' : 'Unknown'
+                  )}
+                </span>
               </div>
+              
+              
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
-        </div>
-        <div className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
-              <Award className="w-8 h-8 text-gray-400 mb-2" />
-              <span className="text-sm font-medium text-gray-900">View Earnings</span>
-            </button>
-            <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors">
-              <Users className="w-8 h-8 text-gray-400 mb-2" />
-              <span className="text-sm font-medium text-gray-900">Invite Friends</span>
-            </button>
-            <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors">
-              <Wallet className="w-8 h-8 text-gray-400 mb-2" />
-              <span className="text-sm font-medium text-gray-900">Withdraw</span>
-            </button>
-            <button className="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors">
-              <Crown className="w-8 h-8 text-gray-400 mb-2" />
-              <span className="text-sm font-medium text-gray-900">Upgrade Level</span>
-            </button>
           </div>
         </div>
       </div>
