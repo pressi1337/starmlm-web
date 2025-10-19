@@ -178,28 +178,34 @@ const UserForm = ({
           error={errors}
           value={values}
         />
-        {!data?.id && (
+
+     
           <PasswordInput
             name="password"
             label="Password *"
             placeholder="Enter Password"
             value={values}
+            readOnly={!!data?.id}
             onChange={handleChange}
             error={errors}
+            className={data?.id ? 'opacity-75 cursor-not-allowed' : ''}
           />
-        )}
+       
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        {!data?.id && (
+        
           <PasswordInput
             name="password_confirmation"
             label="Confirm Password *"
             placeholder="Enter Password"
             value={values}
+            readOnly={!!data?.id}
             onChange={handleChange}
             error={errors}
+            className={data?.id ? 'opacity-75 cursor-not-allowed' : ''}
           />
-        )}
+  
+
 
         <CheckboxInput
           label="Is Active?"
