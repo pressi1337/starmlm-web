@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Upload, Trash2, Video } from "lucide-react";
 import Lib from "@/utils/Lib";
+export const VITE_BASE_URL = import.meta.env.VITE_BASE_URL ?? "";
 
 const CHUNK_SIZE = 1 * 1024 * 1024; // 1MB chunk
 const getRealFileName = (responsePath = "") => {
@@ -45,7 +46,7 @@ export default function FileUpload({
 
       try {
         let response = await fetch(
-          "https://api.starupworld.com/api/v1/upload",
+          `${VITE_BASE_URL}/upload`,
           {
             method: "POST",
             headers: {
