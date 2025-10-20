@@ -20,6 +20,7 @@ import QuizForm from "@/components/QuizeForm";
 import Lib from "@/utils/Lib";
 import Error500 from "@/components/ui/Error500";
 import { LANG } from "@/constants/others";
+import { getVideoPlayerConfig, videoContainerProps } from "@/utils/videoPlayerConfig";
 
 const TrainingProgramWatch = () => {
   const { data, loading, setQuery, error } = useGetCall(
@@ -280,7 +281,10 @@ const TrainingProgramWatch = () => {
 
           {/* Video Player Section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
-            <div className="aspect-video bg-gray-900 relative">
+            <div 
+              className="aspect-video bg-gray-900 relative"
+              {...videoContainerProps}
+            >
               {data?.data?.training?.training_video?.video_path ||
               data?.data?.training?.training_video?.youtube_link ? (
                 <ReactPlayer
@@ -298,6 +302,7 @@ const TrainingProgramWatch = () => {
                   playing={playing}
                   onTimeUpdate={handleProgress}
                   onDurationChange={handleDurationChange}
+                  config={getVideoPlayerConfig()}
                   onEnded={handlevideoWatchCompleted}
                   onError={(error) => {
                     console.error("ReactPlayer Error:", error);

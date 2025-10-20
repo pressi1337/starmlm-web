@@ -27,6 +27,7 @@ import Lib from "@/utils/Lib";
 import Error500 from "@/components/ui/Error500";
 import TrainingVideoWarning from "@/components/TrainingVideoWarning";
 import { LANG } from "@/constants/others";
+import { getVideoPlayerConfig, videoContainerProps } from "@/utils/videoPlayerConfig";
 
 function PromotionVideosPage() {
   const { data, loading, setQuery, error } = useGetCall(
@@ -288,7 +289,10 @@ function PromotionVideosPage() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 ">
             {/* Video Player Section */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
-              <div className="aspect-video bg-gray-900 relative">
+              <div 
+                className="aspect-video bg-gray-900 relative"
+                {...videoContainerProps}
+              >
                 {data?.data?.promotion_video?.video_path ||
                 data?.data?.promotion_video?.youtube_link ? (
                   <ReactPlayer
@@ -309,6 +313,7 @@ function PromotionVideosPage() {
                       console.error("ReactPlayer Error:", error);
                       // Handle video loading errors
                     }}
+                    config={getVideoPlayerConfig()}
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-white text-lg">
