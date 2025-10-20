@@ -102,6 +102,39 @@ export default function UserManagement() {
         );
       },
     },
+      {
+      title: "Referred By",
+      key: "referral_by",
+      sortable: true,
+      render: (index: any, row: any) => {
+        return (
+          <div className="flex items-center">
+            <div className="ml-4">
+              <div className="text-sm font-medium text-gray-900">
+                {row.referrer?.username}
+              </div>
+              <div className="text-sm text-gray-500"> {row.referrer?.mobile}</div>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      title: "Join Date",
+      key: "created_at",
+      sortable: true,
+      render: (index: any, row: any) => {
+        return (
+          <div className="flex items-center">
+            <div className="ml-4">
+              <div className="text-sm font-medium text-gray-900">
+                {UIHelpers.DateFormat(row?.created_at)}
+              </div>
+            </div>
+          </div>
+        );
+      },
+    },
     {
       title: "Title & Description",
       key: "title",
