@@ -27,7 +27,10 @@ import Lib from "@/utils/Lib";
 import Error500 from "@/components/ui/Error500";
 import TrainingVideoWarning from "@/components/TrainingVideoWarning";
 import { LANG } from "@/constants/others";
-import { getVideoPlayerConfig, videoContainerProps } from "@/utils/videoPlayerConfig";
+import {
+  getVideoPlayerConfig,
+  videoContainerProps,
+} from "@/utils/videoPlayerConfig";
 
 function PromotionVideosPage() {
   const { data, loading, setQuery, error } = useGetCall(
@@ -145,6 +148,9 @@ function PromotionVideosPage() {
     }).then((result) => {
       handleTakeQuiz();
     });
+    setDuration(0);
+    setCurrentTime(0);
+    setPlayed(0);
     setPlaying(false);
   };
 
@@ -221,6 +227,7 @@ function PromotionVideosPage() {
         "success"
       );
       setQuery();
+      setTakeQuiz(false);
     }
   };
 
@@ -289,7 +296,7 @@ function PromotionVideosPage() {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 ">
             {/* Video Player Section */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
-              <div 
+              <div
                 className="aspect-video bg-gray-900 relative"
                 {...videoContainerProps}
               >
