@@ -152,7 +152,7 @@ export default function DailyVideoWatch({
                 console.error('ReactPlayer Error:', error);
                 // Handle video loading errors
               }}
-              config={getVideoPlayerConfig()}
+              config={data?.data?.video_path ? getVideoPlayerConfig() : undefined}
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-white text-lg">
