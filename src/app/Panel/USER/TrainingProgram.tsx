@@ -302,12 +302,14 @@ const TrainingProgramWatch = () => {
                   playing={playing}
                   onTimeUpdate={handleProgress}
                   onDurationChange={handleDurationChange}
-                  config={getVideoPlayerConfig()}
+                
                   onEnded={handlevideoWatchCompleted}
                   onError={(error) => {
                     console.error("ReactPlayer Error:", error);
                     // Handle video loading errors
                   }}
+                  config={data?.data?.training?.training_video?.video_path ? getVideoPlayerConfig() : undefined}
+                  
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-white text-lg">
