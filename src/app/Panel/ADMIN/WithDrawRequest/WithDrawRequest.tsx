@@ -20,6 +20,7 @@ import {
   LucideVolleyball,
   Flag,
   MessageCircle,
+  Download,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
@@ -30,6 +31,10 @@ import FilterTab from "@/components/FilterTab";
 import { WIDTHDROW_STATUS } from "@/constants/others";
 import CopyClipBoard from "@/components/CopyClip";
 import Lib from "@/utils/Lib";
+import { saveAs } from "file-saver";
+import axios from "axios";
+import { API_BASE_URL } from "@/config";
+
 const getStatusBadge = (status) => {
   const badges = {
     pending: {
@@ -338,13 +343,23 @@ export default function WithDrawRequest() {
               confirmButtonText: "OK",
               customClass: {
                 confirmButton:
-                  "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
+                  "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-colors",
               },
             });
             getWithDrawAPI();
           }
         }
       });
+  };
+
+  const exportToExcel = async () => {
+    const response = await axios.get(`${API_BASE_URL}/withdrawal/export`, {
+      responseType: "blob",
+    });
+    const blob = new Blob([response.data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "withdrawal_requests.xlsx");
   };
 
   return (
@@ -359,6 +374,13 @@ export default function WithDrawRequest() {
               Manage your withdrawal requests and track payment status
             </p>
           </div>
+          <button
+            onClick={exportToExcel}
+            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export to Excel
+          </button>
         </div>
       </div>
 
