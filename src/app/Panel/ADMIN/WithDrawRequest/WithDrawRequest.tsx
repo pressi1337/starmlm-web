@@ -29,6 +29,7 @@ import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
 import { WIDTHDROW_STATUS } from "@/constants/others";
 import CopyClipBoard from "@/components/CopyClip";
+import Lib from "@/utils/Lib";
 const getStatusBadge = (status) => {
   const badges = {
     pending: {
@@ -66,7 +67,7 @@ const getStatusBadge = (status) => {
 };
 const formatAmount = (amount) => {
   const sign = amount >= 0 ? "+" : "";
-  return `${sign}₹${Math.abs(amount)}`;
+  return `${sign}₹${Lib.formatAmount(Math.abs(amount))}`;
 };
 
 export default function WithDrawRequest() {

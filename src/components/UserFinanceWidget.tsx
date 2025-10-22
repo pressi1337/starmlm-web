@@ -1,5 +1,6 @@
 import { SERVICE } from "@/constants/services";
 import { useGetCall } from "@/hooks";
+import Lib from "@/utils/Lib";
 import Loader from "./ui/Loader";
 import { ArrowDown, Clock, CreditCard, Wallet, WalletCards } from "lucide-react";
 
@@ -20,10 +21,10 @@ const UserFinanceWidget = () => {
             <p className="text-sm font-medium text-gray-500">Cash Wallet</p>
             <p className="text-2xl font-bold text-gray-900">
               ₹{" "}
-              {Math.abs(
-                profileInfo?.data?.quiz_total_withdraw -
-                  profileInfo?.data?.quiz_total_earning
-              ) || 0}
+              {Lib.formatAmount(Math.abs(
+                (profileInfo?.data?.quiz_total_withdraw || 0) -
+                  (profileInfo?.data?.quiz_total_earning || 0)
+              ))}
             </p>
           </div>
         </div>
@@ -38,10 +39,10 @@ const UserFinanceWidget = () => {
             <p className="text-sm font-medium text-gray-500">Scratch Wallet</p>
             <p className="text-2xl font-bold text-gray-900">
               ₹{" "}
-              {Math.abs(
-                profileInfo?.data?.scratch_total_withdraw -
-                  profileInfo?.data?.scratch_total_earning
-              ) || 0}
+              {Lib.formatAmount(Math.abs(
+                (profileInfo?.data?.scratch_total_withdraw || 0) -
+                  (profileInfo?.data?.scratch_total_earning || 0)
+              ))}
             </p>
           </div>
         </div>
@@ -56,10 +57,10 @@ const UserFinanceWidget = () => {
             <p className="text-sm font-medium text-gray-500">Grow Wallet</p>
             <p className="text-2xl font-bold text-gray-900">
               ₹{" "}
-              {Math.abs(
+              {Lib.formatAmount(Math.abs(
                 profileInfo?.data?.saving_total_withdraw -
                   profileInfo?.data?.saving_total_earning
-              ) || 0}
+              )) || 0}
             </p>
           </div>
         </div>

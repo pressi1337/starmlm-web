@@ -20,6 +20,7 @@ import FilterTab from "@/components/FilterTab";
 import UserFinanceWidget from "@/components/UserFinanceWidget";
 import DailyVideoWarning from "@/components/DailyVideoWarning";
 import TrainingVideoWarning from "@/components/TrainingVideoWarning";
+import Lib from "@/utils/Lib";
 
 const getWalletColor = (wallet) => {
   if (wallet < 5) {
@@ -126,7 +127,7 @@ function EarningsHistoryPage() {
 
   const formatAmount = (amount, wallet) => {
     const sign = amount >= 0 ? "+" : "";
-    return `${sign}₹${Math.abs(amount)}`;
+    return `${sign}₹${Lib.formatAmount(Math.abs(amount))}`;
   };
 
   return (

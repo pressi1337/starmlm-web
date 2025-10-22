@@ -66,7 +66,7 @@ const getStatusBadge = (status) => {
 
 const formatAmount = (amount) => {
   const sign = amount >= 0 ? "+" : "";
-  return `${sign}₹${Math.abs(amount)}`;
+  return `${sign}₹${Lib.formatAmount(Math.abs(amount))}`;
 };
 function WithdrawRequestsPage() {
   const Columns: any = [
