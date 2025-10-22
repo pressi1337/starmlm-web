@@ -155,7 +155,7 @@ export default function UserDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Total Referrals</p>
+              <p className="text-sm font-medium text-gray-500">Total Promoters</p>
               <p className="text-2xl font-bold text-gray-900">{userDataLoading ? '...' : (userData?.data?.total_referrals || 0)}</p>
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
