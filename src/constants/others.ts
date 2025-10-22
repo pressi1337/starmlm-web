@@ -369,7 +369,7 @@ export const OPTIONS = {
         { value: "English", label: "English" }
     ],
     WALLET_TYPE: [
-        { label: 'Main Wallet ', value: '1' },
+        { label: 'Cash Wallet ', value: '1' },
         { label: 'Scratch Wallet', value: '2' },
         { label: 'Grow Wallet', value: '3' },
     ],
