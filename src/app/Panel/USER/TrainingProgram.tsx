@@ -110,11 +110,11 @@ const TrainingProgramWatch = () => {
             <Crown className="w-8 h-8  text-green-600 " />
             <div className="flex flex-col items-center gap-2">
               <h3 className="text-lg font-semibold text-green-900">
-                Day {data?.data?.nextday - 1} training Complete!
+                Day {data?.data?.nextday - 2} training Complete!
               </h3>
               <p className="text-green-700">
                 Excellent progress! Get ready to continue your journey tomorrow
-                with Day {data?.data?.nextday}.
+                with Day {data?.data?.nextday - 1}.
               </p>
             </div>
           </div>
