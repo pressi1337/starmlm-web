@@ -214,6 +214,16 @@ const Lib = {
     maskLast4Digits(num: string | number) {
         const str = String(num);
         return `**${str.slice(-4)}`;
+    },
+    
+    /**
+     * Formats a number to 2 decimal places
+     * @param {number|string} amount - The amount to format
+     * @returns {string} Formatted amount with 2 decimal places
+     */
+    formatAmount(amount: number | string): string {
+        const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+        return isNaN(num) ? '0.00' : num.toFixed(2);
     }
 
 }

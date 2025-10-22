@@ -76,7 +76,7 @@ const getStatusBadgeColor = (status) => {
 };
 
 const formatAmount = (withdraw: any, total: any) => {
-  return Math.abs(withdraw - total) || 0;
+  return Lib.formatAmount(Math.abs(withdraw - total) || 0);
 };
 export default function UserManagement() {
   const Columns: any = [
