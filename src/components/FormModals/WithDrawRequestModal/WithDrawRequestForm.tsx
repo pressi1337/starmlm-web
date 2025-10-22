@@ -27,7 +27,6 @@ const WithDrawRequestForm = ({
       acc_name: data?.acc_name ?? "",
       ifsc_code: data?.ifsc_code ?? "",
       bank_name: data?.bank_name ?? "",
-      address: data?.address ?? "",
     },
     onSubmit: async (values: any) => {
       onAction(values);
@@ -94,15 +93,6 @@ const WithDrawRequestForm = ({
       <InputText
         name="bank_name"
         label="Bank Name"
-        placeholder="Enter Amount"
-        onChange={handleChange}
-        error={errors}
-        value={values}
-        readOnly={true}
-      />
-      <InputTextArea
-        name="address"
-        label="Address"
         placeholder="Enter Amount"
         onChange={handleChange}
         error={errors}
