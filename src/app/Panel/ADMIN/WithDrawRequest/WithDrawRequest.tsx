@@ -20,6 +20,7 @@ import {
   LucideVolleyball,
   Flag,
   MessageCircle,
+  Download,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
@@ -229,6 +230,13 @@ export default function WithDrawRequest() {
   );
   const [filter, setFilter] = useState(defaultFilter);
 
+  const { loading: exportLoading, fetchApi: exportWithdraw } = useGetCall(
+    SERVICE.EXPORT_EXCEL,
+    {
+      avoidFetch: true,
+    }
+  );
+
   const { loading, setQuery, data } = useGetCall(SERVICE.WITHDRAW_REQUEST, {
     avoidFetch: true,
   });
@@ -359,6 +367,18 @@ export default function WithDrawRequest() {
               Manage your withdrawal requests and track payment status
             </p>
           </div>
+          <button
+            onClick={() =>
+              exportWithdraw({
+                exports: true,
+                downloadFilename: "withdraw_requests.xlsx",
+              })
+            }
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </button>
         </div>
       </div>
 
