@@ -320,7 +320,6 @@ function PromotionVideosPage() {
                       console.error("ReactPlayer Error:", error);
                       // Handle video loading errors
                     }}
-                    config={data?.data?.promotion_video?.video_path ? getVideoPlayerConfig() : undefined}
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-white text-lg">
