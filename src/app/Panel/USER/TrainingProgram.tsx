@@ -308,7 +308,6 @@ const TrainingProgramWatch = () => {
                     console.error("ReactPlayer Error:", error);
                     // Handle video loading errors
                   }}
-                  config={data?.data?.training?.training_video?.video_path ? getVideoPlayerConfig() : undefined}
                   
                 />
               ) : (
