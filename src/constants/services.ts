@@ -39,6 +39,10 @@ export const SERVICE: any = {
     USER_DASHBOARD: "user-dashboard",
     ADMIN_DASHBOARD: "admin-dashboard",
 
+
+    //Export 
+    EXPORT_EXCEL: 'withdraws/export/excel',
+
     //User Service endpoint
     DAILY_VIDEO_STATUS: 'daily-videos-status',
     DAILY_VIDEO_TODAY: 'daily-videos-today',
