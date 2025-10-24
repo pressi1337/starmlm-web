@@ -271,11 +271,9 @@ const UserForm = ({
             label="Branch Name *"
             type="text"
             placeholder="Enter Branch Name"
-            // onChange={isBankLocked ? undefined : handleBankChange}
-            // error={isBankLocked ? {} : bankErros}
-            // value={bankValues}
-            // disabled={isBankLocked}
-            // readOnly={isBankLocked}
+            value={values}
+            onChange={handleChange}
+            error={errors}
           />
         </div>
       </div>
