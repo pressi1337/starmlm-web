@@ -56,6 +56,12 @@ const UserForm = ({
       password: data?.pwd_text ?? "",
       password_confirmation: data?.pwd_text ?? "",
       is_active: data?.is_active ?? 1,
+
+      bank_name: data?.bank_name ?? "",
+      branch_name: data?.branch_name ?? "",
+      ifsc_code: data?.ifsc_code ?? "",
+      acc_no: data?.acc_no ?? "",
+      acc_name: data?.acc_name ?? "",
     },
     onSubmit: async (values: any) => {
       onAction(values);
@@ -179,33 +185,28 @@ const UserForm = ({
           value={values}
         />
 
-     
-          <PasswordInput
-            name="password"
-            label="Password *"
-            placeholder="Enter Password"
-            value={values}
-            readOnly={!!data?.id}
-            onChange={handleChange}
-            error={errors}
-            className={data?.id ? 'opacity-75 cursor-not-allowed' : ''}
-          />
-       
+        <PasswordInput
+          name="password"
+          label="Password *"
+          placeholder="Enter Password"
+          value={values}
+          readOnly={!!data?.id}
+          onChange={handleChange}
+          error={errors}
+          className={data?.id ? "opacity-75 cursor-not-allowed" : ""}
+        />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        
-          <PasswordInput
-            name="password_confirmation"
-            label="Confirm Password *"
-            placeholder="Enter Password"
-            value={values}
-            readOnly={!!data?.id}
-            onChange={handleChange}
-            error={errors}
-            className={data?.id ? 'opacity-75 cursor-not-allowed' : ''}
-          />
-  
-
+        <PasswordInput
+          name="password_confirmation"
+          label="Confirm Password *"
+          placeholder="Enter Password"
+          value={values}
+          readOnly={!!data?.id}
+          onChange={handleChange}
+          error={errors}
+          className={data?.id ? "opacity-75 cursor-not-allowed" : ""}
+        />
 
         <CheckboxInput
           label="Is Active?"
@@ -214,6 +215,69 @@ const UserForm = ({
           onChange={handleChange}
           error={errors}
         />
+      </div>
+
+      <hr />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <InputText
+            name="acc_no"
+            label="Account Number"
+            placeholder="Enter Account Number"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+        </div>
+        <div className="space-y-2">
+          <InputText
+            name="acc_name"
+            label="Account Name "
+            placeholder="Enter Account Name"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <InputText
+            name="bank_name"
+            label="Bank Name "
+            type="text"
+            placeholder="Enter Bank Name"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+        </div>
+        <div className="space-y-2">
+          <InputText
+            type="text"
+            name="ifsc_code"
+            label="IFSC Code "
+            placeholder="Enter IFSC Code"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <InputText
+            name="branch_name"
+            label="Branch Name *"
+            type="text"
+            placeholder="Enter Branch Name"
+            // onChange={isBankLocked ? undefined : handleBankChange}
+            // error={isBankLocked ? {} : bankErros}
+            // value={bankValues}
+            // disabled={isBankLocked}
+            // readOnly={isBankLocked}
+          />
+        </div>
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">

@@ -32,7 +32,7 @@ const ActivatePinForm = ({
 }: any) => {
   const { values, handleChange, errors, handleSubmit, setErrors } = useFormik({
     initialValues: {
-      id:data?.id ?? "",
+      id: data?.id ?? "",
       pin: data?.pin ?? "",
       gift_delivery_type: data?.gift_delivery_type ?? "",
       gift_delivery_address: data?.gift_delivery_address ?? "",
@@ -56,7 +56,7 @@ const ActivatePinForm = ({
     const today = new Date();
     const minDate = new Date(today);
     minDate.setDate(today.getDate() + 25); // 25 days from today
-    return minDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    return minDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
   }, []);
 
   return (
@@ -79,37 +79,37 @@ const ActivatePinForm = ({
         error={errors}
         value={values}
       />
-       <SelectInput
-          name="gift_delivery_type"
-          label="Gift Delivery Type *"
-          placeholder="Select Gift Delivery Type"
-          options={OPTIONS.GIFT_DELIVERY_LEVEL}
+      <SelectInput
+        name="gift_delivery_type"
+        label="Product delivery Type *"
+        placeholder="Select Product Delivery Type"
+        options={OPTIONS.GIFT_DELIVERY_LEVEL}
+        onChange={handleChange}
+        error={errors}
+        value={values}
+      />
+      {values.gift_delivery_type === "2" && (
+        <InputTextArea
+          name="gift_delivery_address"
+          label="Product Delivery Address *"
+          placeholder="Enter Product Delivery Address"
           onChange={handleChange}
           error={errors}
           value={values}
         />
-        {values.gift_delivery_type === "2" && (
-            <InputTextArea
-              name="gift_delivery_address"
-              label="Gift Delivery Address *"
-              placeholder="Enter Gift Delivery Address"
-              onChange={handleChange}
-              error={errors}
-              value={values}
-            />
-        )}
-        {values.gift_delivery_type === "1" && (
-          <InputText
-              name="direct_pick_date"
-              label="Direct Pick Date *"
-              type="date"
-              placeholder="Direct Pick Date"
-              onChange={handleChange}
-              error={errors}
-              value={values}
-              minDate={minSelectableDate}
-            />
-        )}
+      )}
+      {values.gift_delivery_type === "1" && (
+        <InputText
+          name="direct_pick_date"
+          label="Direct Pick Date *"
+          type="date"
+          placeholder="Direct Pick Date"
+          onChange={handleChange}
+          error={errors}
+          value={values}
+          minDate={minSelectableDate}
+        />
+      )}
       <div className="flex justify-end space-x-3 pt-4">
         <Btn title="Cancel" onClick={onCloseModal} uiType="secondary" />
         <Btn title={"Submit"} isLoading={loading} onClick={handleSubmit} />
