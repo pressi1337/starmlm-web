@@ -32,7 +32,7 @@ export default function UserDashboard() {
   const getCurrentRole = (level) => {
     const roleMap = {
       null: 'trainee',
-      0: 'trainee',
+      0: 'Promotor',
       1: 'promotor1',
       2: 'promotor2',
       3: 'promotor3',
@@ -188,8 +188,9 @@ export default function UserDashboard() {
                  currentRole === 'promotor4' ? 'Promoter Level 4' : 'Unknown Level'}
               </h3>
               <p className="text-gray-500 mb-4">
-                {userData?.data?.current_promoter_level === 0 ? 'Start your journey as a trainee' :
-                 userData?.data?.current_promoter_level === 1 ? 'Basic promoter level' :
+                {userData?.data?.current_promoter_level === null ? 'Start your journey as a trainee' :
+                userData?.data?.current_promoter_level === 0 ? 'Basic promoter level' :
+                 userData?.data?.current_promoter_level === 1 ? 'Promoter level' :
                  userData?.data?.current_promoter_level === 2 ? 'Enhanced earning opportunities' :
                  userData?.data?.current_promoter_level === 3 ? 'Advanced promoter benefits' :
                  userData?.data?.current_promoter_level === 4 ? 'Maximum level achieved' : ''}
