@@ -32,7 +32,7 @@ export default function UserDashboard() {
   const getCurrentRole = (level) => {
     const roleMap = {
       null: 'trainee',
-      0: 'Promotor',
+      0: 'promotor',
       1: 'promotor1',
       2: 'promotor2',
       3: 'promotor3',
