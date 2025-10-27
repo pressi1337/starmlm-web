@@ -15,7 +15,11 @@ const PinConfirmationForm = ({ recoilApi = () => {} }) => {
     Put,
     error: RequestError,
   } = useActionCall(SERVICE.USER_PROMOTERS);
-  const { data:PinRequests, loading, error } = useGetCall(SERVICE.GET_PIN_REQUESTS, {
+  const {
+    data: useData,
+    loading,
+    error,
+  } = useGetCall(SERVICE.GET_PROFILE, {
     avoidFetch: false,
   });
 
@@ -46,6 +50,7 @@ const PinConfirmationForm = ({ recoilApi = () => {} }) => {
     }
   };
 
+  console.log({ useData });
   return (
     <Modal
       title={`${Edit ? "Edit" : "Request Level Upgrade"}`}
@@ -54,12 +59,18 @@ const PinConfirmationForm = ({ recoilApi = () => {} }) => {
       {loading ? (
         <Loader />
       ) : (
-        <PinForm
-          data={PinRequests?.data?.[0] ?? {}}
-          onAction={onAction}
-          RequestError={RequestError}
-          onCloseModal={closeModal}
-        />
+        <>
+          {useData ? (
+            <PinForm
+              data={{ current_level: useData?.data?.current_promoter_level }}
+              onAction={onAction}
+              RequestError={RequestError}
+              onCloseModal={closeModal}
+            />
+          ) : (
+            "Something went wrong!"
+          )}
+        </>
       )}
     </Modal>
   );
