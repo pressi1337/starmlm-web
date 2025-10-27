@@ -50,7 +50,7 @@ const PinForm = ({
     const currentLevelStr = currentLevel.toString();
 
     if (!currentLevelStr || currentLevelStr === "") {
-      return [];
+      return OPTIONS.PROMOTER_LEVEL.filter((option) => option.value === "0");
     }
 
     if (currentLevelStr === "0") {
