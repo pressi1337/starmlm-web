@@ -71,7 +71,7 @@ const PinConfirmationForm = ({ recoilApi = () => {} }) => {
   }
 
   // Safely get current level with proper null checks and default value
-  const currentLevel = useData?.data?.current_promoter_level || 0;
+  const currentLevel = useData?.data?.current_promoter_level || "";
 
   return (
     <Modal
