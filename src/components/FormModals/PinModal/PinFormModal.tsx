@@ -50,7 +50,7 @@ const PinConfirmationForm = ({ recoilApi = () => {} }) => {
     }
   };
 
-  console.log({ useData });
+  
   
   // Show loader only on initial load when useData is null
   if (loading && !useData) {
@@ -71,7 +71,8 @@ const PinConfirmationForm = ({ recoilApi = () => {} }) => {
   }
 
   // Safely get current level with proper null checks and default value
-  const currentLevel = useData?.data?.current_promoter_level || "";
+  const currentLevel = useData?.data?.current_promoter_level ?? "";
+
 
   return (
     <Modal
