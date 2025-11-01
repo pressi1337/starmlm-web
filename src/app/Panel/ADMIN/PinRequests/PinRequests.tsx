@@ -67,7 +67,7 @@ export default function PROMOTIONVIDEOS() {
               </div>
               <div className="text-sm text-gray-500 flex items-center">
                 <Smartphone className="w-3 h-3 mr-1" />
-                {row?.user?.mobile}
+                 {row?.user?.mobile ? <CopyClipBoard text={row?.user?.mobile} /> : "-"}
               </div>
             </div>
           </div>
