@@ -5,8 +5,13 @@ import { Play, Users, TrendingUp, Award, ArrowRight } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import banner from '@/assets/starbanner.png';
 import bgBanner from '@/assets/starup_bg.png';
+import apkFile from '@/assets/starupworld.apk';
+
+// Launch time: Feb 8, 2026 at 3:30 PM
+const LAUNCH_DATE = new Date('2026-02-08T15:30:00');
 
 export default function WelcomePage() {
+  const isLaunched = new Date() >= LAUNCH_DATE;
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Navigation */}
@@ -22,12 +27,23 @@ export default function WelcomePage() {
                 Starup
               </span> */}
             </div>
-            <Link
-              to="/login"
-              className="bg-gradient-to-r from-green-600 to-yellow-600 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1"
-            >
-              Login
-            </Link>
+            <div className="flex items-center gap-3">
+              {isLaunched && (
+                <a
+                  href={apkFile}
+                  download
+                  className="bg-gradient-to-r from-green-600 to-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-200"
+                >
+                  Download Mobile App
+                </a>
+              )}
+              <Link
+                to="/login"
+                className="bg-gradient-to-r from-green-600 to-yellow-600 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1"
+              >
+                Login
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
