@@ -8,7 +8,7 @@ import bgBanner from '@/assets/starup_bg.png';
 import apkFile from '@/assets/StarupWorld.apk';
 
 // Launch time: Feb 8, 2026 at 3:30 PM
-const LAUNCH_DATE = new Date('2026-02-08T15:30:00');
+const LAUNCH_DATE = new Date('2026-02-08T15:40:00');
 
 export default function WelcomePage() {
   const isLaunched = new Date() >= LAUNCH_DATE;
