@@ -68,8 +68,8 @@ function ReferralPage() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Join PromoHub",
-          text: "Join me on PromoHub and start earning today!",
+          title: "Join StarupWorld",
+          text: "Transform Your Promotion Journey!",
           url: mockReferralData.referralLink,
         });
       } catch (err) {

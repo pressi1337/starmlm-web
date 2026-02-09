@@ -37,6 +37,7 @@ export default function WelcomePage() {
                   Download Mobile App
                 </a>
               )}
+              
               <Link
                 to="/login"
                 className="bg-gradient-to-r from-green-600 to-yellow-600 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1"
@@ -70,6 +71,12 @@ export default function WelcomePage() {
                   Get Started
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
+                <p className="mt-4 text-white/80">
+                  New here?{" "}
+                  <Link to="/register" className="font-semibold text-white underline hover:text-white/80">
+                    Create an account
+                  </Link>
+                </p>
               </div>
             </div>
             <div className="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
