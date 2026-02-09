@@ -86,9 +86,6 @@ export default function Register() {
     }
   }, [RequestError]);
   useEffect(() => {
-    if (!referalCode) {
-      navigate.push("/login");
-    }
     setLoading(false);
   });
 
@@ -244,11 +241,11 @@ export default function Register() {
               <InputText
                 name="referral_code"
                 label="Promoter Code *"
-                placeholder="Enter Password"
+                placeholder="Enter Promoter Code"
                 onChange={handleChange}
                 error={errors}
                 value={values}
-                readOnly={true}
+                readOnly={!!referalCode}
               />
             </div>
 
