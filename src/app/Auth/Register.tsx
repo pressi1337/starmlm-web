@@ -238,15 +238,29 @@ export default function Register() {
                 error={errors}
               />
 
-              <InputText
-                name="referral_code"
-                label="Promoter Code *"
-                placeholder="Enter Promoter Code"
-                onChange={handleChange}
-                error={errors}
-                value={values}
-                readOnly={!!referalCode}
-              />
+              {!referalCode ? (
+                <div className="hidden">
+                  <InputText
+                    name="referral_code"
+                    label="Promoter Code *"
+                    placeholder="Enter Promoter Code"
+                    onChange={handleChange}
+                    error={errors}
+                    value={values}
+                    readOnly={false}
+                  />
+                </div>
+              ) : (
+                <InputText
+                  name="referral_code"
+                  label="Promoter Code *"
+                  placeholder="Enter Promoter Code"
+                  onChange={handleChange}
+                  error={errors}
+                  value={values}
+                  readOnly={true}
+                />
+              )}
             </div>
 
             <div className="flex justify-end space-x-3 pt-4">
