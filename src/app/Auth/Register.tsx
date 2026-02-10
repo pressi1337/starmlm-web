@@ -14,6 +14,7 @@ import PasswordInput from "@/components/ui/PasswordInput";
 import { OPTIONS } from "@/constants/others";
 import { DISTRICTS_OPTIONS, STATE_OPTIONS } from "@/constants/state";
 import { TrendingUp } from "lucide-react";
+import logo from '@/assets/logo.png';
 import Loader from "@/components/ui/Loader";
 export const VALIDATION_SCHEMA = Yup.object().shape({
   first_name: Yup.string().required("First Name is required*"),
@@ -101,11 +102,8 @@ export default function Register() {
           className="flex justify-center items-center space-x-3 mb-6"
         >
           
-          <img
-            src="/src/assets/logo.png"
-            alt="Starup Logo"
-            className="h-8 w-auto"
-          />
+          
+          <img src={logo} alt="Logo" className="h-8 w-auto" />
         </Link>
         <h2 className="text-center text-3xl font-bold text-gray-900">
           Register
