@@ -27,6 +27,9 @@ const PromotionVideos = Loadable(
 const ReferralSettings = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/ReferralSettings/ReferralSettings"))
 );
+const LevelIncomeSettings = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/LevelIncomeSettings/LevelIncomeSettings"))
+);
 const PinRequests = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/PinRequests/PinRequests"))
 );
@@ -64,6 +67,10 @@ const AdminRoutes = {
     {
       path: "referral-settings",
       element: <ReferralSettings />,
+    },
+    {
+      path: "level-income-matrix",
+      element: <LevelIncomeSettings />,
     },
     {
       path: "pin-requests",

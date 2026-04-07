@@ -29,6 +29,8 @@ const getWalletColor = (wallet) => {
     return "text-purple-600 bg-purple-100";
   } else if (wallet === 6) {
     return "text-orange-600 bg-orange-100";
+  } else if (wallet === 7) {
+    return "text-green-600 bg-green-100";
   }
   return "text-gray-600 bg-gray-100";
 };
@@ -59,6 +61,9 @@ function EarningsHistoryPage() {
             break;
           case 6:
             message = "Savings Earning";
+            break;
+          case 7:
+            message = "Level Income";
             break;
           default:
             message = "Unknown Earning Type";

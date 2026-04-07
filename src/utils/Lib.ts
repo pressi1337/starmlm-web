@@ -224,6 +224,47 @@ const Lib = {
     formatAmount(amount: number | string): string {
         const num = typeof amount === 'string' ? parseFloat(amount) : amount;
         return isNaN(num) ? '0.00' : num.toFixed(2);
+    },
+
+    promoterLevelLabel(level: number | string | null | undefined): string {
+        if (level === null || level === undefined || level === '') {
+            return 'Trainee';
+        }
+
+        const normalizedLevel = Number(level);
+        if (Number.isNaN(normalizedLevel)) {
+            return 'Unknown';
+        }
+
+        if (normalizedLevel === 0) {
+            return 'Promoter';
+        }
+
+        return `Promoter Level ${normalizedLevel}`;
+    },
+
+    promoterLevelColor(level: number | string | null | undefined): string {
+        if (level === null || level === undefined || level === '') {
+            return 'text-blue-600 bg-blue-100';
+        }
+
+        const normalizedLevel = Number(level);
+
+        if (normalizedLevel <= 0) {
+            return 'text-green-600 bg-green-100';
+        }
+
+        const palette = [
+            'text-purple-600 bg-purple-100',
+            'text-yellow-700 bg-yellow-100',
+            'text-pink-600 bg-pink-100',
+            'text-indigo-600 bg-indigo-100',
+            'text-red-600 bg-red-100',
+            'text-cyan-700 bg-cyan-100',
+            'text-emerald-700 bg-emerald-100',
+        ];
+
+        return palette[(normalizedLevel - 1) % palette.length];
     }
 
 }

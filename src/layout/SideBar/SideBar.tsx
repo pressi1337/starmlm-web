@@ -124,6 +124,13 @@ const Sidebar = ({
         icon: Settings,
         color: "from-sky-500 to-blue-600",
       });
+      baseItems.push({
+        id: "level-income-matrix",
+        label: "Level Income Matrix",
+        path: "/portal/admin/level-income-matrix",
+        icon: BanknoteArrowUp,
+        color: "from-emerald-500 to-teal-600",
+      });
     } else if (user.role === ROLE.USER) {
       baseItems.push(
         {

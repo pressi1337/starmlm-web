@@ -17,6 +17,7 @@ import {
 import logo from '@/assets/logo.png';
 import { useGetCall } from '@/hooks';
 import { SERVICE } from "@/constants/services";
+import Lib from "@/utils/Lib";
 
 export default function UserDashboard() {
   const { user } = useAuth();
@@ -28,49 +29,35 @@ export default function UserDashboard() {
   const totalEarnings = user?.earnings?.cash + user?.earnings?.grow + user?.earnings?.scratch;
   const {data: userData, loading: userDataLoading} = useGetCall(SERVICE.USER_DASHBOARD);
 
-  // Map API promoter level to role names
-  const getCurrentRole = (level) => {
-    const roleMap = {
-      null: 'trainee',
-      0: 'promotor',
-      1: 'promotor1',
-      2: 'promotor2',
-      3: 'promotor3',
-      4: 'promotor4'
-    };
-    return roleMap[level] || 'trainee';
+  const currentPromoterLevel = userData?.data?.current_promoter_level;
+
+  const getLevelGradient = (level) => {
+    if (level === null || level === undefined || level === "") {
+      return "from-gray-600 to-gray-700";
+    }
+
+    if (Number(level) === 0) {
+      return "from-blue-600 to-blue-700";
+    }
+
+    const gradients = [
+      "from-green-600 to-green-700",
+      "from-purple-600 to-purple-700",
+      "from-yellow-600 to-yellow-700",
+      "from-pink-600 to-pink-700",
+      "from-indigo-600 to-indigo-700",
+      "from-cyan-600 to-cyan-700",
+      "from-emerald-600 to-emerald-700",
+    ];
+
+    return gradients[(Number(level) - 1) % gradients.length];
   };
-
-  const currentRole = getCurrentRole(userData?.data?.current_promoter_level);
-
-  const getLevelColor = (role) => {
-    const colors = {
-      promotor: 'from-blue-600 to-blue-700',
-      promotor1: 'from-green-600 to-green-700',
-      promotor2: 'from-purple-600 to-purple-700',
-      promotor3: 'from-yellow-600 to-yellow-700',
-      promotor4: 'from-pink-600 to-pink-700'
-    };
-    return colors[role] || 'from-gray-600 to-gray-700';
-  };
-
-  const getUpgradeOptions = (currentLevel) => {
-    const upgrades = {
-      0: ['promotor'], // trainee -> promotor
-      1: ['promotor1'], // promotor -> promotor1
-      2: ['promotor2'], // promotor1 -> promotor2
-      3: ['promotor3', 'promotor4'] // promotor2 -> promotor3 or promotor4
-    };
-    return upgrades[currentLevel] || [];
-  };
-
-  const upgradeOptions = getUpgradeOptions(userData?.data?.current_promoter_level || 0);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Greeting Section */}
       <div className="mb-8">
-        <div className={`bg-gradient-to-r ${getLevelColor(currentRole)} rounded-2xl p-8 text-white`}>
+        <div className={`bg-gradient-to-r ${getLevelGradient(currentPromoterLevel)} rounded-2xl p-8 text-white`}>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-2">
@@ -176,24 +163,16 @@ export default function UserDashboard() {
           </div>
           <div className="p-6">
             <div className="text-center">
-              <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 ${getLevelColor(currentRole)}`}>
+              <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 bg-gradient-to-r ${getLevelGradient(currentPromoterLevel)}`}>
                 <Crown className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {currentRole === 'trainee' ? 'Trainee' :
-                 currentRole === 'promotor' ? 'Promoter' :
-                 currentRole === 'promotor1' ? 'Promoter Level 1' :
-                 currentRole === 'promotor2' ? 'Promoter Level 2' :
-                 currentRole === 'promotor3' ? 'Promoter Level 3' :
-                 currentRole === 'promotor4' ? 'Promoter Level 4' : 'Unknown Level'}
+                {Lib.promoterLevelLabel(currentPromoterLevel)}
               </h3>
               <p className="text-gray-500 mb-4">
-                {userData?.data?.current_promoter_level === null ? 'Start your journey as a trainee' :
-                userData?.data?.current_promoter_level === 0 ? 'Basic promoter level' :
-                 userData?.data?.current_promoter_level === 1 ? 'Promoter level' :
-                 userData?.data?.current_promoter_level === 2 ? 'Enhanced earning opportunities' :
-                 userData?.data?.current_promoter_level === 3 ? 'Advanced promoter benefits' :
-                 userData?.data?.current_promoter_level === 4 ? 'Maximum level achieved' : ''}
+                {currentPromoterLevel === null || currentPromoterLevel === undefined
+                  ? "Start your journey as a trainee"
+                  : `You are currently active as ${Lib.promoterLevelLabel(currentPromoterLevel)}`}
               </p>
               
             </div>

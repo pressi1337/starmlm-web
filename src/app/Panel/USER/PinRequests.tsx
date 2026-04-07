@@ -6,10 +6,10 @@ import { SERVICE } from "@/constants/services";
 import { MODAL_OPEN } from "@/constants/others";
 import PinFormModal from "@/components/FormModals/PinModal/PinFormModal";
 import ActivatePinFormModal from "@/components/FormModals/ActivatePinModal/ActivatePinFormModal";
-import { OPTIONS } from "@/constants/others";
 import PinConfirmationFormModal from "@/components/FormModals/PinConfirmationModal/PinConfirmationFormModal";
 import DailyVideoWarning from "@/components/DailyVideoWarning";
 import TrainingVideoWarning from "@/components/TrainingVideoWarning";
+import Lib from "@/utils/Lib";
 
 function PinRequestsPage() {
   const { user } = useAuth();
@@ -24,27 +24,11 @@ function PinRequestsPage() {
   const pinRequestConfirmationModal =
     pinRequests?.data?.[0]?.user?.promoter_status === 1;
     const getLevelColor = (level: number) => {
-    if (level === undefined || level === null) {
-      return "text-gray-600";
-    }
-    const colors = {
-      0: "text-blue-600",
-      1: "text-green-600",
-      2: "text-purple-600",
-      3: "text-yellow-600",
-      4: "text-pink-600",
-    };
-    return colors[level] || "text-gray-600";
+    const colorClasses = Lib.promoterLevelColor(level);
+    return colorClasses.split(" ")[0] || "text-gray-600";
   };
   const getLevelName = (level: number) => {
-    if (level === undefined || level === null) {
-      return "Trainee";
-    }
-    const names = OPTIONS.PROMOTER_LEVEL;
-    return (
-      names.find((name) => name.value === level.toString())?.label ||
-      `Level ${level}`
-    );
+    return Lib.promoterLevelLabel(level);
   };
 
   const getDateToShow = (item) => {
@@ -156,23 +140,6 @@ function PinRequestsPage() {
               (() => {
                 const latestData = pinRequests.data[0];
                 if (!latestData) return null;
-                // If level 3 — show "Maximum Level Reached"
-                if (latestData?.user?.current_promoter_level === 4) {
-                  return (
-                    <div className="text-center py-8">
-                      <Crown className="mx-auto h-12 w-12 text-gray-400" />
-                      <h3 className="mt-2 text-sm font-medium text-gray-900">
-                        Maximum Level Reached
-                      </h3>
-                      <p className="mt-1 text-sm text-gray-500">
-                        You've reached the highest available level for your
-                        current path!
-                      </p>
-                    </div>
-                  );
-                }
-
-                // Otherwise show request card
                 return (
                   <div
                     key={latestData.id}
@@ -187,7 +154,10 @@ function PinRequestsPage() {
                           )}`}
                         >
                           {getLevelName(
-                            latestData?.user?.current_promoter_level + 1
+                            latestData?.user?.current_promoter_level === null ||
+                              latestData?.user?.current_promoter_level === undefined
+                              ? 0
+                              : latestData?.user?.current_promoter_level + 1
                           )}
                         </div>
                         <div className="text-sm text-gray-500">

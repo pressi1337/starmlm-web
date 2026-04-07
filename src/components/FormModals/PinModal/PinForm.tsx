@@ -5,6 +5,7 @@ import InputText from "@/components/ui/InputText";
 import Btn from "@/components/ui/Btn";
 import { OPTIONS } from "@/constants/others";
 import SelectInput from "@/components/ui/SelectInput";
+import Lib from "@/utils/Lib";
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
   level: Yup.string().required("Required Upgrade Level*"),
@@ -33,15 +34,7 @@ const PinForm = ({
   const currentLevel = data?.current_level ?? "";
 
   const getLevelName = (level: string | number) => {
-    const levelMap: { [key: string]: string } = {
-      "": "Trainee",
-      "0": "Promoter",
-      "1": "Promoter Level 1",
-      "2": "Promoter Level 2",
-      "3": "Promoter Level 3",
-      "4": "Promoter Level 4",
-    };
-    return levelMap[level.toString()] || `Level ${level}`;
+    return Lib.promoterLevelLabel(level);
   };
 
   const displayCurrentLevel = getLevelName(currentLevel);
@@ -73,14 +66,21 @@ const PinForm = ({
       return OPTIONS.PROMOTER_LEVEL.filter((option) => option.value === "4");
     }
 
-    if (currentLevelStr === "4") {
-      return [];
+    if (Number(currentLevelStr) >= 4) {
+      const nextLevel = String(Number(currentLevelStr) + 1);
+      return [
+        {
+          value: nextLevel,
+          label: Lib.promoterLevelLabel(nextLevel),
+          color: Lib.promoterLevelColor(nextLevel),
+        },
+      ];
     }
 
     return [];
   }, [currentLevel]);
 
-  const isMaxLevel = currentLevel.toString() === "4";
+  const isMaxLevel = availableOptions.length === 0;
 
   useMemo(() => {
     if (RequestError && Object.keys(RequestError).length) {

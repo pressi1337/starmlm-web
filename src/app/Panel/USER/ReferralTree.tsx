@@ -19,7 +19,7 @@ import ReferalAddModal from "@/components/FormModals/ReferalAddModal/ReferalAddM
 import TrainingVideoWarning from "@/components/TrainingVideoWarning";
 
 function ReferralPage() {
-  const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
+  const { updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
 
   const { loading: profileLoading, data: profileData } = useGetCall(
@@ -35,8 +35,14 @@ function ReferralPage() {
     },
   });
 
+  const { data: teamSummaryData, loading: teamSummaryLoading } = useGetCall(
+    SERVICE.REFERRAL_TEAM_SUMMARY
+  );
+
   // Fetch user dashboard data for stats
-  const { data: userDashboardData, loading: userDashboardLoading } = useGetCall(SERVICE.USER_DASHBOARD);
+  const { data: userDashboardData, loading: userDashboardLoading } = useGetCall(
+    SERVICE.USER_DASHBOARD
+  );
   const getReferalAPI = () => {
     setQuery({
       query: {
@@ -80,51 +86,20 @@ function ReferralPage() {
     }
   };
 
-  const getLevelColor = (level: string | number | null | undefined) => {
-    // Handle null, undefined, or empty values
-    if (!level && level !== 0) {
-      return "text-blue-600 bg-blue-100";
-    }
-
-    // Convert to string for consistent handling
-    const levelStr = String(level);
-
-    const colors: { [key: string]: string } = {
-      "0": "text-green-600 bg-green-100",      // Promoter
-      "1": "text-purple-600 bg-purple-100",    // Promoter Level 1
-      "2": "text-yellow-600 bg-yellow-100",    // Promoter Level 2
-      "3": "text-pink-600 bg-pink-100",        // Promoter Level 3
-      "4": "text-indigo-600 bg-indigo-100",    // Promoter Level 4
-      "5": "text-red-600 bg-red-100",         // Higher levels
-    };
-
-    return colors[levelStr] || "text-gray-600 bg-gray-100";
-  };
-  const getLevelName = (level: string | number | null | undefined) => {
-    // Handle null, undefined, or empty values
-    if (!level && level !== 0) {
-      return "Trainee";
-    }
-
-    // Convert to string for consistent handling
-    const levelStr = String(level);
-
-    const levelMap: { [key: string]: string } = {
-      "0": "Promoter",
-      "1": "Promoter Level 1",
-      "2": "Promoter Level 2",
-      "3": "Promoter Level 3",
-      "4": "Promoter Level 4",
-      "5": "Promoter Level 5",
-    };
-
-    return levelMap[levelStr] || `Level ${level}`;
-  };
   const getStatusColor = (status) => {
     return status === "active" ? "text-green-600" : "text-red-600";
   };
 
-  if (profileLoading || referalLoading || userDashboardLoading) {
+  const teamSummary = teamSummaryData?.data;
+  const directReferrals = teamSummary?.direct_referrals || referalData?.data || [];
+  const teamCountsByDepth = teamSummary?.team_counts_by_depth || [];
+
+  if (
+    profileLoading ||
+    referalLoading ||
+    userDashboardLoading ||
+    teamSummaryLoading
+  ) {
     return <Loader />;
   }
 
@@ -163,10 +138,10 @@ function ReferralPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">
-                Total Promoters
+                Direct Promoters
               </p>
               <p className="text-2xl font-bold text-gray-900">
-                {userDashboardLoading ? '...' : (userDashboardData?.data?.total_referrals || 0)}
+                {directReferrals.length}
               </p>
             </div>
           </div>
@@ -179,11 +154,10 @@ function ReferralPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">
-                Active Members
+                Total Team Count
               </p>
               <p className="text-2xl font-bold text-gray-900">
-                {" "}
-                {userDashboardLoading ? '...' : (userDashboardData?.data?.active_referrals || 0)}
+                {teamSummary?.total_team_count || 0}
               </p>
             </div>
           </div>
@@ -199,7 +173,10 @@ function ReferralPage() {
                 Total Earnings
               </p>
               <p className="text-2xl font-bold text-gray-900">
-                ₹{userDashboardLoading ? '...' : (userDashboardData?.data?.scratch_wallet || 0)}
+                ₹
+                {userDashboardLoading
+                  ? "..."
+                  : userDashboardData?.data?.scratch_wallet || 0}
               </p>
             </div>
           </div>
@@ -213,10 +190,44 @@ function ReferralPage() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Your Level</p>
               <p className="text-lg font-bold text-gray-900">
-                {userDashboardLoading ? '...' : (userDashboardData?.data?.current_promoter_level || 0)}
+                {Lib.promoterLevelLabel(
+                  userDashboardData?.data?.current_promoter_level
+                )}
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-medium text-gray-900 flex items-center">
+            <TrendingUp className="w-5 h-5 mr-2" />
+            Team Depth Summary
+          </h3>
+        </div>
+        <div className="p-6">
+          {teamCountsByDepth.length ? (
+            <div className="flex flex-wrap gap-3">
+              {teamCountsByDepth.map((item: any) => (
+                <div
+                  key={item.depth}
+                  className="px-4 py-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 min-w-[140px]"
+                >
+                  <div className="text-xs uppercase tracking-wide text-gray-500">
+                    Depth {item.depth}
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {item.count}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">
+              No team-depth data available yet.
+            </p>
+          )}
         </div>
       </div>
 
@@ -307,7 +318,9 @@ function ReferralPage() {
               <div className="text-right">
                 {/* <div className="font-bold text-lg">₹0</div> */}
                 <span className="px-2 py-1 text-xs font-medium bg-white/20 rounded-full">
-                  {getLevelName(userDashboardData?.data?.current_promoter_level)}
+                  {Lib.promoterLevelLabel(
+                    userDashboardData?.data?.current_promoter_level
+                  )}
                 </span>
                 {/* <div className="text-xs opacity-75">Referral Earnings</div> */}
               </div>
@@ -315,10 +328,10 @@ function ReferralPage() {
           </div>
 
           {/* Referral Tree */}
-          {referalData?.data?.length ? (
+          {directReferrals?.length ? (
             <div className="space-y-2">
-              {referalData?.data?.map((referalUser) => (
-                <div className="ml-4">
+              {directReferrals?.map((referalUser) => (
+                <div className="ml-4" key={referalUser?.id}>
                   <div className="flex items-center py-3 px-4 bg-white rounded-lg border border-gray-200 mb-2 hover:shadow-md transition-shadow">
                     <div className="flex items-center flex-1">
                       <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mr-3">
@@ -346,12 +359,14 @@ function ReferralPage() {
                       </div>
 
                       <div className="text-right">
-                         <span
-                            className={`px-2 py-1 text-xs font-medium rounded-full ${getLevelColor(
+                          <span
+                            className={`px-2 py-1 text-xs font-medium rounded-full ${Lib.promoterLevelColor(
                               referalUser?.current_promoter_level
                             )}`}
                           >
-                            {getLevelName(referalUser?.current_promoter_level ?? "")}
+                            {Lib.promoterLevelLabel(
+                              referalUser?.current_promoter_level ?? ""
+                            )}
                           </span>
                         {/* <div className="font-medium text-gray-900">₹0</div> */}
                         {/* <div className="text-xs text-gray-500">

@@ -9,7 +9,6 @@ import {
   CircleX,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
-import { OPTIONS } from "@/constants/others";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import Swal from "sweetalert2";
@@ -17,6 +16,7 @@ import FilterTab from "@/components/FilterTab";
 import CopyClipBoard from "@/components/CopyClip";
 import AdminPinFormModal from "@/components/FormModals/AdminGeneratePinModal/AdminPinFormModal";
 import UIHelpers from "@/utils/UIhelper";
+import Lib from "@/utils/Lib";
 
 export default function PROMOTIONVIDEOS() {
   const getStatusBadge = (status) => {
@@ -81,11 +81,11 @@ export default function PROMOTIONVIDEOS() {
         <div>
           <div
             className={`text-sm font-medium text-gray-900 whitespace-nowrap ${
-              OPTIONS.PROMOTER_LEVEL[row.level].color
+              Lib.promoterLevelColor(row.level).split(" ")[0]
             }`}
             title={row.level}
           >
-            {OPTIONS.PROMOTER_LEVEL[row.level].label}
+            {Lib.promoterLevelLabel(row.level)}
           </div>
         </div>
       ),

@@ -10,11 +10,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useGetCall, useQueryParams } from "@/hooks";
-import {
-  MODAL_OPEN,
-  PROMOTER_LEVEL,
-  WIDTHDROW_STATUS,
-} from "@/constants/others";
+import { MODAL_OPEN, WIDTHDROW_STATUS } from "@/constants/others";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import UIHelpers from "@/utils/UIhelper";
@@ -23,16 +19,26 @@ import FilterTab from "@/components/FilterTab";
 import Lib from "@/utils/Lib";
 import UserFormModal from "@/components/FormModals/UserModal/UserFormModal";
 
-const getRoleBadgeColor = (role) => {
-  const colors = {
-    trainee: "bg-red-100 text-red-800",
-    promotor: "bg-blue-100 text-blue-800",
-    promotor1: "bg-green-100 text-green-800",
-    promotor2: "bg-purple-100 text-purple-800",
-    promotor3: "bg-yellow-100 text-yellow-800",
-    promotor4: "bg-pink-100 text-pink-800",
-  };
-  return colors[role] || "bg-gray-100 text-gray-800";
+const getPromoterBadgeColor = (level) => {
+  if (level === null || level === undefined || level === "") {
+    return "bg-red-100 text-red-800";
+  }
+
+  if (Number(level) === 0) {
+    return "bg-blue-100 text-blue-800";
+  }
+
+  const colors = [
+    "bg-green-100 text-green-800",
+    "bg-purple-100 text-purple-800",
+    "bg-yellow-100 text-yellow-800",
+    "bg-pink-100 text-pink-800",
+    "bg-indigo-100 text-indigo-800",
+    "bg-cyan-100 text-cyan-800",
+    "bg-emerald-100 text-emerald-800",
+  ];
+
+  return colors[(Number(level) - 1) % colors.length];
 };
 
 const getStatusBadge = (status) => {
@@ -141,11 +147,11 @@ export default function UserManagement() {
       render: (index: any, row: any) => (
         <div>
           <span
-            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(
-              PROMOTER_LEVEL[row?.current_promoter_level]
+            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPromoterBadgeColor(
+              row?.current_promoter_level
             )}`}
           >
-            {PROMOTER_LEVEL[row?.current_promoter_level] ?? "Trainee"}
+            {Lib.promoterLevelLabel(row?.current_promoter_level)}
           </span>
           <div className="text-xs text-gray-500 mt-1 capitalize">
             {row?.language}

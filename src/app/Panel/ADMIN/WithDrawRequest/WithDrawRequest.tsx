@@ -100,7 +100,7 @@ export default function WithDrawRequest() {
             </div>
             <div className="text-sm font-medium text-gray-900 flex gap-2">
               <Flag size={16} />
-              Promoter {row?.user?.current_promoter_level ?? 0}
+              {Lib.promoterLevelLabel(row?.user?.current_promoter_level)}
             </div>
           </div>
         </div>

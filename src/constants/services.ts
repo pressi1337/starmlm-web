@@ -33,11 +33,14 @@ export const SERVICE: any = {
     ACTIVATE_PIN: "activate-pin",
     ACCEPT_TERMS: "term-accepted",
     GET_SCRATCH: 'scratch-setup',
+    LEVEL_INCOME_RULES: 'level-income-rules',
+    LEVEL_INCOME_RULES_STATUS_UPDATE: 'level-income-rules/status-update',
     WITHDRAW_UPDATE_STATUS: 'withdraw-status-update',
     SCRATCH_CARDS: "get-scratch-cards",
     SCRATCHED_STATUS_UPDATE: "scratched-status-update",
     USER_DASHBOARD: "user-dashboard",
     ADMIN_DASHBOARD: "admin-dashboard",
+    REFERRAL_TEAM_SUMMARY: 'referrals/team-summary',
 
 
     //Export 
