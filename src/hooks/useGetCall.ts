@@ -44,9 +44,11 @@ const useGetCall = (services: string, initialOptions: OptionsProps = {}) => {
 
             if (query.sortBy) {
                 apiUrl.searchParams.append("sortBy", query.sortBy);
+                apiUrl.searchParams.append("sort_column", query.sortBy);
             }
             if (query.sortDir) {
                 apiUrl.searchParams.append("sortDir", query.sortDir);
+                apiUrl.searchParams.append("sort_direction", query.sortDir);
             }
             if (query.exports) {
                 apiUrl.searchParams.append("exports", query.exports);

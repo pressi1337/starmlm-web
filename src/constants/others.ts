@@ -304,6 +304,7 @@ export const MODAL_OPEN: any = {
     PROMOTION_VIDEO_MODAL: 'PROMOTION_VIDEO_MODAL',
     PROMOTION_VIDEO_QUIZ_MODAL: 'PROMOTION_VIDEO_QUIZ_MODAL',
     PIN_REQUEST_MODAL: 'PIN_REQUEST_MODAL',
+    PRODUCT_DELIVERY_MODAL: 'PRODUCT_DELIVERY_MODAL',
     ACTIVATE_PIN_MODAL: 'ACTIVATE_PIN_MODAL',
     YOUTUBE_MODAL: 'YOUTUBE_MODAL',
     USER_MODAL: 'USER_MODAL',
@@ -382,6 +383,31 @@ export const OPTIONS = {
     { value: "2", label: "Activated" },
     { value: "3", label: "Rejected" },
     { value: "4", label: "Auto Deleted" },],
+    WITHDRAW_STATUS: [
+        { value: "0", label: "Pending" },
+        { value: "1", label: "Processing" },
+        { value: "2", label: "Completed" },
+        { value: "3", label: "Rejected" },
+    ],
+    WALLET_TYPE_FILTER: [
+        { value: "1", label: "Cash Wallet" },
+        { value: "2", label: "Scratch Wallet" },
+        { value: "3", label: "Grow Wallet" },
+    ],
+    ACTIVE_STATUS: [
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+    ],
+    PRODUCT_DELIVERY_STATUS: [
+        { value: "0", label: "Pending" },
+        { value: "1", label: "Processing" },
+        { value: "2", label: "Delivered" },
+        { value: "3", label: "Not Delivered" },
+    ],
+    CUSTOMER_DELIVERY_STATUS: [
+        { value: "1", label: "Received" },
+        { value: "2", label: "Not Received" },
+    ],
 
 
 }

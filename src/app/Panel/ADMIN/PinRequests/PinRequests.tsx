@@ -7,6 +7,8 @@ import {
   User,
   Smartphone,
   CircleX,
+  Download,
+  Truck,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
@@ -17,6 +19,8 @@ import CopyClipBoard from "@/components/CopyClip";
 import AdminPinFormModal from "@/components/FormModals/AdminGeneratePinModal/AdminPinFormModal";
 import UIHelpers from "@/utils/UIhelper";
 import Lib from "@/utils/Lib";
+import ProductDeliveryFormModal from "@/components/FormModals/ProductDeliveryModal/ProductDeliveryFormModal";
+import { MODAL_OPEN } from "@/constants/others";
 
 export default function PROMOTIONVIDEOS() {
   const getStatusBadge = (status) => {
@@ -177,6 +181,27 @@ export default function PROMOTIONVIDEOS() {
       ),
     },
     {
+      title: "Product Delivery",
+      key: "product_delivery_status",
+      sortable: true,
+      render: (index: any, row: any) => (
+        <div className="space-y-2">
+          <div>{getProductDeliveryBadge(row?.product_delivery_status)}</div>
+          {row?.bill_path ? (
+            <a
+              href={Lib.CloudPath(row?.bill_path)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
+            >
+              <Download className="w-4 h-4 mr-1" />
+              Bill
+            </a>
+          ) : null}
+        </div>
+      ),
+    },
+    {
       title: "Action",
       key: "action",
       render: (index: any, row: any) => (
@@ -207,15 +232,55 @@ export default function PROMOTIONVIDEOS() {
               Reject
             </button>
           )}
+          {row?.status === 2 && (
+            <button
+              className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-amber-600 hover:bg-amber-700"
+              onClick={() =>
+                updateSearchParam({
+                  options: {
+                    Modal: MODAL_OPEN.PRODUCT_DELIVERY_MODAL,
+                    Edit: row.id,
+                    userData: JSON.stringify(row),
+                  },
+                })
+              }
+            >
+              <Truck className="w-3 h-3 mr-1" />
+              Product Delivery
+            </button>
+          )}
         </div>
       ),
     },
   ];
 
+  const getProductDeliveryBadge = (status) => {
+    const labels = {
+      0: "Pending",
+      1: "Processing",
+      2: "Delivered",
+      3: "Not Delivered",
+    };
+    const colors = {
+      0: "bg-gray-100 text-gray-800",
+      1: "bg-blue-100 text-blue-800",
+      2: "bg-green-100 text-green-800",
+      3: "bg-red-100 text-red-800",
+    };
+    return (
+      <span className={`inline-flex items-center px-3 py-1 text-xs font-medium rounded-full ${colors[status ?? 0]}`}>
+        {labels[status ?? 0]}
+      </span>
+    );
+  };
+
   const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
   const [filter, setFilter] = useState(defaultFilter);
   const { loading, setQuery, data } = useGetCall(SERVICE.ADMIN_PIN_REQUESTS, {
+    avoidFetch: true,
+  });
+  const { loading: exportLoading, fetchApi: exportPins } = useGetCall(SERVICE.PIN_REQUEST_EXPORT_EXCEL, {
     avoidFetch: true,
   });
   const { loading: deleteLoading, Delete: DeleteTrainingVideo } = useActionCall(
@@ -374,6 +439,13 @@ export default function PROMOTIONVIDEOS() {
               Manage user level upgrade requests and pin generation
             </p>
           </div>
+          <button
+            onClick={() => exportPins({ query: { ...filter, exports: true }, exports: true, downloadFilename: "pin_requests.xlsx" })}
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export Excel
+          </button>
         </div>
       </div>
 
@@ -449,6 +521,7 @@ export default function PROMOTIONVIDEOS() {
           "SEARCH",
           "PROMOTER_LEVEL_PIN",
           "PIN_STATUS",
+          "PRODUCT_DELIVERY_STATUS",
           "FROM_DATE_PIN",
           "TO_DATE_PIN",
         ]}
@@ -486,6 +559,9 @@ export default function PROMOTIONVIDEOS() {
           allPinRequestsData={data}
           recoilApi={PinRequestApi}
         />
+      )}
+      {Modal === MODAL_OPEN.PRODUCT_DELIVERY_MODAL && (
+        <ProductDeliveryFormModal recoilApi={PinRequestApi} />
       )}
     </div>
   );

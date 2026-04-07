@@ -10,6 +10,7 @@ import {
   CheckCircle,
   XCircle,
   RefreshCcw,
+  Download,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { MODAL_OPEN, WIDTHDROW_STATUS } from "@/constants/others";
@@ -146,7 +147,8 @@ export default function UserManagement() {
     },
     {
       title: "Title & Description",
-      key: "title",
+      key: "current_promoter_level",
+      sortable: true,
       render: (index: any, row: any) => (
         <div>
           <span
@@ -159,6 +161,16 @@ export default function UserManagement() {
           <div className="text-xs text-gray-500 mt-1 capitalize">
             {row?.language}
           </div>
+        </div>
+      ),
+    },
+    {
+      title: "Total Members",
+      key: "total_team_count",
+      sortable: true,
+      render: (index: any, row: any) => (
+        <div className="text-sm font-semibold text-gray-900">
+          {row?.total_team_count ?? 0}
         </div>
       ),
     },
@@ -284,6 +296,9 @@ export default function UserManagement() {
   const { loading, setQuery, data } = useGetCall(SERVICE.GET_ALL_REFERRALS, {
     avoidFetch: true,
   });
+  const { loading: exportLoading, fetchApi: exportUsers } = useGetCall(SERVICE.USER_EXPORT_EXCEL, {
+    avoidFetch: true,
+  });
   const { Post: resetUserBank } = useActionCall(SERVICE.ADMIN_RESET_USER_BANK_DETAIL);
 
   // Fetch admin dashboard data for stats
@@ -390,6 +405,19 @@ export default function UserManagement() {
             <Plus className="w-4 h-4 mr-2" />
             Add User
           </button>
+          <button
+            onClick={() =>
+              exportUsers({
+                query: { ...filter, exports: true },
+                exports: true,
+                downloadFilename: "users.xlsx",
+              })
+            }
+            className="inline-flex items-center ml-3 px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export Excel
+          </button>
         </div>
       </div>
 
@@ -462,7 +490,7 @@ export default function UserManagement() {
       <FilterTab
         filter={filter}
         setFilter={setFilter}
-        TABLE_FILTER={["SEARCH", "PROMOTER_LEVEL", "FROM_DATE", "TO_DATE"]}
+        TABLE_FILTER={["SEARCH", "PROMOTER_LEVEL", "ACTIVE_STATUS", "FROM_DATE", "TO_DATE"]}
       />
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <DataTable

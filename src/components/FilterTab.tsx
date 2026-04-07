@@ -44,6 +44,30 @@ const FILTER_FIELD = {
     options: OPTIONS.PIN_STATUS,
     label: "Select Status",
   },
+  PRODUCT_DELIVERY_STATUS: {
+    type: "select_input",
+    name: "product_delivery_status",
+    options: OPTIONS.PRODUCT_DELIVERY_STATUS,
+    label: "Product Delivery Status",
+  },
+  WITHDRAW_STATUS: {
+    type: "select_input",
+    name: "status",
+    options: OPTIONS.WITHDRAW_STATUS,
+    label: "Withdraw Status",
+  },
+  WALLET_TYPE: {
+    type: "select_input",
+    name: "wallet_type",
+    options: OPTIONS.WALLET_TYPE_FILTER,
+    label: "Wallet Type",
+  },
+  ACTIVE_STATUS: {
+    type: "select_input",
+    name: "is_active",
+    options: OPTIONS.ACTIVE_STATUS,
+    label: "User Status",
+  },
   FROM_DATE: {
     type: "date",
     name: "fromdate",

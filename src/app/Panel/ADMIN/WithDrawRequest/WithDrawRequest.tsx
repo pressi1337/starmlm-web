@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Calendar,
   HelpCircle,
@@ -21,6 +21,7 @@ import {
   Flag,
   MessageCircle,
   Download,
+  Upload,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
@@ -31,6 +32,7 @@ import FilterTab from "@/components/FilterTab";
 import { WIDTHDROW_STATUS } from "@/constants/others";
 import CopyClipBoard from "@/components/CopyClip";
 import Lib from "@/utils/Lib";
+import { BASE_URL } from "@/constants/services";
 const getStatusBadge = (status) => {
   const badges = {
     pending: {
@@ -164,8 +166,14 @@ export default function WithDrawRequest() {
           {row.status === 3 && (
             <p className="text-sm text-gray-500 mt-2 flex item-center gap-1">
               <MessageCircle size={16} />
-              {row.reason}
+              {row.rejected_details || row.reason}
             </p>
+          )}
+          {row.status === 1 && row.processing_details && (
+            <p className="text-sm text-gray-500 mt-2">{row.processing_details}</p>
+          )}
+          {row.status === 2 && row.completed_details && (
+            <p className="text-sm text-gray-500 mt-2">{row.completed_details}</p>
           )}
         </>
       ),
@@ -229,6 +237,7 @@ export default function WithDrawRequest() {
     SERVICE.WITHDRAW_UPDATE_STATUS
   );
   const [filter, setFilter] = useState(defaultFilter);
+  const importRef = useRef<HTMLInputElement>(null);
 
   const { loading: exportLoading, fetchApi: exportWithdraw } = useGetCall(
     SERVICE.EXPORT_EXCEL,
@@ -248,6 +257,27 @@ export default function WithDrawRequest() {
   useEffect(() => {
     getWithDrawAPI();
   }, [filter]);
+
+  const handleImportFile = async (file: File | null) => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch(`${BASE_URL}${SERVICE.WITHDRAW_IMPORT_EXCEL}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${Lib.getCookies("session-token") ?? ""}`,
+      },
+      body: formData,
+    });
+
+    if (response.ok) {
+      Swal.fire({ icon: "success", title: "Import completed" });
+      getWithDrawAPI();
+    } else {
+      Swal.fire({ icon: "error", title: "Import failed" });
+    }
+  };
 
   const handleReject = async (id) => {
     Swal.fire({
@@ -305,54 +335,30 @@ export default function WithDrawRequest() {
   };
 
   const handleStatusUpdate = async (id, status = 2) => {
-    const swalWithTailwind = Swal.mixin({
-      customClass: {
-        confirmButton:
-          "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md shadow-sm transition-all duration-200 ml-3",
-        cancelButton:
-          "bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-md shadow-sm transition-all duration-200",
-        popup:
-          "rounded-xl shadow-2xl border border-gray-200 bg-white p-6 dark:bg-gray-800 dark:border-gray-700",
-        title: "text-lg font-semibold text-gray-800 dark:text-gray-100",
-        htmlContainer: "text-gray-600 dark:text-gray-300",
-      },
-      buttonsStyling: false,
-    });
-    swalWithTailwind
-      .fire({
-        title: `Are you sure, make this request as ${
-          status === 1 ? "Progress" : "Complete"
-        }?`,
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, Confirm",
-        cancelButtonText: "No, cancel!",
-        reverseButtons: true,
-        padding: "2em",
-        backdrop: true,
-      })
-      .then(async (result) => {
-        if (result.isConfirmed) {
-          const reponse = await updateWithDrawStatus({
-            id,
-            status,
+    Swal.fire({
+      title: status === 1 ? "Move To Processing" : "Mark As Completed",
+      input: "textarea",
+      inputLabel: status === 1 ? "Processing Details" : "Completion Details",
+      inputPlaceholder: "Enter details for this status update",
+      showCancelButton: true,
+      confirmButtonText: "Save",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const reponse = await updateWithDrawStatus({
+          id,
+          status,
+          details: result.value || "",
+        });
+        if (reponse) {
+          Swal.fire({
+            icon: "success",
+            title: "Successfully updated",
+            text: "The request has been updated successfully.",
           });
-          if (reponse) {
-            Swal.fire({
-              icon: "success",
-              title: "Successfully updated",
-              text: "the request has been successfully update.",
-              confirmButtonText: "OK",
-              customClass: {
-                confirmButton:
-                  "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
-              },
-            });
-            getWithDrawAPI();
-          }
+          getWithDrawAPI();
         }
-      });
+      }
+    });
   };
 
   return (
@@ -367,19 +373,36 @@ export default function WithDrawRequest() {
               Manage your withdrawal requests and track payment status
             </p>
           </div>
-          <button
-            onClick={() =>
-              exportWithdraw({
-                exports: true,
-                downloadFilename: "withdraw_requests.xlsx",
-              })
-            }
-            disabled={exportLoading}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            {exportLoading ? "Exporting..." : "Export"}
-          </button>
+          <div className="flex items-center gap-3">
+            <input
+              ref={importRef}
+              type="file"
+              accept=".xlsx,.xls,.csv"
+              className="hidden"
+              onChange={(e) => handleImportFile(e.target.files?.[0] || null)}
+            />
+            <button
+              onClick={() => importRef.current?.click()}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Import Status
+            </button>
+            <button
+              onClick={() =>
+                exportWithdraw({
+                  query: { ...filter, exports: true },
+                  exports: true,
+                  downloadFilename: "withdraw_requests.xlsx",
+                })
+              }
+              disabled={exportLoading}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {exportLoading ? "Exporting..." : "Export"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -387,7 +410,7 @@ export default function WithDrawRequest() {
       <FilterTab
         filter={filter}
         setFilter={setFilter}
-        TABLE_FILTER={["SEARCH"]}
+        TABLE_FILTER={["SEARCH", "WITHDRAW_STATUS", "WALLET_TYPE", "FROM_DATE_PIN", "TO_DATE_PIN"]}
       />
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <DataTable

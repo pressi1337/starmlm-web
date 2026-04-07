@@ -29,6 +29,9 @@ export const SERVICE: any = {
     RIASE_TERM: "term-raised",
     GENERATE_PIN: "generate-pin",
     REJECT_REQUEST: "pin-rejected",
+    PIN_REQUEST_EXPORT_EXCEL: "pin-requests/export/excel",
+    PIN_REQUEST_PRODUCT_DELIVERY_UPDATE: "pin-requests/product-delivery-status-update",
+    CUSTOMER_DELIVERY_CONFIRMATION: "pin-requests/customer-delivery-confirmation",
     GET_PIN_REQUESTS: "user-promoters/list",
     ACTIVATE_PIN: "activate-pin",
     ACCEPT_TERMS: "term-accepted",
@@ -51,6 +54,8 @@ export const SERVICE: any = {
 
     //Export 
     EXPORT_EXCEL: 'withdraws/export/excel',
+    WITHDRAW_IMPORT_EXCEL: 'withdraws/import/excel',
+    USER_EXPORT_EXCEL: 'referrals/export/excel',
 
     //User Service endpoint
     DAILY_VIDEO_STATUS: 'daily-videos-status',

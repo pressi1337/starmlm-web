@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { Crown, CheckCircle, Clock, ArrowUp, CircleX } from "lucide-react";
-import { useGetCall, useQueryParams } from "@/hooks";
+import { Crown, CheckCircle, Clock, ArrowUp, CircleX, Download, Truck } from "lucide-react";
+import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
 import { MODAL_OPEN } from "@/constants/others";
 import PinFormModal from "@/components/FormModals/PinModal/PinFormModal";
@@ -21,6 +21,9 @@ function PinRequestsPage() {
     loading: pinRequestsLoading,
     setQuery,
   } = useGetCall(SERVICE.GET_PIN_REQUESTS);
+  const { Post: updateCustomerDelivery, loading: customerDeliveryLoading } = useActionCall(
+    SERVICE.CUSTOMER_DELIVERY_CONFIRMATION
+  );
   const pendingTermRequest = pinRequests?.data?.find(
     (item) => item.status === 0 && item.term_raised_at && !item.terms_accepted_at
   );
@@ -93,6 +96,25 @@ function PinRequestsPage() {
       >
         <Icon className="w-4 h-4 mr-1" />
         {badge.text}
+      </span>
+    );
+  };
+  const getProductDeliveryBadge = (status) => {
+    const badges = {
+      0: "bg-gray-100 text-gray-800",
+      1: "bg-blue-100 text-blue-800",
+      2: "bg-green-100 text-green-800",
+      3: "bg-red-100 text-red-800",
+    };
+    const label = {
+      0: "Pending",
+      1: "Processing",
+      2: "Delivered",
+      3: "Not Delivered",
+    };
+    return (
+      <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${badges[status ?? 0]}`}>
+        {label[status ?? 0]}
       </span>
     );
   };
@@ -292,11 +314,11 @@ function PinRequestsPage() {
                   key={request.id}
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                 >
-                  <div className="flex items-center">
+                  <div className="flex items-center flex-1">
                     <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-4">
                       <ArrowUp className="w-5 h-5 text-gray-600" />
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <div
                         className={`font-medium ${getLevelColor(
                           request.level
@@ -308,6 +330,58 @@ function PinRequestsPage() {
                         {getDateLabel(request)}
                         {new Date(getDateToShow(request)).toLocaleDateString()}
                       </div>
+                      {request.status === 2 && (
+                        <div className="mt-3 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Truck className="w-4 h-4 text-gray-500" />
+                            {getProductDeliveryBadge(request.product_delivery_status)}
+                          </div>
+                          {request.product_delivery_notes ? (
+                            <div className="text-sm text-gray-600 whitespace-pre-wrap">
+                              {request.product_delivery_notes}
+                            </div>
+                          ) : null}
+                          {request.bill_path ? (
+                            <a
+                              href={Lib.CloudPath(request.bill_path)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
+                            >
+                              <Download className="w-4 h-4 mr-1" />
+                              Download Bill
+                            </a>
+                          ) : null}
+                          <div className="flex items-center gap-2 pt-1">
+                            <button
+                              disabled={customerDeliveryLoading}
+                              onClick={async () => {
+                                const response = await updateCustomerDelivery({
+                                  id: request.id,
+                                  customer_delivery_status: 1,
+                                });
+                                if (response) PinRequestAPI();
+                              }}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium ${request.customer_delivery_status === 1 ? "bg-green-600 text-white" : "bg-green-100 text-green-800 hover:bg-green-200"}`}
+                            >
+                              Received
+                            </button>
+                            <button
+                              disabled={customerDeliveryLoading}
+                              onClick={async () => {
+                                const response = await updateCustomerDelivery({
+                                  id: request.id,
+                                  customer_delivery_status: 2,
+                                });
+                                if (response) PinRequestAPI();
+                              }}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium ${request.customer_delivery_status === 2 ? "bg-red-600 text-white" : "bg-red-100 text-red-800 hover:bg-red-200"}`}
+                            >
+                              Not Received
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="text-right">
