@@ -8,6 +8,8 @@ import moment from "moment";
 import Btn from "@/components/ui/Btn";
 import CheckboxInput from "@/components/ui/CheckboxInput";
 import FileUpload from "@/components/FileUpload";
+import SelectInput from "@/components/ui/SelectInput";
+import { OPTIONS } from "@/constants/others";
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
   title: Yup.string().required("Required Title*"),
@@ -46,7 +48,13 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
       }
     ),
 
-  showing_date: Yup.string().required("Required Date"),
+  delivery_mode: Yup.string().required("Required Delivery Mode*"),
+  showing_date: Yup.string().when("delivery_mode", {
+    is: "1",
+    then: (schema) => schema.required("Required Date"),
+    otherwise: (schema) => schema.nullable(),
+  }),
+  priority: Yup.number().nullable().min(0, "Priority must be 0 or greater"),
 });
 
 const DailyVideoForm = ({
@@ -65,6 +73,8 @@ const DailyVideoForm = ({
       showing_date: data?.showing_date
         ? moment(new Date(data?.showing_date)).format("YYYY-MM-DD")
         : "",
+      delivery_mode: String(data?.delivery_mode ?? "1"),
+      priority: data?.priority ?? 0,
       type: "1",
       is_active: data?.is_active ?? 1,
     },
@@ -122,12 +132,36 @@ const DailyVideoForm = ({
         <InputText
           type="Date"
           name="showing_date"
-          label="Showing Date *"
+          label={`Showing Date ${values.delivery_mode === "1" ? "*" : "(Optional)"}`}
           placeholder="Enter Show Date"
           onChange={handleChange}
           error={errors}
           value={values}
         />
+        <SelectInput
+          name="delivery_mode"
+          label="Delivery Mode *"
+          placeholder="Select delivery mode"
+          options={OPTIONS.DAILY_VIDEO_DELIVERY_MODE}
+          onChange={handleChange}
+          error={errors}
+          value={values}
+        />
+        <InputText
+          type="number"
+          name="priority"
+          label="Priority"
+          placeholder="Enter priority"
+          onChange={handleChange}
+          error={errors}
+          value={values}
+        />
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <div className="font-medium mb-1">Delivery mode guide</div>
+          <div>`Scheduled Daily`: used when a date-specific daily video is available.</div>
+          <div>`Common Fallback`: used when no scheduled daily video exists for that day.</div>
+          <div>`New Joiner Default`: shown to members on their joining day before the regular daily flow.</div>
+        </div>
         <CheckboxInput
           label="Is Active?"
           name="is_active"

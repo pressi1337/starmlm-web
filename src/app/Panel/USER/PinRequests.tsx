@@ -21,9 +21,14 @@ function PinRequestsPage() {
     loading: pinRequestsLoading,
     setQuery,
   } = useGetCall(SERVICE.GET_PIN_REQUESTS);
-  const pinRequestConfirmationModal =
-    pinRequests?.data?.[0]?.user?.promoter_status === 1;
-    const getLevelColor = (level: number) => {
+  const pendingTermRequest = pinRequests?.data?.find(
+    (item) => item.status === 0 && item.term_raised_at && !item.terms_accepted_at
+  );
+  const hasOpenRequest = pinRequests?.data?.some((item) =>
+    [0, 1].includes(item.status)
+  );
+  const pinRequestConfirmationModal = Boolean(pendingTermRequest);
+  const getLevelColor = (level: number) => {
     const colorClasses = Lib.promoterLevelColor(level);
     return colorClasses.split(" ")[0] || "text-gray-600";
   };
@@ -34,6 +39,8 @@ function PinRequestsPage() {
   const getDateToShow = (item) => {
     if (item.activated_at) {
       return item.activated_at;
+    } else if (item.auto_deleted_at) {
+      return item.auto_deleted_at;
     } else if (item.pin_generated_at) {
       return item.pin_generated_at;
     } else {
@@ -44,10 +51,12 @@ function PinRequestsPage() {
   const getDateLabel = (item) => {
     if (item.activated_at) {
       return "Activated on ";
+    } else if (item.auto_deleted_at) {
+      return "Deleted on ";
     } else if (item.pin_generated_at) {
-      return "Requested on ";
+      return "PIN generated on ";
     } else {
-      return "Created on ";
+      return "Requested on ";
     }
   };
 
@@ -69,6 +78,11 @@ function PinRequestsPage() {
         text: "Activated",
       },
       3: { color: "bg-red-100 text-red-800", icon: CircleX, text: "Rejected" },
+      4: {
+        color: "bg-gray-200 text-gray-700",
+        icon: CircleX,
+        text: "Auto Deleted",
+      },
     };
     const badge = badges[status] || badges[0];
     const Icon = badge.icon;
@@ -106,6 +120,9 @@ function PinRequestsPage() {
         <p className="mt-2 text-gray-600">
           Request level upgrades and activate approved pins to unlock new
           features
+        </p>
+        <p className="mt-2 text-sm text-blue-600">
+          Your currently activated promoter level stays active until the new pin is fully activated.
         </p>
       </div>
 
@@ -165,9 +182,7 @@ function PinRequestsPage() {
                         </div>
                       </div>
                     </div>
-                  {(() => {
-                    const promoterStatus = pinRequests?.data[0]?.user?.promoter_status;
-                    return (promoterStatus === null || promoterStatus === "" || promoterStatus === 4) && (
+                    {!hasOpenRequest && (
                       <button
                         onClick={() =>
                           updateSearchParam({
@@ -180,8 +195,7 @@ function PinRequestsPage() {
                       >
                         Request Level Upgrade
                       </button>
-                    );
-                  })()}
+                    )}
                   </div>
                 );
               })()
@@ -198,18 +212,20 @@ function PinRequestsPage() {
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={() =>
-                    updateSearchParam({
-                      options: {
-                        Modal: MODAL_OPEN.PIN_REQUEST_MODAL,
-                      },
-                    })
-                  }
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Request Level Upgrade
-                </button>
+                {!hasOpenRequest && (
+                  <button
+                    onClick={() =>
+                      updateSearchParam({
+                        options: {
+                          Modal: MODAL_OPEN.PIN_REQUEST_MODAL,
+                        },
+                      })
+                    }
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Request Level Upgrade
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -322,7 +338,7 @@ function PinRequestsPage() {
       {pinRequestConfirmationModal && (
         <PinConfirmationFormModal
           recoilApi={PinRequestAPI}
-          pinRequestId={pinRequests?.data?.[0]?.id}
+          pinRequestId={pendingTermRequest?.id}
         />
       )}
     </div>

@@ -37,6 +37,11 @@ export default function PROMOTIONVIDEOS() {
         text: "Pin Activated",
       },
       3: { color: "bg-red-100 text-red-800", icon: CircleX, text: "Rejected" },
+      4: {
+        color: "bg-gray-200 text-gray-700",
+        icon: CircleX,
+        text: "Auto Deleted",
+      },
     };
     const badge = badges[status] || badges[0];
     const Icon = badge.icon;
@@ -176,7 +181,7 @@ export default function PROMOTIONVIDEOS() {
       key: "action",
       render: (index: any, row: any) => (
         <div className="flex items-center justify-start space-x-2">
-          {row?.user?.promoter_status === 0 && row?.status === 0 && (
+          {!row?.term_raised_at && row?.status === 0 && (
             <button
               className="whitespace-nowrap inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               onClick={() => handleRaiseTerm(row.id)}
@@ -185,7 +190,7 @@ export default function PROMOTIONVIDEOS() {
               Raise Term
             </button>
           )}
-          {row?.user?.promoter_status === 2 && row?.status === 0 && (
+          {!!row?.terms_accepted_at && row?.status === 0 && (
             <button
               className="whitespace-nowrap inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               onClick={() => handleGeneratePin(row)}
@@ -193,16 +198,15 @@ export default function PROMOTIONVIDEOS() {
               Generate Pin
             </button>
           )}
-          {![1, 3, 4].includes(row?.user?.promoter_status) &&
-            row?.status === 0 && (
-              <button
-                className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                onClick={() => handleReject(row.id)}
-              >
-                <XCircle className="w-3 h-3 mr-1" />
-                Reject
-              </button>
-            )}
+          {row?.status === 0 && (
+            <button
+              className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              onClick={() => handleReject(row.id)}
+            >
+              <XCircle className="w-3 h-3 mr-1" />
+              Reject
+            </button>
+          )}
         </div>
       ),
     },

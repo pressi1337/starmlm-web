@@ -463,6 +463,11 @@ export default function DailyVideoWatch({
             </span>
           )}
         </p>
+        {data?.data?.delivery_mode_label && (
+          <div className="mt-3 inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-700">
+            {data?.data?.delivery_mode_label}
+          </div>
+        )}
       </div>
 
       {/* Video Player Section */}

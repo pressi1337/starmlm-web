@@ -56,6 +56,17 @@ export default function DailyVideos() {
       ),
     },
     {
+      title: "Delivery Mode",
+      key: "delivery_mode",
+      render: (index: any, row: any) => (
+        <div className="flex items-center text-sm text-gray-900">
+          <span className="inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800">
+            {row?.delivery_mode_label ?? "Scheduled Daily"}
+          </span>
+        </div>
+      ),
+    },
+    {
       title: "Showing Date",
       key: "showing_date",
       dataIndex: "showing_date",
@@ -63,7 +74,7 @@ export default function DailyVideos() {
       render: (index: any, row: any) => (
         <div className="flex items-center text-sm text-gray-900">
           <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-          {UIHelpers.DateFormat(row.showing_date)}
+          {row?.showing_date ? UIHelpers.DateFormat(row.showing_date) : "-"}
         </div>
       ),
     },
@@ -80,6 +91,13 @@ export default function DailyVideos() {
         >
           {row.video_path ? "Direct Upload" : "YouTube"}
         </span>
+      ),
+    },
+    {
+      title: "Priority",
+      key: "priority",
+      render: (index: any, row: any) => (
+        <span className="text-sm font-medium text-gray-900">{row?.priority ?? 0}</span>
       ),
     },
     {
@@ -200,7 +218,7 @@ export default function DailyVideos() {
               Daily Information Videos
             </h1>
             <p className="mt-2 text-gray-600">
-              Manage daily videos that users must watch first
+              Manage scheduled daily videos, fallback common videos, and new joiner default videos
             </p>
           </div>
           <button

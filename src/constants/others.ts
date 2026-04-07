@@ -344,6 +344,11 @@ export const OPTIONS = {
         { value: "1", label: "Morning Session" },
         { value: "2", label: "Evening Session" },
     ],
+    DAILY_VIDEO_DELIVERY_MODE: [
+        { value: "1", label: "Scheduled Daily" },
+        { value: "2", label: "Common Fallback" },
+        { value: "3", label: "New Joiner Default" },
+    ],
     PROMOTER_LEVEL: [
         { value: "0", label: "Promoter", color: "text-blue-600" },
         { value: "1", label: "Promoter Level 1", color: "text-green-600" },
@@ -375,7 +380,8 @@ export const OPTIONS = {
     PIN_STATUS: [{ value: "0", label: "Pending" },
     { value: "1", label: "Approved" },
     { value: "2", label: "Activated" },
-    { value: "3", label: "Rejected" },],
+    { value: "3", label: "Rejected" },
+    { value: "4", label: "Auto Deleted" },],
 
 
 }

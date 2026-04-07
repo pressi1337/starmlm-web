@@ -116,8 +116,11 @@ const PinForm = ({
         <h4 className="font-medium text-blue-900 mb-2">Important Notes:</h4>
         <ul className="text-sm text-blue-800 space-y-1">
           <li>• Pin requests are reviewed by admin</li>
+          <li>• Terms are raised automatically after 10 minutes</li>
+          <li>• Pending requests auto-delete after 3 days if no admin action happens</li>
           <li>• Approval may take 1-3 business days</li>
           <li>• You'll be notified when your pin is ready</li>
+          <li>• Your current promoter benefits continue until the new pin is activated</li>
           <li>• Activation requires additional information</li>
         </ul>
       </div>
