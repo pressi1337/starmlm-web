@@ -8,6 +8,7 @@ import {
   Gift,
   Link as LinkIcon,
   Plus,
+  Layers3,
 } from "lucide-react";
 import Lib from "@/utils/Lib";
 import { useGetCall, useQueryParams } from "@/hooks";
@@ -91,6 +92,7 @@ function ReferralPage() {
   };
 
   const teamSummary = teamSummaryData?.data;
+  const myPromotor = teamSummary?.my_promotor;
   const directReferrals = teamSummary?.direct_referrals || referalData?.data || [];
   const teamCountsByDepth = teamSummary?.team_counts_by_depth || [];
 
@@ -109,10 +111,10 @@ function ReferralPage() {
         <div className="flex justify-between items-center">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900">
-              Promoters Network
+              My Promotor
             </h1>
             <p className="mt-2 text-gray-600">
-              Manage your promoters network and track your team's performance
+              View your direct promoter network and track your total team growth
             </p>
           </div>
           <button
@@ -138,7 +140,7 @@ function ReferralPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">
-                Direct Promoters
+                Direct Only View
               </p>
               <p className="text-2xl font-bold text-gray-900">
                 {directReferrals.length}
@@ -154,7 +156,7 @@ function ReferralPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">
-                Total Team Count
+                Team Total Count
               </p>
               <p className="text-2xl font-bold text-gray-900">
                 {teamSummary?.total_team_count || 0}
@@ -170,13 +172,10 @@ function ReferralPage() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">
-                Total Earnings
+                Ceiling Limit
               </p>
               <p className="text-2xl font-bold text-gray-900">
-                ₹
-                {userDashboardLoading
-                  ? "..."
-                  : userDashboardData?.data?.scratch_wallet || 0}
+                {teamSummary?.ceiling_limit || teamSummary?.configured_depth || 0}
               </p>
             </div>
           </div>
@@ -196,6 +195,40 @@ function ReferralPage() {
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-medium text-gray-900 flex items-center">
+            <Layers3 className="w-5 h-5 mr-2" />
+            My Promotor Details
+          </h3>
+        </div>
+        <div className="p-6">
+          {myPromotor ? (
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <div className="text-xl font-semibold text-gray-900">
+                  {myPromotor.username}
+                </div>
+                <div className="text-sm text-gray-600">
+                  {myPromotor.first_name} {myPromotor.last_name} • {myPromotor.mobile}
+                </div>
+              </div>
+              <span
+                className={`inline-flex px-3 py-2 text-sm font-semibold rounded-full ${Lib.promoterLevelColor(
+                  myPromotor.current_promoter_level
+                )}`}
+              >
+                {myPromotor.promoter_label}
+              </span>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">
+              No parent promotor found for your account.
+            </p>
+          )}
         </div>
       </div>
 

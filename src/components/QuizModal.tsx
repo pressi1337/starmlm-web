@@ -19,7 +19,7 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
         { id: "1", textEn: "", textTa: "", isCorrect: false },
         { id: "2", textEn: "", textTa: "", isCorrect: false },
       ],
-      timeLimit: 30,
+      timeLimit: 55,
     },
   ]);
   const [earnings, setEarnings] = useState({
@@ -46,7 +46,7 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
             { id: "1", textEn: "", textTa: "", isCorrect: false },
             { id: "2", textEn: "", textTa: "", isCorrect: false },
           ],
-          timeLimit: 30,
+          timeLimit: 55,
         },
       ]);
       setEarnings({
@@ -70,7 +70,7 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
           { id: "1", textEn: "", textTa: "", isCorrect: false },
           { id: "2", textEn: "", textTa: "", isCorrect: false },
         ],
-        timeLimit: 30,
+        timeLimit: 55,
       },
     ]);
   };
@@ -273,7 +273,7 @@ export default function QuizModal({ isOpen, onClose, video }: QuizModalProps) {
                               updateQuestion(
                                 question.id,
                                 "timeLimit",
-                                parseInt(e.target.value) || 30
+                                parseInt(e.target.value) || 55
                               )
                             }
                             className="w-16 px-2 py-1 border border-gray-300 rounded text-sm"

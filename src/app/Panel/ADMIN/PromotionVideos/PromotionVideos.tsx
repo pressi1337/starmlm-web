@@ -260,7 +260,7 @@ export default function PROMOTIONVIDEOS() {
               Education & Promotion Videos
             </h1>
             <p className="mt-2 text-gray-600">
-              Manage session-based promotional content with quizzes
+              Manage uploaded promotion videos with tracked user delivery and quizzes
             </p>
           </div>
           <button

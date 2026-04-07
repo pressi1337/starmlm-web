@@ -47,7 +47,7 @@ const Question = [
   {
     questionEn: "",
     questionTa: "",
-    timeLimit: 30,
+    timeLimit: 55,
     promotor: 10,
     promotor1: 5,
     promotor2: 3,
@@ -71,7 +71,7 @@ const transformQuestionsFromResponse = (questions = []) => {
     formattedQuestions.push({
       questionEn: enQuestion?.question ?? "",
       questionTa: taQuestion?.question ?? "",
-      timeLimit: enQuestion?.time_limit ?? 0,
+      timeLimit: enQuestion?.time_limit ?? 55,
       promotor: enQuestion?.promotor,
       promotor1: enQuestion?.promotor1,
       promotor2: enQuestion?.promotor2,

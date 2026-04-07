@@ -41,6 +41,7 @@ export const SERVICE: any = {
     USER_DASHBOARD: "user-dashboard",
     ADMIN_DASHBOARD: "admin-dashboard",
     REFERRAL_TEAM_SUMMARY: 'referrals/team-summary',
+    REFERRAL_TEAM_DETAILS: 'referrals',
 
 
     //Export 

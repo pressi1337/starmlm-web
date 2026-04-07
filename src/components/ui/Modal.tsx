@@ -10,7 +10,7 @@ export default function Modal({
   title?: string;
   onClose?: () => void;
   children: React.ReactNode;
-  modalSize?: "md" | "lg";
+  modalSize?: "md" | "lg" | "xl";
 }) {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -22,7 +22,7 @@ export default function Modal({
 
         <div
           className={`inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle ${
-            modalSize == "md" ? "sm:max-w-lg" : "sm:max-w-4xl"
+            modalSize == "md" ? "sm:max-w-lg" : modalSize == "lg" ? "sm:max-w-4xl" : "sm:max-w-7xl"
           } sm:w-full`}
         >
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">

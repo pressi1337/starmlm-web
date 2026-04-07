@@ -307,6 +307,7 @@ export const MODAL_OPEN: any = {
     ACTIVATE_PIN_MODAL: 'ACTIVATE_PIN_MODAL',
     YOUTUBE_MODAL: 'YOUTUBE_MODAL',
     USER_MODAL: 'USER_MODAL',
+    USER_TEAM_MODAL: 'USER_TEAM_MODAL',
     BLOG_MODAL: 'Blog',
     COMBO_MODAL: 'ComboProduct',
     CATEGORY_MODAL: 'Category',
@@ -338,8 +339,6 @@ export const OPTIONS = {
         { label: 'Day 3', value: '3' },
         { label: 'Day 4', value: '4' },
         { label: 'Day 5', value: '5' },
-        { label: 'Day 6', value: '6' },
-        { label: 'Day 7', value: '7' },
     ],
     SESSION_TYPE: [
         { value: "1", label: "Morning Session" },
@@ -364,7 +363,7 @@ export const OPTIONS = {
         { value: "Hindi", label: "Hindi" },
         { value: "Kannada", label: "Kannada" },
         { value: "Malayalam", label: "Malayalam" },
-        { value: "Tamil", label: "Tamil" },
+        { value: "Tamil", label: "தமிழ்" },
         { value: "Telugu", label: "Telugu" },
         { value: "English", label: "English" }
     ],

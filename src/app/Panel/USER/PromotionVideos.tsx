@@ -677,8 +677,8 @@ function PromotionVideosPage() {
      </ul>
     `,
       showCancelButton: true,
-      confirmButtonText: "Take Quiz in English",
-      cancelButtonText: "Take Quiz in Tamil",
+      confirmButtonText: "English",
+      cancelButtonText: "தமிழ்",
       reverseButtons: true, // Puts the buttons in a specific order (optional)
       customClass: {
         confirmButton:
@@ -759,8 +759,8 @@ function PromotionVideosPage() {
               Education & Promotion Videos
             </h1>
             <p className="mt-2 text-gray-600">
-              Watch session-based promotional content and earn rewards through
-              quizzes
+              Watch your assigned promotion video, complete the quiz, and earn
+              rewards
             </p>
           </div>
 
@@ -783,12 +783,11 @@ function PromotionVideosPage() {
                 <div className="flex items-center mb-2">
                   <Play className="w-5 h-5 text-blue-600 mr-2" />
                   <span className="font-medium text-gray-900">
-                    Videos Available
+                    Delivery Flow
                   </span>
                 </div>
                 <div className="text-lg font-bold text-blue-600">
-                  {userInfo?.data?.current_promoter_level >= 2 ? "4" : "2"} per
-                  session
+                  New first, replay fallback
                 </div>
               </div>
               <div className="bg-white rounded-lg p-4 shadow-sm">
@@ -921,6 +920,23 @@ function PromotionVideosPage() {
                       <h2 className="text-xl font-semibold text-gray-900 mb-2">
                         {data?.data?.promotion_video?.title}
                       </h2>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          data?.data?.assignment?.assignment_type === "replay"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-emerald-100 text-emerald-700"
+                        }`}>
+                          {data?.data?.assignment?.assignment_type === "replay"
+                            ? "Replay Video"
+                            : "New Video"}
+                        </span>
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
+                          Session {data?.data?.assignment?.session_type || data?.data?.user_promoter_session?.session_type}
+                        </span>
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700">
+                          {data?.data?.assignment?.attend_date || ""}
+                        </span>
+                      </div>
                       <p className="text-gray-600 mb-4">
                         {data?.data?.promotion_video?.description}
                       </p>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Plus,
   Edit,
+  Eye,
   User,
   Crown,
   Users,
@@ -18,6 +19,7 @@ import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
 import Lib from "@/utils/Lib";
 import UserFormModal from "@/components/FormModals/UserModal/UserFormModal";
+import UserTeamDetailsModal from "@/components/FormModals/UserModal/UserTeamDetailsModal";
 
 const getPromoterBadgeColor = (level) => {
   if (level === null || level === undefined || level === "") {
@@ -227,6 +229,20 @@ export default function UserManagement() {
           >
             <Eye className="w-4 h-4" />
           </a> */}
+          <button
+            onClick={() =>
+              updateSearchParam({
+                options: {
+                  Modal: MODAL_OPEN.USER_TEAM_MODAL,
+                  Edit: row.id,
+                },
+              })
+            }
+            className="text-blue-600 hover:text-blue-900 p-1"
+            title="View Team Tree"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
           <button
             onClick={() =>
               updateSearchParam({
@@ -451,6 +467,7 @@ export default function UserManagement() {
       {Modal === MODAL_OPEN.USER_MODAL && (
         <UserFormModal recoilApi={getUsers} />
       )}
+      {Modal === MODAL_OPEN.USER_TEAM_MODAL && <UserTeamDetailsModal />}
     </div>
   );
 }

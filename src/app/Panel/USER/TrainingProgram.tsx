@@ -677,8 +677,8 @@ const TrainingProgramWatch = () => {
         </ul>
        `,
       showCancelButton: true,
-      confirmButtonText: "Take Quiz in English",
-      cancelButtonText: "Take Quiz in Tamil",
+      confirmButtonText: "English",
+      cancelButtonText: "தமிழ்",
       reverseButtons: true, // Puts the buttons in a specific order (optional)
       customClass: {
         confirmButton:
@@ -740,22 +740,22 @@ const TrainingProgramWatch = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  7-Day Training Program
+                  5-Day Training Program
                 </h1>
                 <p className="mt-2 text-gray-600">
-                  Day {data?.data?.training?.day} of 7
+                  Day {data?.data?.training?.day} of {data?.data?.training_total_days || 5}
                 </p>
               </div>
               <div className="text-right">
                 <div className="text-sm text-gray-500">Progress</div>
                 <div className="text-2xl font-bold text-blue-600">
-                  {data?.data?.training?.day}/7
+                  {data?.data?.training?.day}/{data?.data?.training_total_days || 5}
                 </div>
                 <div className="w-32 bg-gray-200 rounded-full h-2 mt-2">
                   <div
                     className="bg-blue-600 h-2 rounded-full transition-all duration-500"
                     style={{
-                      width: `${((data?.data?.training?.day) / 7) * 100}%`,
+                      width: `${((data?.data?.training?.day) / (data?.data?.training_total_days || 5)) * 100}%`,
                     }}
                   ></div>
                 </div>
