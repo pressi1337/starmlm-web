@@ -21,6 +21,8 @@ import {
   BanknoteArrowUp,
   GitPullRequestCreateArrow,
   Phone,
+  MessageSquareMore,
+  Lightbulb,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -131,6 +133,20 @@ const Sidebar = ({
         icon: BanknoteArrowUp,
         color: "from-emerald-500 to-teal-600",
       });
+      baseItems.push({
+        id: "support-help",
+        label: "Support & Help",
+        path: "/portal/admin/support-help",
+        icon: MessageSquareMore,
+        color: "from-blue-500 to-cyan-600",
+      });
+      baseItems.push({
+        id: "suggestions",
+        label: "Suggestions",
+        path: "/portal/admin/suggestions",
+        icon: Lightbulb,
+        color: "from-yellow-500 to-amber-600",
+      });
     } else if (user.role === ROLE.USER) {
       baseItems.push(
         {
@@ -198,10 +214,17 @@ const Sidebar = ({
         },
         {
           id: "contact-us",
-          label: "Contact Us",
+          label: "Support & Help",
           path: "/portal/user/contact-us",
           icon: Phone,
           color: "from-green-500 to-emerald-600",
+        },
+        {
+          id: "suggestions",
+          label: "Suggestions",
+          path: "/portal/user/suggestions",
+          icon: Lightbulb,
+          color: "from-yellow-500 to-orange-600",
         }
       );
     }

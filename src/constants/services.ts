@@ -42,6 +42,11 @@ export const SERVICE: any = {
     ADMIN_DASHBOARD: "admin-dashboard",
     REFERRAL_TEAM_SUMMARY: 'referrals/team-summary',
     REFERRAL_TEAM_DETAILS: 'referrals',
+    SUPPORT_HELP: 'support-help',
+    SUPPORT_HELP_STATUS_UPDATE: 'support-help/status-update',
+    USER_SUGGESTIONS: 'user-suggestions',
+    USER_SUGGESTIONS_REACT: 'user-suggestions/react',
+    ADMIN_RESET_USER_BANK_DETAIL: 'user-bank-detail/admin-reset',
 
 
     //Export 

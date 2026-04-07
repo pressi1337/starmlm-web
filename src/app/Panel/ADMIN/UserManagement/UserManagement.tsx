@@ -9,8 +9,9 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  RefreshCcw,
 } from "lucide-react";
-import { useGetCall, useQueryParams } from "@/hooks";
+import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { MODAL_OPEN, WIDTHDROW_STATUS } from "@/constants/others";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
@@ -257,6 +258,13 @@ export default function UserManagement() {
           >
             <Edit className="w-4 h-4" />
           </button>
+          <button
+            onClick={() => handleResetBank(row)}
+            className="text-amber-600 hover:text-amber-900 p-1"
+            title="Clear Bank Details And Refill"
+          >
+            <RefreshCcw className="w-4 h-4" />
+          </button>
           {/* <button
             onClick={() => ConfirmDeleteModal(row.id)}
             className="text-red-600 hover:text-red-900 p-1"
@@ -276,6 +284,7 @@ export default function UserManagement() {
   const { loading, setQuery, data } = useGetCall(SERVICE.GET_ALL_REFERRALS, {
     avoidFetch: true,
   });
+  const { Post: resetUserBank } = useActionCall(SERVICE.ADMIN_RESET_USER_BANK_DETAIL);
 
   // Fetch admin dashboard data for stats
   const { data: adminDashboardData, loading: adminDashboardLoading } =
@@ -292,6 +301,24 @@ export default function UserManagement() {
   useEffect(() => {
     getUsers();
   }, [filter]);
+
+  const handleResetBank = async (row: any) => {
+    const result = await Swal.fire({
+      title: "Clear customer bank details?",
+      text: "This will remove the current bank data and allow the customer to refill it again.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, clear it",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      const response = await resetUserBank({ user_id: row.id });
+      if (response) {
+        getUsers();
+      }
+    }
+  };
 
   // const ConfirmDeleteModal = async (value: string) => {
   //   const swalWithTailwind = Swal.mixin({

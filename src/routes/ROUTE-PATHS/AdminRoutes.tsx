@@ -36,6 +36,12 @@ const PinRequests = Loadable(
 const UserProfile = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/ProfileSettings/Profile"))
 );
+const SupportHelp = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/SupportHelp/SupportHelp"))
+);
+const SuggestionManagement = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/SuggestionManagement/SuggestionManagement"))
+);
 const AdminRoutes = {
   path: "portal/admin",
   element: <PortalLayout />,
@@ -83,6 +89,14 @@ const AdminRoutes = {
     {
       path: "withdraw-request",
       element: <WithDrawRequest />,
+    },
+    {
+      path: "support-help",
+      element: <SupportHelp />,
+    },
+    {
+      path: "suggestions",
+      element: <SuggestionManagement />,
     },
   ],
 };

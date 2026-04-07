@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Phone, Building2, CreditCard, Hash, User } from "lucide-react";
+import { Phone, Building2, CreditCard, Hash, User, HelpCircle } from "lucide-react";
 import { useGetCall } from "@/hooks";
 import { SERVICE } from "@/constants/services";
 import Loader from "@/components/ui/Loader";
@@ -10,21 +10,47 @@ const ContactUs = () => {
     loading,
     data: bankData,
   } = useGetCall(SERVICE.GET_ADMIN_BANK_DETAILS);
+  const { loading: helpLoading, data: supportData } = useGetCall(SERVICE.SUPPORT_HELP);
 
-  if (loading) {
+  if (loading || helpLoading) {
     return <Loader />;
   }
 
   const bankDetails = bankData?.data || {};
+  const helpItems = supportData?.data || [];
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Contact Us</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Support & Help</h1>
         <p className="mt-2 text-gray-600">
-          Get in touch with us using the information below
+          Find quick answers and contact details whenever you need support
         </p>
       </div>
+
+      <Card className="shadow-soft mb-6">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-primary" />
+            <CardTitle>Quick Help Answers</CardTitle>
+          </div>
+          <CardDescription>
+            Repeated questions answered automatically for faster support
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {helpItems.length > 0 ? (
+            helpItems.map((item: any) => (
+              <div key={item.id} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <div className="font-semibold text-gray-900">{item.question}</div>
+                <div className="mt-2 text-sm text-gray-700 whitespace-pre-wrap">{item.answer}</div>
+              </div>
+            ))
+          ) : (
+            <div className="text-sm text-gray-500">No help answers configured yet.</div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Bank Information Card */}
       <Card className="shadow-soft">
