@@ -107,7 +107,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [trainingVideos, setTrainingVideos] = useState<Video[]>([
     {
       id: "1",
-      title: "Day 1: Company Introduction",
+      title: "Day 1: Welcome Video",
       description: "Welcome to our company and mission overview",
       videoUrl: "",
       youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
@@ -117,13 +117,23 @@ export function DataProvider({ children }: { children: ReactNode }) {
     },
     {
       id: "2",
-      title: "Day 2: Company Plan & Vision",
+      title: "Day 2: Company Plan",
       description: "Understanding our business model and future plans",
       videoUrl: "",
       youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       showingDate: "2025-10-11",
       type: "training",
       day: 2,
+    },
+    {
+      id: "3",
+      title: "Day 3: How to Work",
+      description: "Step-by-step guide on how the program works",
+      videoUrl: "",
+      youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      showingDate: "2025-10-11",
+      type: "training",
+      day: 3,
     },
   ]);
 
