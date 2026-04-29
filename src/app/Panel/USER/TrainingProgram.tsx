@@ -93,7 +93,7 @@
 //                 Congratulations!
 //               </h3>
 //               <p className="text-green-700">
-//                 You have completed all the training videos for the 7-day
+//                 You have completed all the training videos for the 3-day
 //                 training program. Great job!
 //               </p>
 //             </div>
@@ -224,22 +224,22 @@
 //             <div className="flex items-center justify-between">
 //               <div>
 //                 <h1 className="text-3xl font-bold text-gray-900">
-//                   7-Day Training Program
+//                   3-Day Training Program
 //                 </h1>
 //                 <p className="mt-2 text-gray-600">
-//                   Day {data?.data?.training?.day} of 7
+//                   Day {data?.data?.training?.day} of 3
 //                 </p>
 //               </div>
 //               <div className="text-right">
 //                 <div className="text-sm text-gray-500">Progress</div>
 //                 <div className="text-2xl font-bold text-blue-600">
-//                   {data?.data?.training?.day - 1}/7
+//                   {data?.data?.training?.day - 1}/3
 //                 </div>
 //                 <div className="w-32 bg-gray-200 rounded-full h-2 mt-2">
 //                   <div
 //                     className="bg-blue-600 h-2 rounded-full transition-all duration-500"
 //                     style={{
-//                       width: `${((data?.data?.training?.day - 1) / 7) * 100}%`,
+//                       width: `${((data?.data?.training?.day - 1) / 3) * 100}%`,
 //                     }}
 //                   ></div>
 //                 </div>
@@ -251,30 +251,26 @@
 //             <h3 className="text-lg font-semibold text-gray-900 mb-4">
 //               Training Structure
 //             </h3>
-//             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+//             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 //               <div className="bg-white rounded-lg p-4 shadow-sm">
-//                 <div className="text-sm font-medium text-blue-600">Days 1</div>
+//                 <div className="text-sm font-medium text-blue-600">Day 1</div>
 //                 <div className="text-gray-900 font-medium">Welcome Video</div>
 //               </div>
 //               <div className="bg-white rounded-lg p-4 shadow-sm">
 //                 <div className="text-sm font-medium text-green-600">
-//                   Days 2-3
+//                   Day 2
 //                 </div>
 //                 <div className="text-gray-900 font-medium">
-//                   Company Plan Video
+//                   Company Plan
 //                 </div>
 //               </div>
 //               <div className="bg-white rounded-lg p-4 shadow-sm">
 //                 <div className="text-sm font-medium text-purple-600">
-//                   Days 4-5
+//                   Day 3
 //                 </div>
-//                 <div className="text-gray-900 font-medium">How Work Video</div>
-//               </div>
-//               <div className="bg-white rounded-lg p-4 shadow-sm">
-//                 <div className="text-sm font-medium text-purple-600">
-//                   Days 6-7
+//                 <div className="text-gray-900 font-medium">
+//                   How to Work
 //                 </div>
-//                 <div className="text-gray-900 font-medium">Demo Working</div>
 //               </div>
 //             </div>
 //           </div>
@@ -609,7 +605,7 @@ const TrainingProgramWatch = () => {
                 Congratulations!
               </h3>
               <p className="text-green-700">
-                You have completed all the training videos for the 7-day
+                You have completed all the training videos for the 3-day
                 training program. Great job!
               </p>
             </div>
@@ -740,22 +736,22 @@ const TrainingProgramWatch = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  7-Day Training Program
+                  3-Day Training Program
                 </h1>
                 <p className="mt-2 text-gray-600">
-                  Day {data?.data?.training?.day} of 7
+                  Day {data?.data?.training?.day} of 3
                 </p>
               </div>
               <div className="text-right">
                 <div className="text-sm text-gray-500">Progress</div>
                 <div className="text-2xl font-bold text-blue-600">
-                  {data?.data?.training?.day}/7
+                  {data?.data?.training?.day}/3
                 </div>
                 <div className="w-32 bg-gray-200 rounded-full h-2 mt-2">
                   <div
                     className="bg-blue-600 h-2 rounded-full transition-all duration-500"
                     style={{
-                      width: `${((data?.data?.training?.day) / 7) * 100}%`,
+                      width: `${((data?.data?.training?.day) / 3) * 100}%`,
                     }}
                   ></div>
                 </div>
@@ -767,30 +763,26 @@ const TrainingProgramWatch = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Training Structure
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-white rounded-lg p-4 shadow-sm">
-                <div className="text-sm font-medium text-blue-600">Days 1</div>
+                <div className="text-sm font-medium text-blue-600">Day 1</div>
                 <div className="text-gray-900 font-medium">Welcome Video</div>
               </div>
               <div className="bg-white rounded-lg p-4 shadow-sm">
                 <div className="text-sm font-medium text-green-600">
-                  Days 2-3
+                  Day 2
                 </div>
                 <div className="text-gray-900 font-medium">
-                  Company Plan Video
+                  Company Plan
                 </div>
               </div>
               <div className="bg-white rounded-lg p-4 shadow-sm">
                 <div className="text-sm font-medium text-purple-600">
-                  Days 4-5
+                  Day 3
                 </div>
-                <div className="text-gray-900 font-medium">How Work Video</div>
-              </div>
-              <div className="bg-white rounded-lg p-4 shadow-sm">
-                <div className="text-sm font-medium text-purple-600">
-                  Days 6-7
+                <div className="text-gray-900 font-medium">
+                  How to Work
                 </div>
-                <div className="text-gray-900 font-medium">Demo Working</div>
               </div>
             </div>
           </div>
