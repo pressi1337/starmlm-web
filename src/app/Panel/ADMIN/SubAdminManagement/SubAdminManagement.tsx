@@ -193,7 +193,7 @@ export default function SubAdminManagement() {
       <FilterTab
         filter={filter}
         setFilter={setFilter}
-        TABLE_FILTER={["SEARCH", "FROM_DATE", "TO_DATE"]}
+        TABLE_FILTER={["SEARCH"]}
       />
 
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">

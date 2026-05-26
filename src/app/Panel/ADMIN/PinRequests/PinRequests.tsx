@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   HeartHandshake,
   Clock,
@@ -18,10 +18,6 @@ import CopyClipBoard from "@/components/CopyClip";
 import AdminPinFormModal from "@/components/FormModals/AdminGeneratePinModal/AdminPinFormModal";
 import UIHelpers from "@/utils/UIhelper";
 import { useAuth } from "@/context/AuthContext";
-
-// Sub-admins can only manage pins for Promoter (level 0) and Level 1.
-// This matches the server-side gate in UserPromoterController.
-const SUB_ADMIN_ALLOWED_LEVELS = [0, 1];
 
 export default function PROMOTIONVIDEOS() {
   const getStatusBadge = (status) => {
@@ -219,23 +215,6 @@ export default function PROMOTIONVIDEOS() {
   const isSubAdmin = role === ROLE.SUB_ADMIN;
   const [filter, setFilter] = useState(defaultFilter);
 
-  // Sub-admin's level filter is locked to [0, 1]. We override whatever filter
-  // they try to set so the API call always carries the level restriction.
-  const effectiveFilter = useMemo(() => {
-    if (!isSubAdmin) return filter;
-    const next = { ...filter, search_param: { ...(filter as any).search_param } };
-    const requestedLevel = next.search_param?.level;
-    if (
-      requestedLevel === undefined ||
-      requestedLevel === "" ||
-      !SUB_ADMIN_ALLOWED_LEVELS.includes(Number(requestedLevel))
-    ) {
-      // Force the multi-level filter by spreading allowed levels.
-      next.search_param.level = SUB_ADMIN_ALLOWED_LEVELS;
-    }
-    return next;
-  }, [filter, isSubAdmin]);
-
   const { loading, setQuery, data } = useGetCall(SERVICE.ADMIN_PIN_REQUESTS, {
     avoidFetch: true,
   });
@@ -260,12 +239,12 @@ export default function PROMOTIONVIDEOS() {
   );
 
   const PinRequestApi = () => {
-    setQuery(effectiveFilter);
+    setQuery(filter);
   };
 
   useEffect(() => {
     PinRequestApi();
-  }, [effectiveFilter]);
+  }, [filter]);
 
   const ConfirmDeleteModal = async (value: string) => {
     const swalWithTailwind = Swal.mixin({

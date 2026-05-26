@@ -6,8 +6,9 @@ import {
   Award,
 } from "lucide-react";
 import { useQueryParams, useGetCall } from "@/hooks";
-import { MODAL_OPEN } from "@/constants/others";
+import { MODAL_OPEN, ROLE } from "@/constants/others";
 import { SERVICE } from "@/constants/services";
+import { useAuth } from "@/context/AuthContext";
 import DailyVideoFormModal from "@/components/FormModals/DailyVideoModal/DailyVideoFormModal";
 import TrainingVideoFormModal from "@/components/FormModals/TrainingVideoModal/TrainingVideoFormModal";
 import PromotionVideoFormModal from "@/components/FormModals/PromotionVideoModal/PromotionVideoFormModal";
@@ -32,13 +33,15 @@ interface Activity {
 export default function Dashboard() {
   const { updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
+  const { role } = useAuth();
+  const isSubAdmin = role === ROLE.SUB_ADMIN;
 
   // Fetch admin dashboard data
   const { data: adminDashboardData, loading: adminDashboardLoading } = useGetCall(SERVICE.ADMIN_DASHBOARD);
 
   const isLoading = adminDashboardLoading;
 
-  const stats: StatCard[] = [
+  const allStats: StatCard[] = [
     {
       name: "Daily Videos",
       value: isLoading ? '...' : adminDashboardData?.data?.total_daily_videos || 0,
@@ -72,6 +75,12 @@ export default function Dashboard() {
       changeType: "positive",
     },
   ];
+
+  // Sub-admin only manages Daily Videos, Promotion Videos and Pin Requests —
+  // hide stat cards for surfaces they don't have access to.
+  const stats = isSubAdmin
+    ? allStats.filter((s) => s.name === "Daily Videos" || s.name === "Promotion Videos")
+    : allStats;
 
   const recentActivities: Activity[] = adminDashboardData?.data?.recent_users?.map((user: any) => ({
     id: user.id,
@@ -116,40 +125,46 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Activities */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">
-              Recent Activities
-            </h3>
-          </div>
-          <div className="p-6">
-            {recentActivities.length > 0 ? (
-              <ul className="space-y-4">
-                {recentActivities.map((activity) => (
-                  <li key={activity.id} className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
-                        <Users className="h-5 w-5 text-gray-400" />
+      <div
+        className={`grid grid-cols-1 ${
+          isSubAdmin ? "" : "lg:grid-cols-2"
+        } gap-8`}
+      >
+        {/* Recent Activities — recent user signups; super-admin only. */}
+        {!isSubAdmin && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900">
+                Recent Activities
+              </h3>
+            </div>
+            <div className="p-6">
+              {recentActivities.length > 0 ? (
+                <ul className="space-y-4">
+                  {recentActivities.map((activity) => (
+                    <li key={activity.id} className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
+                          <Users className="h-5 w-5 text-gray-400" />
+                        </div>
                       </div>
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-900">
-                        {activity.user}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {activity.action} • {activity.time}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-500 text-center py-4">No recent activities</p>
-            )}
+                      <div className="ml-4">
+                        <p className="text-sm font-medium text-gray-900">
+                          {activity.user}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {activity.action} • {activity.time}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500 text-center py-4">No recent activities</p>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Quick Actions */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -171,19 +186,21 @@ export default function Dashboard() {
                   Add Daily Video
                 </span>
               </button>
-              <button
-                onClick={() =>
-                  updateSearchParam({
-                    options: { Modal: MODAL_OPEN.TRAINING_VIDEO_MODAL },
-                  })
-                }
-                className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors"
-              >
-                <Trophy className="w-8 h-8 text-gray-400 mb-2" />
-                <span className="text-sm font-medium text-gray-900">
-                  Add Training Video
-                </span>
-              </button>
+              {!isSubAdmin && (
+                <button
+                  onClick={() =>
+                    updateSearchParam({
+                      options: { Modal: MODAL_OPEN.TRAINING_VIDEO_MODAL },
+                    })
+                  }
+                  className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors"
+                >
+                  <Trophy className="w-8 h-8 text-gray-400 mb-2" />
+                  <span className="text-sm font-medium text-gray-900">
+                    Add Training Video
+                  </span>
+                </button>
+              )}
               <button
                 onClick={() =>
                   updateSearchParam({
@@ -197,19 +214,21 @@ export default function Dashboard() {
                   Add Promotion Video
                 </span>
               </button>
-              <button
-                onClick={() =>
-                  updateSearchParam({
-                    options: { Modal: MODAL_OPEN.USER_MODAL },
-                  })
-                }
-                className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-red-500 hover:bg-red-50 transition-colors"
-              >
-                <Users className="w-8 h-8 text-gray-400 mb-2" />
-                <span className="text-sm font-medium text-gray-900">
-                  Manage Users
-                </span>
-              </button>
+              {!isSubAdmin && (
+                <button
+                  onClick={() =>
+                    updateSearchParam({
+                      options: { Modal: MODAL_OPEN.USER_MODAL },
+                    })
+                  }
+                  className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <Users className="w-8 h-8 text-gray-400 mb-2" />
+                  <span className="text-sm font-medium text-gray-900">
+                    Manage Users
+                  </span>
+                </button>
+              )}
             </div>
           </div>
         </div>
