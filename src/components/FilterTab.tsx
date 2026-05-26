@@ -29,12 +29,14 @@ const FILTER_FIELD = {
   PROMOTER_LEVEL: {
     type: "select_input",
     name: "current_promoter_level",
-    options: OPTIONS.PROMOTER_LEVEL,
+    // User Management filter — includes Trainee (whereNull sentinel).
+    options: OPTIONS.USER_PROMOTER_LEVEL_FILTER,
     label: "Select Promoter Level",
   },
   PROMOTER_LEVEL_PIN: {
     type: "select_input",
     name: "level",
+    // PinRequests filter — no Trainee (pin rows always have a concrete level).
     options: OPTIONS.PROMOTER_LEVEL,
     label: "Select Promoter Level",
   },

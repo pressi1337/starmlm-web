@@ -343,14 +343,24 @@ export const OPTIONS = {
         { value: "2", label: "Evening Session" },
     ],
     PROMOTER_LEVEL: [
-        // 'null' sentinel matches users with no current_promoter_level (Trainee).
-        // Backend ReferralController treats this string as a whereNull check.
-        { value: "null", label: "Trainee", color: "text-gray-600" },
+        // Position-indexed: PinRequests reads via OPTIONS.PROMOTER_LEVEL[row.level].
+        // Do NOT prepend entries here — it shifts every label.
         { value: "0", label: "Promoter", color: "text-blue-600" },
         { value: "1", label: "Promoter Level 1", color: "text-green-600" },
         { value: "2", label: "Promoter Level 2", color: "text-purple-600" },
         { value: "3", label: "Promoter Level 3", color: "text-yellow-600" },
         { value: "4", label: "Promoter Level 4", color: "text-pink-600" },
+    ],
+    // Options for the User Management filter dropdown only. 'null' is the
+    // sentinel for users with no current_promoter_level (Trainees) — backend
+    // ReferralController treats this as a whereNull check.
+    USER_PROMOTER_LEVEL_FILTER: [
+        { value: "null", label: "Trainee" },
+        { value: "0", label: "Promoter" },
+        { value: "1", label: "Promoter Level 1" },
+        { value: "2", label: "Promoter Level 2" },
+        { value: "3", label: "Promoter Level 3" },
+        { value: "4", label: "Promoter Level 4" },
     ],
     GIFT_DELIVERY_LEVEL: [
         { value: "1", label: "Direct" },
