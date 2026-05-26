@@ -1,17 +1,12 @@
 //@ts-nocheck
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Play, Users, TrendingUp, Award, ArrowRight } from 'lucide-react';
+import { Play, Users, TrendingUp, Award, Download } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import banner from '@/assets/starbanner.png';
 import bgBanner from '@/assets/starup_bg.png';
 import apkFile from '@/assets/StarupWorld.apk';
 
-// Launch time: Feb 8, 2026 at 3:30 PM
-const LAUNCH_DATE = new Date('2026-02-08T15:40:00');
-
 export default function WelcomePage() {
-  const isLaunched = new Date() >= LAUNCH_DATE;
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Navigation */}
@@ -28,22 +23,13 @@ export default function WelcomePage() {
               </span> */}
             </div>
             <div className="flex items-center gap-3">
-              {isLaunched && (
-                <a
-                  href={apkFile}
-                  download
-                  className="bg-gradient-to-r from-green-600 to-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-200"
-                >
-                  Download Mobile App
-                </a>
-              )}
-              
-              <Link
-                to="/login"
-                className="bg-gradient-to-r from-green-600 to-yellow-600 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1"
+              <a
+                href={apkFile}
+                download
+                className="bg-gradient-to-r from-green-600 to-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-200"
               >
-                Login
-              </Link>
+                Download Mobile App
+              </a>
             </div>
           </div>
         </div>
@@ -64,18 +50,16 @@ export default function WelcomePage() {
                 Empower your professional journey alongside thousands of promoters who have realized success with us.
               </p>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
-                <Link
-                  to="/login"
+                <a
+                  href={apkFile}
+                  download
                   className="inline-flex items-center bg-gradient-to-r from-green-600 to-yellow-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group"
                 >
-                  Get Started
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                  Download Mobile App
+                  <Download className="ml-2 w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
+                </a>
                 <p className="mt-4 text-white/80">
-                  New here?{" "}
-                  <Link to="/register" className="font-semibold text-white underline hover:text-white/80">
-                    Create an account
-                  </Link>
+                  The Starup experience lives on the mobile app — install it to get started.
                 </p>
               </div>
             </div>
@@ -171,13 +155,14 @@ export default function WelcomePage() {
             Join thousands of successful promoters who have transformed their careers with our platform
           </p>
           <div className="mt-8">
-            <Link
-              to="/login"
+            <a
+              href={apkFile}
+              download
               className="inline-flex items-center bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-colors duration-200 transform hover:-translate-y-1 hover:shadow-xl group"
             >
-              Join Now
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
+              Download Mobile App
+              <Download className="ml-2 w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
+            </a>
           </div>
         </div>
       </section>
