@@ -9,7 +9,9 @@ import { SERVICE } from "@/constants/services";
 import { ROLE } from "@/constants/others";
 
 // This frontend is the admin-only console. End users belong on the PWA.
-const ALLOWED_ROLES: number[] = [ROLE.ADMIN, ROLE.SUPER_ADMIN];
+// Both Super-Admin (0) and Sub-Admin (1) are allowed in here; per-page guards
+// inside AdminRoutes restrict the sub-admin to a subset of pages.
+const ALLOWED_ROLES: number[] = [ROLE.SUPER_ADMIN, ROLE.SUB_ADMIN];
 
 interface User {
   id: string;

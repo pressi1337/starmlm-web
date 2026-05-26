@@ -39,8 +39,12 @@ export const SERVICE: any = {
     USER_DASHBOARD: "user-dashboard",
     ADMIN_DASHBOARD: "admin-dashboard",
 
+    // Sub-admin management (super-admin only on the backend)
+    SUB_ADMINS: "sub-admins",
+    SUB_ADMIN_STATUS_UPDATE: "sub-admins/status-update",
 
-    //Export 
+
+    //Export
     EXPORT_EXCEL: 'withdraws/export/excel',
 
     //User Service endpoint

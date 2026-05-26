@@ -317,6 +317,7 @@ export const MODAL_OPEN: any = {
     COUPONS: 'Coupons',
     WITHDRAW_REQUEST: 'WITHDRAW_REQUEST',
     REFERAL_MODAL: 'REFERAL_MODAL',
+    SUB_ADMIN_MODAL: 'SUB_ADMIN_MODAL',
 }
 
 export const URL_QUERY: any = {
@@ -377,9 +378,13 @@ export const OPTIONS = {
 
 }
 
+// 0 is the full-access admin (renamed from ADMIN → SUPER_ADMIN for clarity).
+// 1 is the restricted Sub-Admin (Daily Videos, Promotion Videos, Promoter L0/L1 pin ops).
+// `ADMIN` is kept as a backwards-compat alias for 0 so legacy call sites keep working.
 export const ROLE: any = {
+    SUPER_ADMIN: 0,
     ADMIN: 0,
-    SUPER_ADMIN: 1,
+    SUB_ADMIN: 1,
     USER: 2
 }
 

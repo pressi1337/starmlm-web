@@ -16,6 +16,8 @@ import { User, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useActionCall, useGetCall } from "@/hooks";
 import { SERVICE } from "@/constants/services";
+import { ROLE } from "@/constants/others";
+import { useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/Loader";
 import Lib from "@/utils/Lib";
 import { useFormik } from "formik";
@@ -55,6 +57,12 @@ export const SCRATCH_REFERRAL_VALIDATION_SCHEMA = Yup.object().shape({
 });
 
 const Profile = () => {
+  const { role } = useAuth();
+  // Sub-admin gets the personal/security half of this page only — the bank
+  // details and additional-scratch-referrals are super-admin-wide settings
+  // (and their endpoints are gated by role:0 on the backend).
+  const isSubAdmin = role === ROLE.SUB_ADMIN;
+
   const {
     loading,
     setQuery,
@@ -65,7 +73,7 @@ const Profile = () => {
     loading: bankloading,
     setQuery: setBankQuery,
     data: bankData,
-  } = useGetCall(SERVICE.GET_ADMIN_BANK_DETAILS);
+  } = useGetCall(SERVICE.GET_ADMIN_BANK_DETAILS, { avoidFetch: isSubAdmin });
 
   const {
     Post: updateAdminBank,
@@ -122,7 +130,7 @@ const Profile = () => {
     loading: scratchReferralLoading,
     setQuery: setScratchReferralQuery,
     data: scratchReferralData,
-  } = useGetCall(SERVICE.GET_ADDITIONAL_SCRAT);
+  } = useGetCall(SERVICE.GET_ADDITIONAL_SCRAT, { avoidFetch: isSubAdmin });
 
   const {
     Post: updateScratchReferral,
@@ -352,7 +360,8 @@ const Profile = () => {
                 </CardContent>
               </Card>
 
-              {/* Bank Informations */}
+              {/* Bank Informations — super-admin only */}
+              {!isSubAdmin && (
               <Card className="shadow-soft">
                 <CardHeader>
                   <div className="flex items-center gap-2">
@@ -438,8 +447,10 @@ const Profile = () => {
                   />
                 </CardContent>
               </Card>
+              )}
 
-              {/* Additional Scratch Referrals */}
+              {/* Additional Scratch Referrals — super-admin only */}
+              {!isSubAdmin && (
               <Card className="shadow-soft">
                 <CardHeader>
                   <div className="flex items-center gap-2">
@@ -481,6 +492,7 @@ const Profile = () => {
                   />
                 </CardContent>
               </Card>
+              )}
             </div>
           </div>
         </main>

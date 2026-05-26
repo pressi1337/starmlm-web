@@ -32,7 +32,8 @@ import DailyVideoFormModal from "@/components/FormModals/DailyVideoModal/DailyVi
 import { ROLE } from "@/constants/others";
 
 const roleLabels: Record<number, string> = {
-  0: "Admin",
+  0: "Super Admin",
+  1: "Sub Admin",
   2: "User",
 };
 
@@ -44,6 +45,7 @@ const PortalLayout = () => {
   const [darkMode, setDarkMode] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const isAdmin = role === ROLE.SUPER_ADMIN || role === ROLE.SUB_ADMIN;
 
   const handleLogout = () => {
     logout(); // call logout from context
@@ -59,7 +61,7 @@ const PortalLayout = () => {
         return "Purchase Orders";
 
       default:
-        return role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN ? "Admin Panel" : "User Panel";
+        return isAdmin ? "Admin Panel" : "User Panel";
     }
   };
 
@@ -99,7 +101,7 @@ const PortalLayout = () => {
 
               <div className="items-center space-x-2 hidden md:flex">
                 <div className="h-8 w-8 bg-gradient-to-r from-green-600 to-yellow-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">{role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN ? "AP" : "UP"}</span>
+                  <span className="text-white font-bold text-sm">{isAdmin ? "AP" : "UP"}</span>
                 </div>
                 <h1 className="text-xl font-bold text-gray-800 dark:text-white">
                   {getPageTitle()}
@@ -165,7 +167,7 @@ const PortalLayout = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem>
-                    <Link to={role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN ? "/portal/admin/profile-settings" : "/portal/user/profile-settings"} className="flex">
+                    <Link to={isAdmin ? "/portal/admin/profile-settings" : "/portal/user/profile-settings"} className="flex">
                       <User className="mr-2 h-4 w-4" />
                       Profile
                     </Link>

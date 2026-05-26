@@ -8,7 +8,8 @@ import { ROLE } from "@/constants/others";
 export default function AllRoutes(): React.ReactElement | null {
   const { isLoading, role } = useAuth();
   const routes = [];
-  if (role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN) {
+  const isAdmin = role === ROLE.SUPER_ADMIN || role === ROLE.SUB_ADMIN;
+  if (isAdmin) {
     routes.push(AdminRoutes);
   } else if (role === ROLE.USER) {
     routes.push(NormalUserRoutes);
@@ -21,7 +22,7 @@ export default function AllRoutes(): React.ReactElement | null {
     element: (
       <Navigate
         to={
-          role === ROLE.ADMIN || role === ROLE.SUPER_ADMIN
+          isAdmin
             ? "/portal/admin/dashboard"
             : role === ROLE.USER
             ? "/portal/user/dashboard"
