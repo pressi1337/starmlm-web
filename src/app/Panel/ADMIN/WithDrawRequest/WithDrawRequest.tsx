@@ -21,6 +21,10 @@ import {
   Flag,
   MessageCircle,
   Download,
+  Wallet,
+  HandCoins,
+  ListChecks,
+  Hourglass,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
@@ -237,6 +241,10 @@ export default function WithDrawRequest() {
     }
   );
 
+  // Filter-aware Excel export — distinct from the pending-only EXPORT_EXCEL.
+  const { loading: exportFilteredLoading, fetchApi: exportWithdrawFiltered } =
+    useGetCall(SERVICE.EXPORT_WITHDRAW_FILTERED, { avoidFetch: true });
+
   const { loading, setQuery, data } = useGetCall(SERVICE.WITHDRAW_REQUEST, {
     avoidFetch: true,
   });
@@ -367,27 +375,104 @@ export default function WithDrawRequest() {
               Manage your withdrawal requests and track payment status
             </p>
           </div>
-          <button
-            onClick={() =>
-              exportWithdraw({
-                exports: true,
-                downloadFilename: "withdraw_requests.xlsx",
-              })
-            }
-            disabled={exportLoading}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            {exportLoading ? "Exporting..." : "Export"}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() =>
+                exportWithdrawFiltered({
+                  query: filter,
+                  exports: true,
+                  downloadFilename: "withdraw_requests_filtered.xlsx",
+                })
+              }
+              disabled={exportFilteredLoading}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-all duration-200"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {exportFilteredLoading ? "Exporting..." : "Filtered Export"}
+            </button>
+            <button
+              onClick={() =>
+                exportWithdraw({
+                  exports: true,
+                  downloadFilename: "withdraw_requests.xlsx",
+                })
+              }
+              disabled={exportLoading}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {exportLoading ? "Exporting..." : "Pending Export"}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Filters and Search */}
+      {/* Stat cards — track the date range + username search; ignore status filter so each tile stays meaningful */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+              <Wallet className="w-6 h-6 text-white" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Total Withdrawn</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {loading ? "..." : `₹${Lib.formatAmount(data?.stats?.total_withdrawn_amount ?? 0)}`}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center">
+              <Hourglass className="w-6 h-6 text-white" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Total Pending</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {loading ? "..." : `₹${Lib.formatAmount(data?.stats?.total_pending_amount ?? 0)}`}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+              <HandCoins className="w-6 h-6 text-white" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Total Requested</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {loading ? "..." : `₹${Lib.formatAmount(data?.stats?.total_requested_amount ?? 0)}`}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
+              <ListChecks className="w-6 h-6 text-white" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Total Requests</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {loading ? "..." : data?.stats?.total_requests ?? 0}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters: username search, withdraw status, request-date range */}
       <FilterTab
         filter={filter}
         setFilter={setFilter}
-        TABLE_FILTER={["SEARCH"]}
+        TABLE_FILTER={[
+          "SEARCH",
+          "WITHDRAW_STATUS",
+          "FROM_DATE_WITHDRAW",
+          "TO_DATE_WITHDRAW",
+        ]}
       />
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <DataTable

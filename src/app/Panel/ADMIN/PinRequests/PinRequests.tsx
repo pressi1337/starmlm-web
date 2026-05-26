@@ -7,6 +7,7 @@ import {
   User,
   Smartphone,
   CircleX,
+  Download,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { OPTIONS, ROLE } from "@/constants/others";
@@ -218,6 +219,12 @@ export default function PROMOTIONVIDEOS() {
   const { loading, setQuery, data } = useGetCall(SERVICE.ADMIN_PIN_REQUESTS, {
     avoidFetch: true,
   });
+
+  // Filter-aware Excel export — passes the current filter as query.
+  const { loading: exportLoading, fetchApi: exportPinRequests } = useGetCall(
+    SERVICE.EXPORT_PIN_REQUESTS,
+    { avoidFetch: true }
+  );
   const { loading: deleteLoading, Delete: DeleteTrainingVideo } = useActionCall(
     SERVICE.ADMIN_PIN_REQUESTS
   );
@@ -379,6 +386,20 @@ export default function PROMOTIONVIDEOS() {
               </p>
             )}
           </div>
+          <button
+            onClick={() =>
+              exportPinRequests({
+                query: filter,
+                exports: true,
+                downloadFilename: "pin_requests.xlsx",
+              })
+            }
+            disabled={exportLoading}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-all duration-200"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {exportLoading ? "Exporting..." : "Export Excel"}
+          </button>
         </div>
       </div>
 

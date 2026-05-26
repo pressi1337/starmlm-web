@@ -343,6 +343,9 @@ export const OPTIONS = {
         { value: "2", label: "Evening Session" },
     ],
     PROMOTER_LEVEL: [
+        // 'null' sentinel matches users with no current_promoter_level (Trainee).
+        // Backend ReferralController treats this string as a whereNull check.
+        { value: "null", label: "Trainee", color: "text-gray-600" },
         { value: "0", label: "Promoter", color: "text-blue-600" },
         { value: "1", label: "Promoter Level 1", color: "text-green-600" },
         { value: "2", label: "Promoter Level 2", color: "text-purple-600" },
@@ -374,6 +377,16 @@ export const OPTIONS = {
     { value: "1", label: "Approved" },
     { value: "2", label: "Activated" },
     { value: "3", label: "Rejected" },],
+    WITHDRAW_STATUS: [
+        { value: "0", label: "Pending" },
+        { value: "1", label: "Processing" },
+        { value: "2", label: "Completed" },
+        { value: "3", label: "Rejected" },
+    ],
+    ACTIVE_STATUS: [
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+    ],
 
 
 }

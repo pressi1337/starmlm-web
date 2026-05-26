@@ -46,6 +46,9 @@ export const SERVICE: any = {
 
     //Export
     EXPORT_EXCEL: 'withdraws/export/excel',
+    EXPORT_WITHDRAW_FILTERED: 'withdraws/export/filtered/excel',
+    EXPORT_USERS: 'all-referrals/export/excel',
+    EXPORT_PIN_REQUESTS: 'user-promoters/export/excel',
 
     //User Service endpoint
     DAILY_VIDEO_STATUS: 'daily-videos-status',

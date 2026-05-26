@@ -65,6 +65,30 @@ const FILTER_FIELD = {
     name: "todate",
     label: "Request To",
   },
+
+  WITHDRAW_STATUS: {
+    type: "select_input",
+    name: "status",
+    options: OPTIONS.WITHDRAW_STATUS,
+    label: "Select Status",
+  },
+  FROM_DATE_WITHDRAW: {
+    type: "date",
+    name: "fromdate",
+    label: "Request From",
+  },
+  TO_DATE_WITHDRAW: {
+    type: "date",
+    name: "todate",
+    label: "Request To",
+  },
+
+  ACTIVE_STATUS: {
+    type: "select_input",
+    name: "is_active",
+    options: OPTIONS.ACTIVE_STATUS,
+    label: "Select Status",
+  },
 };
 const FilterTab = ({ filter, setFilter, TABLE_FILTER }) => {
   const { defaultFilter } = useQueryParams();

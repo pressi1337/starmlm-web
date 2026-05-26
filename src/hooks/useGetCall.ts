@@ -106,7 +106,9 @@ const useGetCall = (services: string, initialOptions: OptionsProps = {}) => {
                     a.download = Options?.downloadFilename ?? 'download.xlsx'
                     document.body.appendChild(a);
                     a.click();
-                    return window.URL.revokeObjectURL(createdURLObj);
+                    window.URL.revokeObjectURL(createdURLObj);
+                    setLoading(false);
+                    return;
                 }
 
                 const jsonData = await response.json();

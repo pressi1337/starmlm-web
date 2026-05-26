@@ -8,6 +8,7 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  Download,
 } from "lucide-react";
 import { useGetCall, useQueryParams } from "@/hooks";
 import {
@@ -255,6 +256,13 @@ export default function UserManagement() {
     avoidFetch: true,
   });
 
+  // Filter-aware Excel export — passes the current filter as query, marks
+  // exports=true so useGetCall streams the blob and triggers a download.
+  const { loading: exportLoading, fetchApi: exportUsers } = useGetCall(
+    SERVICE.EXPORT_USERS,
+    { avoidFetch: true }
+  );
+
   // Fetch admin dashboard data for stats
   const { data: adminDashboardData, loading: adminDashboardLoading } =
     useGetCall(SERVICE.ADMIN_DASHBOARD);
@@ -330,17 +338,33 @@ export default function UserManagement() {
               Manage all platform users and their permissions
             </p>
           </div>
-          <button
-            onClick={() =>
-              updateSearchParam({
-                options: { Modal: MODAL_OPEN.USER_MODAL },
-              })
-            }
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add User
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() =>
+                exportUsers({
+                  query: filter,
+                  exports: true,
+                  downloadFilename: "users.xlsx",
+                })
+              }
+              disabled={exportLoading}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-all duration-200"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {exportLoading ? "Exporting..." : "Export Excel"}
+            </button>
+            <button
+              onClick={() =>
+                updateSearchParam({
+                  options: { Modal: MODAL_OPEN.USER_MODAL },
+                })
+              }
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add User
+            </button>
+          </div>
         </div>
       </div>
 
@@ -413,7 +437,13 @@ export default function UserManagement() {
       <FilterTab
         filter={filter}
         setFilter={setFilter}
-        TABLE_FILTER={["SEARCH", "PROMOTER_LEVEL", "FROM_DATE", "TO_DATE"]}
+        TABLE_FILTER={[
+          "SEARCH",
+          "PROMOTER_LEVEL",
+          "ACTIVE_STATUS",
+          "FROM_DATE",
+          "TO_DATE",
+        ]}
       />
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <DataTable
