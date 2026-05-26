@@ -89,9 +89,6 @@ export default function Register() {
   }, [RequestError]);
 
   useEffect(() => {
-    if (!referalCode) {
-      navigate.push("/login");
-    }
     setLoading(false);
   }, []);
 

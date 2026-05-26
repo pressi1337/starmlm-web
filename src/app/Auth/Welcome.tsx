@@ -1,5 +1,6 @@
 //@ts-nocheck
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Play, Users, TrendingUp, Award, Download } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import banner from '@/assets/starbanner.png';
@@ -23,6 +24,12 @@ export default function WelcomePage() {
               </span> */}
             </div>
             <div className="flex items-center gap-3">
+              <Link
+                to="/register"
+                className="border border-green-600 text-green-700 px-4 py-2 rounded-lg font-semibold hover:bg-green-50 transition-all duration-200"
+              >
+                Register
+              </Link>
               <a
                 href={apkFile}
                 download
