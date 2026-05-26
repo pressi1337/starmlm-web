@@ -72,7 +72,8 @@ export default function Register() {
       //onAction(values);
       const response = await Post(values, "Successfully Register");
       if (response) {
-        navigate.push("/login");
+        // Users sign in via the mobile app; send them to the Welcome page to grab it.
+        navigate.push("/");
       }
     },
 
@@ -101,8 +102,8 @@ export default function Register() {
           to="/"
           className="flex justify-center items-center space-x-3 mb-6"
         >
-          
-          
+
+
           <img src={logo} alt="Logo" className="h-8 w-auto" />
         </Link>
         <h2 className="text-center text-3xl font-bold text-gray-900">

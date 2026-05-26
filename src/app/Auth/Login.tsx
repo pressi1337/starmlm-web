@@ -152,26 +152,6 @@ export default function Login() {
               </button>
             </div>
           </form>
-
-          <div className="mt-6 flex items-center justify-between">
-            <div className="relative flex-1">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
-                Register here
-              </Link>
-            </p>
-          </div>
         </div>
 
         <div className="mt-8 text-center">

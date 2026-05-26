@@ -1,10 +1,15 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
+import toast from "react-hot-toast";
 import axiosInstance from "@/utils/CustomAxios";
 import { API_AUTH_USER } from "@/utils/http/apiPaths";
 import Lib from "@/utils/Lib";
 import { useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
+import { ROLE } from "@/constants/others";
+
+// This frontend is the admin-only console. End users belong on the PWA.
+const ALLOWED_ROLES: number[] = [ROLE.ADMIN, ROLE.SUPER_ADMIN];
 
 interface User {
   id: string;
@@ -48,9 +53,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let token: string | null | undefined = Lib.getCookies("session-token");
     let decordToken: JwtPayload = token ? Lib.DecodeJwt(token) : null;
-    if (token && decordToken?.role !== undefined) {
+    const hasDecodedRole = !!token && decordToken?.role !== undefined;
+    if (hasDecodedRole && ALLOWED_ROLES.includes(decordToken.role)) {
       setUpUserData(decordToken);
     } else {
+      if (hasDecodedRole) {
+        // Stale non-admin session was kicking around — surface why we're logging them out.
+        toast.error("This portal is for administrators only.");
+      }
       logout();
     }
   }, []);
@@ -74,23 +84,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = (token: string | undefined | null) => {
-    let TokenDecoder: JwtPayload = Lib.DecodeJwt(token);
     let decordToken: JwtPayload = token ? Lib.DecodeJwt(token) : null;
-    if (token && decordToken?.role !== undefined) {
-      Lib.setCookies({
-        name: "session-token",
-        value: token,
-        exp: decordToken?.exp ? Lib.expiredSec(decordToken?.exp ?? 1) : 1,
-      });
-      setUpUserData(decordToken);
-      navigate.push(
-        TokenDecoder?.role == 2
-          ? "/portal/user/dashboard"
-          : "/portal/admin/dashboard"
-      );
-    } else {
+    if (!token || decordToken?.role === undefined) {
       logout();
+      return;
     }
+    if (!ALLOWED_ROLES.includes(decordToken.role)) {
+      toast.error("This portal is for administrators only.");
+      logout();
+      return;
+    }
+    Lib.setCookies({
+      name: "session-token",
+      value: token,
+      exp: decordToken?.exp ? Lib.expiredSec(decordToken?.exp ?? 1) : 1,
+    });
+    setUpUserData(decordToken);
+    navigate.push("/portal/admin/dashboard");
   };
 
   const value: AuthContextType = {
