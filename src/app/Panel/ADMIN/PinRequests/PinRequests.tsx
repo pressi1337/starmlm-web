@@ -229,9 +229,9 @@ export default function PROMOTIONVIDEOS() {
     SERVICE.ADMIN_PIN_REQUESTS
   );
 
-  // Fetch admin dashboard data for stats
-  const { data: adminDashboardData, loading: adminDashboardLoading } =
-    useGetCall(SERVICE.ADMIN_DASHBOARD);
+  // Stats ride along with the list response (data.stats) and reflect the
+  // active filter (search + date range), so the cards update on every
+  // filter change.
 
   const { loading: raiseTermLoading, Post: RaiseTerm } = useActionCall(
     SERVICE.RIASE_TERM
@@ -403,7 +403,7 @@ export default function PROMOTIONVIDEOS() {
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stat cards — track date range + search; ignore status/level filter so each tile stays meaningful */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center">
@@ -413,9 +413,7 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Pending</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.pending_promoters || 0}
+                {loading ? "..." : data?.stats?.pending_promoters ?? 0}
               </p>
             </div>
           </div>
@@ -428,9 +426,7 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Approved</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.approved_promoters || 0}
+                {loading ? "..." : data?.stats?.approved_promoters ?? 0}
               </p>
             </div>
           </div>
@@ -443,9 +439,7 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Activated</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.activated_promoters || 0}
+                {loading ? "..." : data?.stats?.activated_promoters ?? 0}
               </p>
             </div>
           </div>
@@ -458,9 +452,7 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Rejected</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.rejected_promoters || 0}
+                {loading ? "..." : data?.stats?.rejected_promoters ?? 0}
               </p>
             </div>
           </div>

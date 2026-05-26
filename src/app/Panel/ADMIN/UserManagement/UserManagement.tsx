@@ -263,13 +263,9 @@ export default function UserManagement() {
     { avoidFetch: true }
   );
 
-  // Fetch admin dashboard data for stats
-  const { data: adminDashboardData, loading: adminDashboardLoading } =
-    useGetCall(SERVICE.ADMIN_DASHBOARD);
-
-  // const { loading: deleteLoading, Delete: DeleteTrainingVideo } = useActionCall(
-  //   SERVICE.TRAININGVIDEOS
-  // );
+  // Stats now ride along with the list response (data.stats) and reflect
+  // the active filter (search + date range), so the cards update on every
+  // filter change.
 
   const getUsers = () => {
     setQuery(filter);
@@ -368,7 +364,7 @@ export default function UserManagement() {
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stat cards — track date range + search; ignore status/level filter so each tile stays meaningful */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center">
@@ -378,9 +374,7 @@ export default function UserManagement() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Users</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.total_users || 0}
+                {loading ? "..." : data?.stats?.total_users ?? 0}
               </p>
             </div>
           </div>
@@ -393,9 +387,7 @@ export default function UserManagement() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Active Users</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.total_active_users || 0}
+                {loading ? "..." : data?.stats?.total_active_users ?? 0}
               </p>
             </div>
           </div>
@@ -408,9 +400,7 @@ export default function UserManagement() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">New This Day</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.new_users_today || 0}
+                {loading ? "..." : data?.stats?.new_users_today ?? 0}
               </p>
             </div>
           </div>
@@ -425,9 +415,7 @@ export default function UserManagement() {
                 New This Month
               </p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.new_users_this_month || 0}
+                {loading ? "..." : data?.stats?.new_users_this_month ?? 0}
               </p>
             </div>
           </div>
