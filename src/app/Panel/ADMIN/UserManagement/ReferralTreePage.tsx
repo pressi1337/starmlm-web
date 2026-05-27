@@ -221,9 +221,9 @@ const ReferralTreePage: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => navigate.goBack()}
+            onClick={() => navigate.push("/portal/admin/users")}
             className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100"
-            title="Back"
+            title="Back to User Management"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>

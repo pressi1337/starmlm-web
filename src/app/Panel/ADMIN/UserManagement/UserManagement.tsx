@@ -284,13 +284,15 @@ export default function UserManagement() {
           >
             <Edit className="w-4 h-4" />
           </button>
-          <button
-            onClick={() => navigate.push(`/portal/admin/users/referral-tree/${row.id}`)}
-            className="text-emerald-600 hover:text-emerald-900 p-1"
-            title="View Referral Tree"
+          <a
+            href={`/portal/admin/users/referral-tree/${row.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-emerald-600 hover:text-emerald-900 p-1 inline-flex items-center"
+            title="View Referral Tree (opens in new tab)"
           >
             <Network className="w-4 h-4" />
-          </button>
+          </a>
           {/* <button
             onClick={() => ConfirmDeleteModal(row.id)}
             className="text-red-600 hover:text-red-900 p-1"
@@ -303,7 +305,7 @@ export default function UserManagement() {
     },
   ];
 
-  const { defaultFilter, updateSearchParam, searchParams, navigate } = useQueryParams();
+  const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
   const [filter, setFilter] = useState(defaultFilter);
 
