@@ -21,6 +21,7 @@ import {
   BanknoteArrowUp,
   GitPullRequestCreateArrow,
   Phone,
+  UserCog,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -51,79 +52,103 @@ const Sidebar = ({
     }));
   };
   const getMenuItems = () => {
+    const isSuperAdmin = user.role === ROLE.SUPER_ADMIN;
+    const isSubAdmin = user.role === ROLE.SUB_ADMIN;
+    const isAdmin = isSuperAdmin || isSubAdmin;
+
     let baseItems = [];
     baseItems = [
       {
         id: "dashboard",
         label: "Dashboard",
         icon: LayoutDashboard,
-        path:
-          user.role === ROLE.ADMIN || user.role === ROLE.SUPER_ADMIN
-            ? "/portal/admin/dashboard"
-            : user.role === ROLE.USER
-            ? "/portal/user/dashboard"
-            : "/",
+        path: isAdmin
+          ? "/portal/admin/dashboard"
+          : user.role === ROLE.USER
+          ? "/portal/user/dashboard"
+          : "/",
         color: "from-indigo-500 to-indigo-600",
       },
     ];
-    if (user.role === ROLE.ADMIN || user.role === ROLE.SUPER_ADMIN) {
-      baseItems.push({
-        id: "daily-videos",
-        label: "Daily Videos",
-        path: "/portal/admin/daily-videos",
-        icon: Video,
-        color: "from-pink-500 to-rose-600",
-      });
-      baseItems.push({
-        id: "training-videos",
-        label: "Training Videos",
-        path: "/portal/admin/training-videos",
-        icon: GraduationCap,
-        color: "from-green-500 to-emerald-600",
-      });
-      baseItems.push({
-        id: "promotion-videos",
-        label: "Promotion Videos",
-        path: "/portal/admin/promotion-videos",
-        icon: Trophy,
-        color: "from-amber-500 to-orange-600",
-      });
-      baseItems.push({
-        id: "youtube-channels",
-        label: "YouTube Channels",
-        path: "/portal/admin/youtube-channels",
-        icon: Youtube,
-        color: "from-red-500 to-rose-600",
-      });
-      baseItems.push({
-        id: "user-management",
-        label: "User Management",
-        path: "/portal/admin/users",
-        icon: Users,
-        color: "from-purple-500 to-violet-600",
-      });
-      baseItems.push({
-        id: "withdraw-request",
-        label: "Withdraw Request",
-        path: "/portal/admin/withdraw-request",
-        icon: Banknote,
-        color: "from-purple-500 to-violet-600",
-      });
+    if (isAdmin) {
+      // Super-admin auto-passes every permission; sub-admin only sees the
+      // surfaces explicitly granted on their user row.
+      const perms = (user?.permissions as any) || {};
+      const can = (key) => isSuperAdmin || perms[key] === true;
 
-      baseItems.push({
-        id: "pin-requests",
-        label: "Pin Requests",
-        path: "/portal/admin/pin-requests",
-        icon: Pin,
-        color: "from-teal-500 to-cyan-600",
-      });
-      baseItems.push({
-        id: "referral-settings",
-        label: "Promotion Settings",
-        path: "/portal/admin/referral-settings",
-        icon: Settings,
-        color: "from-sky-500 to-blue-600",
-      });
+      if (can("daily_videos")) {
+        baseItems.push({
+          id: "daily-videos",
+          label: "Daily Videos",
+          path: "/portal/admin/daily-videos",
+          icon: Video,
+          color: "from-pink-500 to-rose-600",
+        });
+      }
+      if (can("promotion_videos")) {
+        baseItems.push({
+          id: "promotion-videos",
+          label: "Promotion Videos",
+          path: "/portal/admin/promotion-videos",
+          icon: Trophy,
+          color: "from-amber-500 to-orange-600",
+        });
+      }
+      if (can("pin_requests")) {
+        baseItems.push({
+          id: "pin-requests",
+          label: "Pin Requests",
+          path: "/portal/admin/pin-requests",
+          icon: Pin,
+          color: "from-teal-500 to-cyan-600",
+        });
+      }
+
+      // The rest are Super-Admin only.
+      if (isSuperAdmin) {
+        baseItems.push({
+          id: "training-videos",
+          label: "Training Videos",
+          path: "/portal/admin/training-videos",
+          icon: GraduationCap,
+          color: "from-green-500 to-emerald-600",
+        });
+        baseItems.push({
+          id: "youtube-channels",
+          label: "YouTube Channels",
+          path: "/portal/admin/youtube-channels",
+          icon: Youtube,
+          color: "from-red-500 to-rose-600",
+        });
+        baseItems.push({
+          id: "user-management",
+          label: "User Management",
+          path: "/portal/admin/users",
+          icon: Users,
+          color: "from-purple-500 to-violet-600",
+        });
+        baseItems.push({
+          id: "sub-admins",
+          label: "Sub Admins",
+          path: "/portal/admin/sub-admins",
+          icon: UserCog,
+          color: "from-fuchsia-500 to-pink-600",
+        });
+        baseItems.push({
+          id: "withdraw-request",
+          label: "Withdraw Request",
+          path: "/portal/admin/withdraw-request",
+          icon: Banknote,
+          color: "from-purple-500 to-violet-600",
+        });
+        baseItems.push({
+          id: "referral-settings",
+          label: "Promotion Settings",
+          path: "/portal/admin/referral-settings",
+          icon: Settings,
+          color: "from-sky-500 to-blue-600",
+        });
+      }
     } else if (user.role === ROLE.USER) {
       baseItems.push(
         {

@@ -317,6 +317,7 @@ export const MODAL_OPEN: any = {
     COUPONS: 'Coupons',
     WITHDRAW_REQUEST: 'WITHDRAW_REQUEST',
     REFERAL_MODAL: 'REFERAL_MODAL',
+    SUB_ADMIN_MODAL: 'SUB_ADMIN_MODAL',
 }
 
 export const URL_QUERY: any = {
@@ -342,11 +343,24 @@ export const OPTIONS = {
         { value: "2", label: "Evening Session" },
     ],
     PROMOTER_LEVEL: [
+        // Position-indexed: PinRequests reads via OPTIONS.PROMOTER_LEVEL[row.level].
+        // Do NOT prepend entries here — it shifts every label.
         { value: "0", label: "Promoter", color: "text-blue-600" },
         { value: "1", label: "Promoter Level 1", color: "text-green-600" },
         { value: "2", label: "Promoter Level 2", color: "text-purple-600" },
         { value: "3", label: "Promoter Level 3", color: "text-yellow-600" },
         { value: "4", label: "Promoter Level 4", color: "text-pink-600" },
+    ],
+    // Options for the User Management filter dropdown only. 'null' is the
+    // sentinel for users with no current_promoter_level (Trainees) — backend
+    // ReferralController treats this as a whereNull check.
+    USER_PROMOTER_LEVEL_FILTER: [
+        { value: "null", label: "Trainee" },
+        { value: "0", label: "Promoter" },
+        { value: "1", label: "Promoter Level 1" },
+        { value: "2", label: "Promoter Level 2" },
+        { value: "3", label: "Promoter Level 3" },
+        { value: "4", label: "Promoter Level 4" },
     ],
     GIFT_DELIVERY_LEVEL: [
         { value: "1", label: "Direct" },
@@ -373,13 +387,27 @@ export const OPTIONS = {
     { value: "1", label: "Approved" },
     { value: "2", label: "Activated" },
     { value: "3", label: "Rejected" },],
+    WITHDRAW_STATUS: [
+        { value: "0", label: "Pending" },
+        { value: "1", label: "Processing" },
+        { value: "2", label: "Completed" },
+        { value: "3", label: "Rejected" },
+    ],
+    ACTIVE_STATUS: [
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+    ],
 
 
 }
 
+// 0 is the full-access admin (renamed from ADMIN → SUPER_ADMIN for clarity).
+// 1 is the restricted Sub-Admin (Daily Videos, Promotion Videos, Promoter L0/L1 pin ops).
+// `ADMIN` is kept as a backwards-compat alias for 0 so legacy call sites keep working.
 export const ROLE: any = {
+    SUPER_ADMIN: 0,
     ADMIN: 0,
-    SUPER_ADMIN: 1,
+    SUB_ADMIN: 1,
     USER: 2
 }
 

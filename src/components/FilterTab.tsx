@@ -29,12 +29,14 @@ const FILTER_FIELD = {
   PROMOTER_LEVEL: {
     type: "select_input",
     name: "current_promoter_level",
-    options: OPTIONS.PROMOTER_LEVEL,
+    // User Management filter — includes Trainee (whereNull sentinel).
+    options: OPTIONS.USER_PROMOTER_LEVEL_FILTER,
     label: "Select Promoter Level",
   },
   PROMOTER_LEVEL_PIN: {
     type: "select_input",
     name: "level",
+    // PinRequests filter — no Trainee (pin rows always have a concrete level).
     options: OPTIONS.PROMOTER_LEVEL,
     label: "Select Promoter Level",
   },
@@ -64,6 +66,30 @@ const FILTER_FIELD = {
     type: "date",
     name: "todate",
     label: "Request To",
+  },
+
+  WITHDRAW_STATUS: {
+    type: "select_input",
+    name: "status",
+    options: OPTIONS.WITHDRAW_STATUS,
+    label: "Select Status",
+  },
+  FROM_DATE_WITHDRAW: {
+    type: "date",
+    name: "fromdate",
+    label: "Request From",
+  },
+  TO_DATE_WITHDRAW: {
+    type: "date",
+    name: "todate",
+    label: "Request To",
+  },
+
+  ACTIVE_STATUS: {
+    type: "select_input",
+    name: "is_active",
+    options: OPTIONS.ACTIVE_STATUS,
+    label: "Select Status",
   },
 };
 const FilterTab = ({ filter, setFilter, TABLE_FILTER }) => {

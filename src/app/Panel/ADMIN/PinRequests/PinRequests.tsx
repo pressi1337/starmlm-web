@@ -7,9 +7,10 @@ import {
   User,
   Smartphone,
   CircleX,
+  Download,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
-import { OPTIONS } from "@/constants/others";
+import { OPTIONS, ROLE } from "@/constants/others";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import Swal from "sweetalert2";
@@ -17,6 +18,7 @@ import FilterTab from "@/components/FilterTab";
 import CopyClipBoard from "@/components/CopyClip";
 import AdminPinFormModal from "@/components/FormModals/AdminGeneratePinModal/AdminPinFormModal";
 import UIHelpers from "@/utils/UIhelper";
+import { useAuth } from "@/context/AuthContext";
 
 export default function PROMOTIONVIDEOS() {
   const getStatusBadge = (status) => {
@@ -210,17 +212,26 @@ export default function PROMOTIONVIDEOS() {
 
   const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
+  const { role } = useAuth();
+  const isSubAdmin = role === ROLE.SUB_ADMIN;
   const [filter, setFilter] = useState(defaultFilter);
+
   const { loading, setQuery, data } = useGetCall(SERVICE.ADMIN_PIN_REQUESTS, {
     avoidFetch: true,
   });
+
+  // Filter-aware Excel export — passes the current filter as query.
+  const { loading: exportLoading, fetchApi: exportPinRequests } = useGetCall(
+    SERVICE.EXPORT_PIN_REQUESTS,
+    { avoidFetch: true }
+  );
   const { loading: deleteLoading, Delete: DeleteTrainingVideo } = useActionCall(
     SERVICE.ADMIN_PIN_REQUESTS
   );
 
-  // Fetch admin dashboard data for stats
-  const { data: adminDashboardData, loading: adminDashboardLoading } =
-    useGetCall(SERVICE.ADMIN_DASHBOARD);
+  // Stats ride along with the list response (data.stats) and reflect the
+  // active filter (search + date range), so the cards update on every
+  // filter change.
 
   const { loading: raiseTermLoading, Post: RaiseTerm } = useActionCall(
     SERVICE.RIASE_TERM
@@ -369,11 +380,30 @@ export default function PROMOTIONVIDEOS() {
             <p className="mt-2 text-gray-600">
               Manage user level upgrade requests and pin generation
             </p>
+            {isSubAdmin && (
+              <p className="mt-1 text-xs text-amber-600">
+                You can only manage Promoter and Level 1 requests.
+              </p>
+            )}
           </div>
+          <button
+            onClick={() =>
+              exportPinRequests({
+                query: filter,
+                exports: true,
+                downloadFilename: "pin_requests.xlsx",
+              })
+            }
+            disabled={exportLoading}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-all duration-200"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {exportLoading ? "Exporting..." : "Export Excel"}
+          </button>
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stat cards — track date range + search; ignore status/level filter so each tile stays meaningful */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center">
@@ -383,9 +413,7 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Pending</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.pending_promoters || 0}
+                {loading ? "..." : data?.stats?.pending_promoters ?? 0}
               </p>
             </div>
           </div>
@@ -398,9 +426,7 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Approved</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.approved_promoters || 0}
+                {loading ? "..." : data?.stats?.approved_promoters ?? 0}
               </p>
             </div>
           </div>
@@ -413,9 +439,7 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Activated</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.activated_promoters || 0}
+                {loading ? "..." : data?.stats?.activated_promoters ?? 0}
               </p>
             </div>
           </div>
@@ -428,26 +452,28 @@ export default function PROMOTIONVIDEOS() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Rejected</p>
               <p className="text-2xl font-semibold text-gray-900">
-                {adminDashboardLoading
-                  ? "..."
-                  : adminDashboardData?.data?.rejected_promoters || 0}
+                {loading ? "..." : data?.stats?.rejected_promoters ?? 0}
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Filters and Search */}
+      {/* Filters and Search — hide the level filter for sub-admin since it's locked to 0/1. */}
       <FilterTab
         filter={filter}
         setFilter={setFilter}
-        TABLE_FILTER={[
-          "SEARCH",
-          "PROMOTER_LEVEL_PIN",
-          "PIN_STATUS",
-          "FROM_DATE_PIN",
-          "TO_DATE_PIN",
-        ]}
+        TABLE_FILTER={
+          isSubAdmin
+            ? ["SEARCH", "PIN_STATUS", "FROM_DATE_PIN", "TO_DATE_PIN"]
+            : [
+                "SEARCH",
+                "PROMOTER_LEVEL_PIN",
+                "PIN_STATUS",
+                "FROM_DATE_PIN",
+                "TO_DATE_PIN",
+              ]
+        }
       />
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <DataTable
