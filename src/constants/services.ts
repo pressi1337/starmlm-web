@@ -43,6 +43,11 @@ export const SERVICE: any = {
     SUB_ADMINS: "sub-admins",
     SUB_ADMIN_STATUS_UPDATE: "sub-admins/status-update",
 
+    // Multi-level referral tree for the User Management drill-down. Path is
+    // built per-call as `referral-tree/{userId}`; useGetCall falls through
+    // unknown keys to literal paths so this prefix works as a base.
+    REFERRAL_TREE: "referral-tree",
+
 
     //Export
     EXPORT_EXCEL: 'withdraws/export/excel',

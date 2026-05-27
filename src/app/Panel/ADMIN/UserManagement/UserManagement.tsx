@@ -9,6 +9,7 @@ import {
   CheckCircle,
   XCircle,
   Download,
+  Network,
 } from "lucide-react";
 import { useGetCall, useQueryParams } from "@/hooks";
 import {
@@ -23,6 +24,7 @@ import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
 import Lib from "@/utils/Lib";
 import UserFormModal from "@/components/FormModals/UserModal/UserFormModal";
+import ReferralTreeModal from "@/components/FormModals/ReferralTreeModal/ReferralTreeModal";
 
 const getRoleBadgeColor = (role) => {
   const colors = {
@@ -141,18 +143,65 @@ export default function UserManagement() {
       key: "title",
       render: (index: any, row: any) => (
         <div>
-          <span
-            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(
-              PROMOTER_LEVEL[row?.current_promoter_level]
-            )}`}
-          >
-            {PROMOTER_LEVEL[row?.current_promoter_level] ?? "Trainee"}
-          </span>
+          <div className="flex items-center gap-1 flex-wrap">
+            <span
+              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(
+                PROMOTER_LEVEL[row?.current_promoter_level]
+              )}`}
+            >
+              {PROMOTER_LEVEL[row?.current_promoter_level] ?? "Trainee"}
+            </span>
+            {Number(row?.is_distributor) === 1 && (
+              <span
+                className="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white"
+                title="Distributor"
+              >
+                <Crown className="w-2.5 h-2.5 mr-0.5" /> Distributor
+              </span>
+            )}
+          </div>
           <div className="text-xs text-gray-500 mt-1 capitalize">
             {row?.language}
           </div>
         </div>
       ),
+    },
+    {
+      title: "Ceiling Limit",
+      key: "ceiling_info",
+      render: (index: any, row: any) => {
+        const info = row?.ceiling_info;
+        if (!info || info.level === null || info.level === undefined) {
+          return <span className="text-xs text-gray-400">—</span>;
+        }
+        const dailyCurrent = Lib.formatAmount(info.daily_current ?? 0);
+        const dailyMax = Lib.formatAmount(info.daily_max ?? 0);
+        const perVideoCurrent = Lib.formatAmount(info.per_video_current ?? 0);
+        const perVideoMax = Lib.formatAmount(info.per_video_max ?? 0);
+        const eligible = Boolean(info.is_fully_eligible);
+        return (
+          <div className="text-xs whitespace-nowrap">
+            <div
+              className={`text-sm font-semibold ${
+                eligible ? "text-emerald-600" : "text-gray-900"
+              }`}
+              title="Daily potential vs the level's daily cap"
+            >
+              ₹{dailyCurrent}{" "}
+              <span className="text-gray-400 font-normal">/ ₹{dailyMax}</span>
+              {eligible && (
+                <span className="ml-1 inline-flex items-center text-[10px] font-semibold text-amber-700">
+                  • Max
+                </span>
+              )}
+            </div>
+            <div className="text-gray-500 mt-0.5">
+              Per video: ₹{perVideoCurrent}{" "}
+              <span className="text-gray-400">/ ₹{perVideoMax}</span>
+            </div>
+          </div>
+        );
+      },
     },
     {
       title: "Earnings",
@@ -232,9 +281,23 @@ export default function UserManagement() {
               })
             }
             className="text-indigo-600 hover:text-indigo-900 p-1"
-            title="Edit Video"
+            title="Edit User"
           >
             <Edit className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() =>
+              updateSearchParam({
+                options: {
+                  Modal: MODAL_OPEN.REFERRAL_TREE_MODAL,
+                  Tree: row.id,
+                },
+              })
+            }
+            className="text-emerald-600 hover:text-emerald-900 p-1"
+            title="View Referral Tree"
+          >
+            <Network className="w-4 h-4" />
           </button>
           {/* <button
             onClick={() => ConfirmDeleteModal(row.id)}
@@ -463,6 +526,7 @@ export default function UserManagement() {
       {Modal === MODAL_OPEN.USER_MODAL && (
         <UserFormModal recoilApi={getUsers} />
       )}
+      {Modal === MODAL_OPEN.REFERRAL_TREE_MODAL && <ReferralTreeModal />}
     </div>
   );
 }

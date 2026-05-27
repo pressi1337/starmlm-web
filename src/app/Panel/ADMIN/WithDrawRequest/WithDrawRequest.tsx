@@ -22,6 +22,7 @@ import {
   MessageCircle,
   Download,
   Wallet,
+  Crown,
   HandCoins,
   ListChecks,
   Hourglass,
@@ -102,9 +103,14 @@ export default function WithDrawRequest() {
               {row?.user?.city}- {row?.user?.district}- {row?.user?.state}-
               {row?.user?.pin_code}
             </div>
-            <div className="text-sm font-medium text-gray-900 flex gap-2">
+            <div className="text-sm font-medium text-gray-900 flex items-center gap-2 flex-wrap">
               <Flag size={16} />
               Promoter {row?.user?.current_promoter_level ?? 0}
+              {Number(row?.user?.is_distributor) === 1 && (
+                <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white">
+                  <Crown className="w-2.5 h-2.5 mr-0.5" /> Distributor
+                </span>
+              )}
             </div>
           </div>
         </div>
