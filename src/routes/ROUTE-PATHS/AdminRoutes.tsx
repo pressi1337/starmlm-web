@@ -15,6 +15,9 @@ const AdminDashboard = Loadable(
 const UserManagement = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/UserManagement/UserManagement"))
 );
+const ReferralTreePage = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/UserManagement/ReferralTreePage"))
+);
 const YoutubeChannels = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/YoutubeChannels/YoutubeChannels"))
 );
@@ -90,6 +93,12 @@ const AdminRoutes = {
     {
       path: "users",
       element: <SuperOnly><UserManagement /></SuperOnly>,
+    },
+    {
+      // Drilldown from the User Management tree icon. Standalone page (not a
+      // modal) since deep referral trees can render hundreds of nodes.
+      path: "users/referral-tree/:userId",
+      element: <SuperOnly><ReferralTreePage /></SuperOnly>,
     },
     {
       path: "sub-admins",

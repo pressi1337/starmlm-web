@@ -24,7 +24,6 @@ import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
 import Lib from "@/utils/Lib";
 import UserFormModal from "@/components/FormModals/UserModal/UserFormModal";
-import ReferralTreeModal from "@/components/FormModals/ReferralTreeModal/ReferralTreeModal";
 
 const getRoleBadgeColor = (role) => {
   const colors = {
@@ -286,14 +285,7 @@ export default function UserManagement() {
             <Edit className="w-4 h-4" />
           </button>
           <button
-            onClick={() =>
-              updateSearchParam({
-                options: {
-                  Modal: MODAL_OPEN.REFERRAL_TREE_MODAL,
-                  Tree: row.id,
-                },
-              })
-            }
+            onClick={() => navigate.push(`/portal/admin/users/referral-tree/${row.id}`)}
             className="text-emerald-600 hover:text-emerald-900 p-1"
             title="View Referral Tree"
           >
@@ -311,7 +303,7 @@ export default function UserManagement() {
     },
   ];
 
-  const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
+  const { defaultFilter, updateSearchParam, searchParams, navigate } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
   const [filter, setFilter] = useState(defaultFilter);
 
@@ -526,7 +518,6 @@ export default function UserManagement() {
       {Modal === MODAL_OPEN.USER_MODAL && (
         <UserFormModal recoilApi={getUsers} />
       )}
-      {Modal === MODAL_OPEN.REFERRAL_TREE_MODAL && <ReferralTreeModal />}
     </div>
   );
 }
