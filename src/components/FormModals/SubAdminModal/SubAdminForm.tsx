@@ -25,6 +25,16 @@ const buildSchema = (isEdit: boolean) =>
             .oneOf([Yup.ref("password"), null], "Passwords must match"),
         otherwise: (schema) => schema.notRequired(),
       }),
+    // Permission grid: at least one of the three must be ticked. Field-level
+    // error attached to permissions for inline display.
+    permissions: Yup.mixed().test(
+      "at-least-one",
+      "Grant at least one permission (Daily Videos, Promotion Videos, or Pin Requests).",
+      function () {
+        const { can_daily_videos, can_promotion_videos, can_pin_requests } = this.parent;
+        return Boolean(can_daily_videos) || Boolean(can_promotion_videos) || Boolean(can_pin_requests);
+      }
+    ),
   });
 
 type Props = {
@@ -52,6 +62,9 @@ const SubAdminForm = ({
       password: "",
       password_confirmation: "",
       is_active: typeof data?.is_active === "number" ? data.is_active : 1,
+      can_daily_videos: Number(data?.can_daily_videos ?? 0) === 1 ? 1 : 0,
+      can_promotion_videos: Number(data?.can_promotion_videos ?? 0) === 1 ? 1 : 0,
+      can_pin_requests: Number(data?.can_pin_requests ?? 0) === 1 ? 1 : 0,
     },
     onSubmit: (formValues: any) => {
       // Drop empty password fields on edit so we don't send blank strings.
@@ -61,6 +74,9 @@ const SubAdminForm = ({
         delete payload.password_confirmation;
       }
       payload.is_active = payload.is_active ? 1 : 0;
+      payload.can_daily_videos = payload.can_daily_videos ? 1 : 0;
+      payload.can_promotion_videos = payload.can_promotion_videos ? 1 : 0;
+      payload.can_pin_requests = payload.can_pin_requests ? 1 : 0;
       onAction(payload);
     },
     validateOnChange: false,
@@ -131,6 +147,41 @@ const SubAdminForm = ({
           onChange={handleChange}
           error={errors}
         />
+      </div>
+
+      {/* Permission grid — at least one must be selected */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Permissions <span className="text-gray-400">(grant at least one)</span>
+        </label>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 rounded-lg border border-gray-200 p-4">
+          <CheckboxInput
+            label="Daily Videos"
+            name="can_daily_videos"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+          <CheckboxInput
+            label="Promotion Videos"
+            name="can_promotion_videos"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+          <CheckboxInput
+            label="Pin Requests"
+            name="can_pin_requests"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+        </div>
+        {(errors as any).permissions && (
+          <p className="text-sm text-red-800 pt-2" role="alert">
+            {(errors as any).permissions}
+          </p>
+        )}
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">

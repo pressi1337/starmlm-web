@@ -111,6 +111,30 @@ export default function SubAdminManagement() {
       ),
     },
     {
+      title: "Permissions",
+      key: "permissions",
+      render: (_: any, row: any) => {
+        const chip = (label: string, granted: boolean) => (
+          <span
+            className={`inline-flex items-center px-2 py-0.5 text-xs rounded-full mr-1 mb-1 ${
+              granted
+                ? "bg-emerald-100 text-emerald-800"
+                : "bg-gray-100 text-gray-400 line-through"
+            }`}
+          >
+            {label}
+          </span>
+        );
+        return (
+          <div className="flex flex-wrap">
+            {chip("Daily Videos", Number(row?.can_daily_videos) === 1)}
+            {chip("Promotion Videos", Number(row?.can_promotion_videos) === 1)}
+            {chip("Pin Requests", Number(row?.can_pin_requests) === 1)}
+          </div>
+        );
+      },
+    },
+    {
       title: "Created",
       key: "created_at",
       sortable: true,

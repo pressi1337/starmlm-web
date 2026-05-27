@@ -71,30 +71,38 @@ const Sidebar = ({
       },
     ];
     if (isAdmin) {
-      // Daily Videos — both roles
-      baseItems.push({
-        id: "daily-videos",
-        label: "Daily Videos",
-        path: "/portal/admin/daily-videos",
-        icon: Video,
-        color: "from-pink-500 to-rose-600",
-      });
-      // Promotion Videos — both roles
-      baseItems.push({
-        id: "promotion-videos",
-        label: "Promotion Videos",
-        path: "/portal/admin/promotion-videos",
-        icon: Trophy,
-        color: "from-amber-500 to-orange-600",
-      });
-      // Pin Requests — both roles (sub-admin sees only level 0/1, enforced on page)
-      baseItems.push({
-        id: "pin-requests",
-        label: "Pin Requests",
-        path: "/portal/admin/pin-requests",
-        icon: Pin,
-        color: "from-teal-500 to-cyan-600",
-      });
+      // Super-admin auto-passes every permission; sub-admin only sees the
+      // surfaces explicitly granted on their user row.
+      const perms = (user?.permissions as any) || {};
+      const can = (key) => isSuperAdmin || perms[key] === true;
+
+      if (can("daily_videos")) {
+        baseItems.push({
+          id: "daily-videos",
+          label: "Daily Videos",
+          path: "/portal/admin/daily-videos",
+          icon: Video,
+          color: "from-pink-500 to-rose-600",
+        });
+      }
+      if (can("promotion_videos")) {
+        baseItems.push({
+          id: "promotion-videos",
+          label: "Promotion Videos",
+          path: "/portal/admin/promotion-videos",
+          icon: Trophy,
+          color: "from-amber-500 to-orange-600",
+        });
+      }
+      if (can("pin_requests")) {
+        baseItems.push({
+          id: "pin-requests",
+          label: "Pin Requests",
+          path: "/portal/admin/pin-requests",
+          icon: Pin,
+          color: "from-teal-500 to-cyan-600",
+        });
+      }
 
       // The rest are Super-Admin only.
       if (isSuperAdmin) {

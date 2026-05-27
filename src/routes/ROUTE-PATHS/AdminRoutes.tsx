@@ -6,6 +6,7 @@ import Loadable from "@/components/ui/Loadable";
 import path from "path";
 import WithDrawRequest from "@/app/Panel/ADMIN/WithDrawRequest/WithDrawRequest";
 import RoleGuard from "@/routes/RoleGuard";
+import PermissionGuard from "@/routes/PermissionGuard";
 import { ROLE } from "@/constants/others";
 
 const AdminDashboard = Loadable(
@@ -49,22 +50,36 @@ const AdminRoutes = {
   path: "portal/admin",
   element: <PortalLayout />,
   children: [
-    // Shared by both Super-Admin and Sub-Admin
+    // Shared by both Super-Admin and Sub-Admin. The three per-feature pages
+    // are wrapped in <PermissionGuard> so sub-admins without that specific
+    // permission get bounced to the dashboard (backend also 403s their API).
     {
       path: "dashboard",
       element: <AdminDashboard />,
     },
     {
       path: "daily-videos",
-      element: <DailyVideos />,
+      element: (
+        <PermissionGuard need="daily_videos">
+          <DailyVideos />
+        </PermissionGuard>
+      ),
     },
     {
       path: "promotion-videos",
-      element: <PromotionVideos />,
+      element: (
+        <PermissionGuard need="promotion_videos">
+          <PromotionVideos />
+        </PermissionGuard>
+      ),
     },
     {
       path: "pin-requests",
-      element: <PinRequests />,
+      element: (
+        <PermissionGuard need="pin_requests">
+          <PinRequests />
+        </PermissionGuard>
+      ),
     },
     {
       path: "profile-settings",

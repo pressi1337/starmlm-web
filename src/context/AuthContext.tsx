@@ -13,10 +13,17 @@ import { ROLE } from "@/constants/others";
 // inside AdminRoutes restrict the sub-admin to a subset of pages.
 const ALLOWED_ROLES: number[] = [ROLE.SUPER_ADMIN, ROLE.SUB_ADMIN];
 
+export type AdminPermissions = {
+  daily_videos: boolean;
+  promotion_videos: boolean;
+  pin_requests: boolean;
+};
+
 interface User {
   id: string;
   username: string;
   role: number;
+  permissions?: AdminPermissions;
   [key: string]: unknown;
 }
 
@@ -27,9 +34,39 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   role?: number | null;
+  permissions: AdminPermissions;
+  hasPermission: (key: keyof AdminPermissions) => boolean;
   logout: () => void;
   login: (token: string | undefined | null) => void;
 }
+
+const FULL_PERMISSIONS: AdminPermissions = {
+  daily_videos: true,
+  promotion_videos: true,
+  pin_requests: true,
+};
+
+const NO_PERMISSIONS: AdminPermissions = {
+  daily_videos: false,
+  promotion_videos: false,
+  pin_requests: false,
+};
+
+// Normalize the permissions claim from the JWT into a strict boolean map.
+// Sub-admin: read from token; default to all-false if missing (defensive).
+// Super-admin: always full access.
+// Anyone else: no admin permissions.
+const derivePermissions = (decoded: JwtPayload | null): AdminPermissions => {
+  if (!decoded) return NO_PERMISSIONS;
+  if (decoded.role === ROLE.SUPER_ADMIN) return FULL_PERMISSIONS;
+  if (decoded.role !== ROLE.SUB_ADMIN) return NO_PERMISSIONS;
+  const claim = decoded.permissions ?? {};
+  return {
+    daily_videos: !!claim.daily_videos,
+    promotion_videos: !!claim.promotion_videos,
+    pin_requests: !!claim.pin_requests,
+  };
+};
 
 // Create context with initial undefined (will throw if used outside provider)
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,6 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { navigate } = useQueryParams();
   const [role, setRole] = useState<number | null>(null);
+  const [permissions, setPermissions] = useState<AdminPermissions>(NO_PERMISSIONS);
 
   const [user, setUser] = useState<User | null>(() => {
     return null;
@@ -68,12 +106,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const setUpUserData = (decordToken: any) => {
+    const perms = derivePermissions(decordToken);
     setRole(decordToken?.role);
+    setPermissions(perms);
     setUser((prv) => ({
       name: decordToken?.username,
       id: decordToken?.id,
       username: decordToken?.username,
       role: decordToken?.role,
+      permissions: perms,
     }));
     setIsLoading(false);
   };
@@ -82,6 +123,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = (redirect: boolean = false) => {
     setIsLoading(false);
     setRole(null);
+    setPermissions(NO_PERMISSIONS);
     Lib.removeCookies("session-token");
   };
 
@@ -105,12 +147,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     navigate.push("/portal/admin/dashboard");
   };
 
+  const hasPermission = (key: keyof AdminPermissions): boolean => {
+    if (role === ROLE.SUPER_ADMIN) return true;
+    return permissions[key] === true;
+  };
+
   const value: AuthContextType = {
     user,
     isLoading,
     login,
     logout,
     role,
+    permissions,
+    hasPermission,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
