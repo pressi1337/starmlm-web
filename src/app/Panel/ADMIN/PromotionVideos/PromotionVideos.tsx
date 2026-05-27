@@ -9,7 +9,8 @@ import {
   Trophy,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
-import { MODAL_OPEN } from "@/constants/others";
+import { MODAL_OPEN, ROLE } from "@/constants/others";
+import { useAuth } from "@/context/AuthContext";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import UIHelpers from "@/utils/UIhelper";
@@ -20,6 +21,9 @@ import PromotionQuizFormModal from "@/components/FormModals/PromotionQuizModal/P
 import Lib from "@/utils/Lib";
 
 export default function PROMOTIONVIDEOS() {
+  const { role } = useAuth();
+  // Delete is super-admin only — sub-admin can view/create/edit but not remove.
+  const canDelete = role === ROLE.SUPER_ADMIN;
   const getSessionIcon = (session) => {
     return session === 1 ? "🌅" : "🌙";
   };
@@ -171,13 +175,15 @@ export default function PROMOTIONVIDEOS() {
           >
             <Edit className="w-4 h-4" />
           </button>
-          <button
-            onClick={() => ConfirmDeleteModal(row.id)}
-            className="text-red-600 hover:text-red-900 p-1"
-            title="Delete Video"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {canDelete && (
+            <button
+              onClick={() => ConfirmDeleteModal(row.id)}
+              className="text-red-600 hover:text-red-900 p-1"
+              title="Delete Video"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       ),
     },

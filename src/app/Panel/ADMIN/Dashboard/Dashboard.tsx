@@ -33,7 +33,8 @@ interface Activity {
 export default function Dashboard() {
   const { updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
-  const { role } = useAuth();
+  const { role, hasPermission } = useAuth();
+  const isSuperAdmin = role === ROLE.SUPER_ADMIN;
   const isSubAdmin = role === ROLE.SUB_ADMIN;
 
   // Fetch admin dashboard data
@@ -41,9 +42,14 @@ export default function Dashboard() {
 
   const isLoading = adminDashboardLoading;
 
-  const allStats: StatCard[] = [
+  // Each tile is keyed to either a permission (for sub-admin gating) or
+  // "super" (super-admin only). Super-admin always passes via hasPermission.
+  type DashStat = StatCard & { gate: "daily_videos" | "promotion_videos" | "super" };
+
+  const allStats: DashStat[] = [
     {
       name: "Daily Videos",
+      gate: "daily_videos",
       value: isLoading ? '...' : adminDashboardData?.data?.total_daily_videos || 0,
       icon: Video,
       color: "bg-blue-500",
@@ -52,6 +58,7 @@ export default function Dashboard() {
     },
     {
       name: "Training Videos",
+      gate: "super",
       value: isLoading ? '...' : adminDashboardData?.data?.total_training_videos || 0,
       icon: Trophy,
       color: "bg-green-500",
@@ -60,6 +67,7 @@ export default function Dashboard() {
     },
     {
       name: "Promotion Videos",
+      gate: "promotion_videos",
       value: isLoading ? '...' : adminDashboardData?.data?.total_promotion_videos || 0,
       icon: Award,
       color: "bg-purple-500",
@@ -68,6 +76,7 @@ export default function Dashboard() {
     },
     {
       name: "YouTube Channels",
+      gate: "super",
       value: isLoading ? '...' : adminDashboardData?.data?.total_youtube_channels || 0,
       icon: Users,
       color: "bg-red-500",
@@ -76,11 +85,11 @@ export default function Dashboard() {
     },
   ];
 
-  // Sub-admin only manages Daily Videos, Promotion Videos and Pin Requests —
-  // hide stat cards for surfaces they don't have access to.
-  const stats = isSubAdmin
-    ? allStats.filter((s) => s.name === "Daily Videos" || s.name === "Promotion Videos")
-    : allStats;
+  // Show a tile if super-admin OR (sub-admin AND has the matching permission).
+  // Super-only tiles are hidden from any sub-admin entirely.
+  const stats = allStats.filter((s) =>
+    s.gate === "super" ? isSuperAdmin : hasPermission(s.gate)
+  );
 
   const recentActivities: Activity[] = adminDashboardData?.data?.recent_users?.map((user: any) => ({
     id: user.id,
@@ -166,27 +175,29 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Quick Actions */}
+        {/* Quick Actions — each gated by the matching permission/role */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={() =>
-                  updateSearchParam({
-                    options: { Modal: MODAL_OPEN.DAILY_VIDEO_MODAL },
-                  })
-                }
-                className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
-              >
-                <Video className="w-8 h-8 text-gray-400 mb-2" />
-                <span className="text-sm font-medium text-gray-900">
-                  Add Daily Video
-                </span>
-              </button>
-              {!isSubAdmin && (
+              {hasPermission("daily_videos") && (
+                <button
+                  onClick={() =>
+                    updateSearchParam({
+                      options: { Modal: MODAL_OPEN.DAILY_VIDEO_MODAL },
+                    })
+                  }
+                  className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
+                >
+                  <Video className="w-8 h-8 text-gray-400 mb-2" />
+                  <span className="text-sm font-medium text-gray-900">
+                    Add Daily Video
+                  </span>
+                </button>
+              )}
+              {isSuperAdmin && (
                 <button
                   onClick={() =>
                     updateSearchParam({
@@ -201,20 +212,22 @@ export default function Dashboard() {
                   </span>
                 </button>
               )}
-              <button
-                onClick={() =>
-                  updateSearchParam({
-                    options: { Modal: MODAL_OPEN.PROMOTION_VIDEO_MODAL },
-                  })
-                }
-                className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors"
-              >
-                <Award className="w-8 h-8 text-gray-400 mb-2" />
-                <span className="text-sm font-medium text-gray-900">
-                  Add Promotion Video
-                </span>
-              </button>
-              {!isSubAdmin && (
+              {hasPermission("promotion_videos") && (
+                <button
+                  onClick={() =>
+                    updateSearchParam({
+                      options: { Modal: MODAL_OPEN.PROMOTION_VIDEO_MODAL },
+                    })
+                  }
+                  className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors"
+                >
+                  <Award className="w-8 h-8 text-gray-400 mb-2" />
+                  <span className="text-sm font-medium text-gray-900">
+                    Add Promotion Video
+                  </span>
+                </button>
+              )}
+              {isSuperAdmin && (
                 <button
                   onClick={() =>
                     updateSearchParam({
