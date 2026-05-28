@@ -22,6 +22,9 @@ import {
   GitPullRequestCreateArrow,
   Phone,
   UserCog,
+  HelpCircle,
+  FileText,
+  MessageSquare,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -140,6 +143,27 @@ const Sidebar = ({
           path: "/portal/admin/withdraw-request",
           icon: Banknote,
           color: "from-purple-500 to-violet-600",
+        });
+        baseItems.push({
+          id: "support-help",
+          label: "Support & Help",
+          path: "/portal/admin/support-help",
+          icon: HelpCircle,
+          color: "from-blue-500 to-indigo-600",
+        });
+        baseItems.push({
+          id: "suggestions",
+          label: "Suggestions",
+          path: "/portal/admin/suggestions",
+          icon: MessageSquare,
+          color: "from-cyan-500 to-blue-600",
+        });
+        baseItems.push({
+          id: "terms-and-conditions",
+          label: "Terms & Conditions",
+          path: "/portal/admin/terms-and-conditions",
+          icon: FileText,
+          color: "from-slate-500 to-gray-600",
         });
         baseItems.push({
           id: "referral-settings",

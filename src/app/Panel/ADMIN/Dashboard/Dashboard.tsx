@@ -27,6 +27,7 @@ interface Activity {
   id: number;
   action: string;
   user: string;
+  customer_id?: string | null;
   time: string;
 }
 
@@ -95,6 +96,7 @@ export default function Dashboard() {
     id: user.id,
     action: "New user registered",
     user: user.username || 'Unknown User',
+    customer_id: user.customer_id ?? null,
     time: new Date(user.created_at).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -161,6 +163,14 @@ export default function Dashboard() {
                         <p className="text-sm font-medium text-gray-900">
                           {activity.user}
                         </p>
+                        {activity.customer_id && (
+                          <p className="text-xs text-emerald-700">
+                            Customer ID:{" "}
+                            <span className="font-mono font-semibold">
+                              {activity.customer_id}
+                            </span>
+                          </p>
+                        )}
                         <p className="text-sm text-gray-500">
                           {activity.action} • {activity.time}
                         </p>

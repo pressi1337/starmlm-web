@@ -80,6 +80,19 @@ const UserForm = ({
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
+      {data?.customer_id && (
+        <div className="flex items-center gap-3 px-4 py-2 rounded-lg bg-emerald-50 border border-emerald-200">
+          <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wide">
+            Customer ID
+          </span>
+          <span className="text-sm font-mono font-bold text-emerald-900">
+            {data.customer_id}
+          </span>
+          <span className="text-xs text-emerald-700 ml-auto">
+            System-generated, not editable
+          </span>
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <InputText
           name="first_name"

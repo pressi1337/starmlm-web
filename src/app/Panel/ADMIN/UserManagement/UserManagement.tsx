@@ -9,8 +9,10 @@ import {
   CheckCircle,
   XCircle,
   Download,
+  Network,
+  Eraser,
 } from "lucide-react";
-import { useGetCall, useQueryParams } from "@/hooks";
+import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import {
   MODAL_OPEN,
   PROMOTER_LEVEL,
@@ -97,6 +99,12 @@ export default function UserManagement() {
               <div className="text-sm font-medium text-gray-900">
                 {row.username}
               </div>
+              {row?.customer_id && (
+                <div className="text-xs text-emerald-700">
+                  Customer ID:{" "}
+                  <span className="font-mono font-semibold">{row.customer_id}</span>
+                </div>
+              )}
               <div className="text-sm text-gray-500"> {row.mobile}</div>
             </div>
           </div>
@@ -141,18 +149,65 @@ export default function UserManagement() {
       key: "title",
       render: (index: any, row: any) => (
         <div>
-          <span
-            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(
-              PROMOTER_LEVEL[row?.current_promoter_level]
-            )}`}
-          >
-            {PROMOTER_LEVEL[row?.current_promoter_level] ?? "Trainee"}
-          </span>
+          <div className="flex items-center gap-1 flex-wrap">
+            <span
+              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(
+                PROMOTER_LEVEL[row?.current_promoter_level]
+              )}`}
+            >
+              {PROMOTER_LEVEL[row?.current_promoter_level] ?? "Trainee"}
+            </span>
+            {Number(row?.is_distributor) === 1 && (
+              <span
+                className="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-white"
+                title="Distributor"
+              >
+                <Crown className="w-2.5 h-2.5 mr-0.5" /> Distributor
+              </span>
+            )}
+          </div>
           <div className="text-xs text-gray-500 mt-1 capitalize">
             {row?.language}
           </div>
         </div>
       ),
+    },
+    {
+      title: "Ceiling Limit",
+      key: "ceiling_info",
+      render: (index: any, row: any) => {
+        const info = row?.ceiling_info;
+        if (!info || info.level === null || info.level === undefined) {
+          return <span className="text-xs text-gray-400">—</span>;
+        }
+        const dailyCurrent = Lib.formatAmount(info.daily_current ?? 0);
+        const dailyMax = Lib.formatAmount(info.daily_max ?? 0);
+        const perVideoCurrent = Lib.formatAmount(info.per_video_current ?? 0);
+        const perVideoMax = Lib.formatAmount(info.per_video_max ?? 0);
+        const eligible = Boolean(info.is_fully_eligible);
+        return (
+          <div className="text-xs whitespace-nowrap">
+            <div
+              className={`text-sm font-semibold ${
+                eligible ? "text-emerald-600" : "text-gray-900"
+              }`}
+              title="Daily potential vs the level's daily cap"
+            >
+              ₹{dailyCurrent}{" "}
+              <span className="text-gray-400 font-normal">/ ₹{dailyMax}</span>
+              {eligible && (
+                <span className="ml-1 inline-flex items-center text-[10px] font-semibold text-amber-700">
+                  • Max
+                </span>
+              )}
+            </div>
+            <div className="text-gray-500 mt-0.5">
+              Per video: ₹{perVideoCurrent}{" "}
+              <span className="text-gray-400">/ ₹{perVideoMax}</span>
+            </div>
+          </div>
+        );
+      },
     },
     {
       title: "Earnings",
@@ -232,10 +287,33 @@ export default function UserManagement() {
               })
             }
             className="text-indigo-600 hover:text-indigo-900 p-1"
-            title="Edit Video"
+            title="Edit User"
           >
             <Edit className="w-4 h-4" />
           </button>
+          <a
+            href={`/portal/admin/users/referral-tree/${row.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-emerald-600 hover:text-emerald-900 p-1 inline-flex items-center"
+            title="View Referral Tree (opens in new tab)"
+          >
+            <Network className="w-4 h-4" />
+          </a>
+          {/* Clear bank icon — only shows when the user has saved bank
+              details AND they are currently locked (is_editable=1 in this
+              codebase means "locked from user edit"). Clicking nulls every
+              bank field server-side and flips is_editable back to 0. */}
+          {Number(row?.bank_detail?.is_editable) === 1 && (
+            <button
+              onClick={() => confirmClearBank(row.id)}
+              disabled={clearingBank}
+              className="text-amber-600 hover:text-amber-800 p-1 disabled:opacity-50"
+              title="Clear Bank Details (unlock for user)"
+            >
+              <Eraser className="w-4 h-4" />
+            </button>
+          )}
           {/* <button
             onClick={() => ConfirmDeleteModal(row.id)}
             className="text-red-600 hover:text-red-900 p-1"
@@ -255,6 +333,46 @@ export default function UserManagement() {
   const { loading, setQuery, data } = useGetCall(SERVICE.GET_ALL_REFERRALS, {
     avoidFetch: true,
   });
+
+  const { Post: postClearBank, loading: clearingBank } = useActionCall(
+    SERVICE.CLEAR_USER_BANK_DETAIL
+  );
+
+  // Wipe a user's locked bank details. SweetAlert confirms first so an
+  // accidental click can't silently erase the data; on confirm we POST
+  // { user_id } and refresh the table to pick up the new is_editable=0 state.
+  const confirmClearBank = async (userId: number | string) => {
+    const swalT = Swal.mixin({
+      customClass: {
+        confirmButton:
+          "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md shadow-sm ml-3",
+        cancelButton:
+          "bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-md shadow-sm",
+        popup: "rounded-xl shadow-2xl border border-gray-200 bg-white p-6",
+        title: "text-lg font-semibold text-gray-800",
+        htmlContainer: "text-gray-600",
+      },
+      buttonsStyling: false,
+    });
+    const result = await swalT.fire({
+      title: "Clear bank details?",
+      text: "All saved bank fields will be wiped and the user will be able to enter new details. This cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, clear it",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+    });
+    if (result.isConfirmed) {
+      const resp = await postClearBank(
+        { user_id: userId },
+        "Bank details cleared"
+      );
+      if (resp) {
+        getUsers();
+      }
+    }
+  };
 
   // Filter-aware Excel export — passes the current filter as query, marks
   // exports=true so useGetCall streams the blob and triggers a download.

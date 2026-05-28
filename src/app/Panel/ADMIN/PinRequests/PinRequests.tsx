@@ -67,6 +67,14 @@ export default function PROMOTIONVIDEOS() {
               <div className="text-sm font-medium text-gray-900">
                 {row?.user?.username}
               </div>
+              {row?.user?.customer_id && (
+                <div className="text-xs text-emerald-700">
+                  Customer ID:{" "}
+                  <span className="font-mono font-semibold">
+                    {row.user.customer_id}
+                  </span>
+                </div>
+              )}
               <div className="text-sm text-gray-500 flex items-center">
                 <Smartphone className="w-3 h-3 mr-1" />
                  {row?.user?.mobile ? <CopyClipBoard text={row?.user?.mobile} /> : "-"}

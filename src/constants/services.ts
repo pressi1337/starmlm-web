@@ -43,6 +43,26 @@ export const SERVICE: any = {
     SUB_ADMINS: "sub-admins",
     SUB_ADMIN_STATUS_UPDATE: "sub-admins/status-update",
 
+    // Multi-level referral tree for the User Management drill-down. Path is
+    // built per-call as `referral-tree/{userId}`; useGetCall falls through
+    // unknown keys to literal paths so this prefix works as a base.
+    REFERRAL_TREE: "referral-tree",
+
+    // Support & Help Q&A — admin CRUD endpoint.
+    SUPPORT_HELPS: "support-helps",
+    SUPPORT_HELP_STATUS_UPDATE: "support-helps/status-update",
+
+    // Admin-side wipe of a user's locked bank details. POST { user_id }.
+    CLEAR_USER_BANK_DETAIL: "user-bank-detail/clear",
+
+    // Terms & Conditions — single-document admin editor.
+    TERMS_AND_CONDITIONS: "terms-and-conditions",
+    TERMS_AND_CONDITIONS_UPSERT: "terms-and-conditions/upsert",
+
+    // Suggestions — admin read-only list + mark-as-read PATCH.
+    ADMIN_SUGGESTIONS: "admin-suggestions",
+    ADMIN_SUGGESTIONS_MARK_READ: "admin-suggestions/mark-read",
+
 
     //Export
     EXPORT_EXCEL: 'withdraws/export/excel',

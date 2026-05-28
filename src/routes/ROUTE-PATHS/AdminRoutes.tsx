@@ -15,6 +15,9 @@ const AdminDashboard = Loadable(
 const UserManagement = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/UserManagement/UserManagement"))
 );
+const ReferralTreePage = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/UserManagement/ReferralTreePage"))
+);
 const YoutubeChannels = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/YoutubeChannels/YoutubeChannels"))
 );
@@ -38,6 +41,15 @@ const UserProfile = Loadable(
 );
 const SubAdminManagement = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/SubAdminManagement/SubAdminManagement"))
+);
+const SupportHelp = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/SupportHelp/SupportHelp"))
+);
+const TermsAndConditions = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/TermsAndConditions/TermsAndConditions"))
+);
+const Suggestions = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/Suggestions/Suggestions"))
 );
 
 // Sub-Admin (role=1) is allowed only on these pages; the rest are wrapped in
@@ -92,6 +104,12 @@ const AdminRoutes = {
       element: <SuperOnly><UserManagement /></SuperOnly>,
     },
     {
+      // Drilldown from the User Management tree icon. Standalone page (not a
+      // modal) since deep referral trees can render hundreds of nodes.
+      path: "users/referral-tree/:userId",
+      element: <SuperOnly><ReferralTreePage /></SuperOnly>,
+    },
+    {
       path: "sub-admins",
       element: <SuperOnly><SubAdminManagement /></SuperOnly>,
     },
@@ -110,6 +128,18 @@ const AdminRoutes = {
     {
       path: "withdraw-request",
       element: <SuperOnly><WithDrawRequest /></SuperOnly>,
+    },
+    {
+      path: "support-help",
+      element: <SuperOnly><SupportHelp /></SuperOnly>,
+    },
+    {
+      path: "terms-and-conditions",
+      element: <SuperOnly><TermsAndConditions /></SuperOnly>,
+    },
+    {
+      path: "suggestions",
+      element: <SuperOnly><Suggestions /></SuperOnly>,
     },
   ],
 };

@@ -787,8 +787,8 @@ function PromotionVideosPage() {
                   </span>
                 </div>
                 <div className="text-lg font-bold text-blue-600">
-                  {userInfo?.data?.current_promoter_level >= 2 ? "4" : "2"} per
-                  session
+                  {userInfo?.data?.current_promoter_level >= 3 ? "4" : "2"} per
+                  day
                 </div>
               </div>
               <div className="bg-white rounded-lg p-4 shadow-sm">
