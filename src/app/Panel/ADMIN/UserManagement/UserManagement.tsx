@@ -10,8 +10,9 @@ import {
   XCircle,
   Download,
   Network,
+  Eraser,
 } from "lucide-react";
-import { useGetCall, useQueryParams } from "@/hooks";
+import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import {
   MODAL_OPEN,
   PROMOTER_LEVEL,
@@ -299,6 +300,20 @@ export default function UserManagement() {
           >
             <Network className="w-4 h-4" />
           </a>
+          {/* Clear bank icon — only shows when the user has saved bank
+              details AND they are currently locked (is_editable=1 in this
+              codebase means "locked from user edit"). Clicking nulls every
+              bank field server-side and flips is_editable back to 0. */}
+          {Number(row?.bank_detail?.is_editable) === 1 && (
+            <button
+              onClick={() => confirmClearBank(row.id)}
+              disabled={clearingBank}
+              className="text-amber-600 hover:text-amber-800 p-1 disabled:opacity-50"
+              title="Clear Bank Details (unlock for user)"
+            >
+              <Eraser className="w-4 h-4" />
+            </button>
+          )}
           {/* <button
             onClick={() => ConfirmDeleteModal(row.id)}
             className="text-red-600 hover:text-red-900 p-1"
@@ -318,6 +333,46 @@ export default function UserManagement() {
   const { loading, setQuery, data } = useGetCall(SERVICE.GET_ALL_REFERRALS, {
     avoidFetch: true,
   });
+
+  const { Post: postClearBank, loading: clearingBank } = useActionCall(
+    SERVICE.CLEAR_USER_BANK_DETAIL
+  );
+
+  // Wipe a user's locked bank details. SweetAlert confirms first so an
+  // accidental click can't silently erase the data; on confirm we POST
+  // { user_id } and refresh the table to pick up the new is_editable=0 state.
+  const confirmClearBank = async (userId: number | string) => {
+    const swalT = Swal.mixin({
+      customClass: {
+        confirmButton:
+          "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md shadow-sm ml-3",
+        cancelButton:
+          "bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-md shadow-sm",
+        popup: "rounded-xl shadow-2xl border border-gray-200 bg-white p-6",
+        title: "text-lg font-semibold text-gray-800",
+        htmlContainer: "text-gray-600",
+      },
+      buttonsStyling: false,
+    });
+    const result = await swalT.fire({
+      title: "Clear bank details?",
+      text: "All saved bank fields will be wiped and the user will be able to enter new details. This cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, clear it",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+    });
+    if (result.isConfirmed) {
+      const resp = await postClearBank(
+        { user_id: userId },
+        "Bank details cleared"
+      );
+      if (resp) {
+        getUsers();
+      }
+    }
+  };
 
   // Filter-aware Excel export — passes the current filter as query, marks
   // exports=true so useGetCall streams the blob and triggers a download.

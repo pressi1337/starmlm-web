@@ -52,6 +52,9 @@ export const SERVICE: any = {
     SUPPORT_HELPS: "support-helps",
     SUPPORT_HELP_STATUS_UPDATE: "support-helps/status-update",
 
+    // Admin-side wipe of a user's locked bank details. POST { user_id }.
+    CLEAR_USER_BANK_DETAIL: "user-bank-detail/clear",
+
 
     //Export
     EXPORT_EXCEL: 'withdraws/export/excel',
