@@ -22,6 +22,7 @@ import {
   GitPullRequestCreateArrow,
   Phone,
   UserCog,
+  HelpCircle,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -140,6 +141,13 @@ const Sidebar = ({
           path: "/portal/admin/withdraw-request",
           icon: Banknote,
           color: "from-purple-500 to-violet-600",
+        });
+        baseItems.push({
+          id: "support-help",
+          label: "Support & Help",
+          path: "/portal/admin/support-help",
+          icon: HelpCircle,
+          color: "from-blue-500 to-indigo-600",
         });
         baseItems.push({
           id: "referral-settings",

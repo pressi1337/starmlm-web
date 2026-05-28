@@ -42,6 +42,9 @@ const UserProfile = Loadable(
 const SubAdminManagement = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/SubAdminManagement/SubAdminManagement"))
 );
+const SupportHelp = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/SupportHelp/SupportHelp"))
+);
 
 // Sub-Admin (role=1) is allowed only on these pages; the rest are wrapped in
 // <RoleGuard allow={[ROLE.SUPER_ADMIN]}> so direct URL access bounces them.
@@ -119,6 +122,10 @@ const AdminRoutes = {
     {
       path: "withdraw-request",
       element: <SuperOnly><WithDrawRequest /></SuperOnly>,
+    },
+    {
+      path: "support-help",
+      element: <SuperOnly><SupportHelp /></SuperOnly>,
     },
   ],
 };

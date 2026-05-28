@@ -48,6 +48,10 @@ export const SERVICE: any = {
     // unknown keys to literal paths so this prefix works as a base.
     REFERRAL_TREE: "referral-tree",
 
+    // Support & Help Q&A — admin CRUD endpoint.
+    SUPPORT_HELPS: "support-helps",
+    SUPPORT_HELP_STATUS_UPDATE: "support-helps/status-update",
+
 
     //Export
     EXPORT_EXCEL: 'withdraws/export/excel',
