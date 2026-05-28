@@ -59,6 +59,10 @@ export const SERVICE: any = {
     TERMS_AND_CONDITIONS: "terms-and-conditions",
     TERMS_AND_CONDITIONS_UPSERT: "terms-and-conditions/upsert",
 
+    // Suggestions — admin read-only list + mark-as-read PATCH.
+    ADMIN_SUGGESTIONS: "admin-suggestions",
+    ADMIN_SUGGESTIONS_MARK_READ: "admin-suggestions/mark-read",
+
 
     //Export
     EXPORT_EXCEL: 'withdraws/export/excel',
