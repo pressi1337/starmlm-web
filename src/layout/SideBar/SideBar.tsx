@@ -23,6 +23,7 @@ import {
   Phone,
   UserCog,
   HelpCircle,
+  FileText,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -148,6 +149,13 @@ const Sidebar = ({
           path: "/portal/admin/support-help",
           icon: HelpCircle,
           color: "from-blue-500 to-indigo-600",
+        });
+        baseItems.push({
+          id: "terms-and-conditions",
+          label: "Terms & Conditions",
+          path: "/portal/admin/terms-and-conditions",
+          icon: FileText,
+          color: "from-slate-500 to-gray-600",
         });
         baseItems.push({
           id: "referral-settings",

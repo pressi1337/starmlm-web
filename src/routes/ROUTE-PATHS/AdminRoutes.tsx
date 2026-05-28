@@ -45,6 +45,9 @@ const SubAdminManagement = Loadable(
 const SupportHelp = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/SupportHelp/SupportHelp"))
 );
+const TermsAndConditions = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/TermsAndConditions/TermsAndConditions"))
+);
 
 // Sub-Admin (role=1) is allowed only on these pages; the rest are wrapped in
 // <RoleGuard allow={[ROLE.SUPER_ADMIN]}> so direct URL access bounces them.
@@ -126,6 +129,10 @@ const AdminRoutes = {
     {
       path: "support-help",
       element: <SuperOnly><SupportHelp /></SuperOnly>,
+    },
+    {
+      path: "terms-and-conditions",
+      element: <SuperOnly><TermsAndConditions /></SuperOnly>,
     },
   ],
 };

@@ -55,6 +55,10 @@ export const SERVICE: any = {
     // Admin-side wipe of a user's locked bank details. POST { user_id }.
     CLEAR_USER_BANK_DETAIL: "user-bank-detail/clear",
 
+    // Terms & Conditions — single-document admin editor.
+    TERMS_AND_CONDITIONS: "terms-and-conditions",
+    TERMS_AND_CONDITIONS_UPSERT: "terms-and-conditions/upsert",
+
 
     //Export
     EXPORT_EXCEL: 'withdraws/export/excel',
