@@ -90,6 +90,14 @@ export default function WithDrawRequest() {
               <User size={16} />
               {row?.user?.username}
             </div>
+            {row?.user?.customer_id && (
+              <div className="text-xs text-emerald-700 ml-6">
+                Customer ID:{" "}
+                <span className="font-mono font-semibold">
+                  {row.user.customer_id}
+                </span>
+              </div>
+            )}
             <div className="text-sm font-medium text-gray-900 flex gap-2">
               <UserCheck size={16} />
               {row?.user?.first_name} {row?.user?.last_name}

@@ -98,6 +98,12 @@ export default function UserManagement() {
               <div className="text-sm font-medium text-gray-900">
                 {row.username}
               </div>
+              {row?.customer_id && (
+                <div className="text-xs text-emerald-700">
+                  Customer ID:{" "}
+                  <span className="font-mono font-semibold">{row.customer_id}</span>
+                </div>
+              )}
               <div className="text-sm text-gray-500"> {row.mobile}</div>
             </div>
           </div>

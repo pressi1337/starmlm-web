@@ -18,6 +18,7 @@ import Loader from "@/components/ui/Loader";
 type TreeNode = {
   id: number;
   username: string | null;
+  customer_id?: string | null;
   first_name?: string | null;
   last_name?: string | null;
   current_promoter_level: number | null;
@@ -83,6 +84,12 @@ const TreeOrgNode: React.FC<{ node: TreeNode; depth?: number }> = ({
             >
               {displayName}
             </div>
+            {node.customer_id && (
+              <div className="text-[10px] text-white/85 leading-tight">
+                Customer ID:{" "}
+                <span className="font-mono font-semibold">{node.customer_id}</span>
+              </div>
+            )}
             <div className="flex items-center gap-1 mt-1 flex-wrap">
               <span
                 className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${levelChipClass(
