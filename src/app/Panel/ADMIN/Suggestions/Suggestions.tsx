@@ -251,14 +251,20 @@ export default function Suggestions() {
         <button
           type="button"
           onClick={() =>
-            setFilter((prv: any) => ({
-              ...prv,
-              filter: { ...(prv.filter || {}) },
-              pageNo: 1,
-            }))
+            setFilter((prv: any) => {
+              // Remove the is_read key explicitly — just spreading the
+              // existing filter would carry over the previous Unread/Read
+              // selection, which was the bug here.
+              const { is_read: _drop, ...rest } = prv.filter || {};
+              return {
+                ...prv,
+                filter: rest,
+                pageNo: 1,
+              };
+            })
           }
           className={`px-3 py-1 text-xs rounded-full border ${
-            !filter?.filter?.is_read
+            filter?.filter?.is_read === undefined
               ? "bg-blue-100 text-blue-800 border-blue-300"
               : "bg-white text-gray-700 border-gray-300"
           }`}

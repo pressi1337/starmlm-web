@@ -106,6 +106,15 @@ const Sidebar = ({
           color: "from-teal-500 to-cyan-600",
         });
       }
+      if (can("suggestions")) {
+        baseItems.push({
+          id: "suggestions",
+          label: "Suggestions",
+          path: "/portal/admin/suggestions",
+          icon: MessageSquare,
+          color: "from-cyan-500 to-blue-600",
+        });
+      }
 
       // The rest are Super-Admin only.
       if (isSuperAdmin) {
@@ -150,13 +159,6 @@ const Sidebar = ({
           path: "/portal/admin/support-help",
           icon: HelpCircle,
           color: "from-blue-500 to-indigo-600",
-        });
-        baseItems.push({
-          id: "suggestions",
-          label: "Suggestions",
-          path: "/portal/admin/suggestions",
-          icon: MessageSquare,
-          color: "from-cyan-500 to-blue-600",
         });
         baseItems.push({
           id: "terms-and-conditions",

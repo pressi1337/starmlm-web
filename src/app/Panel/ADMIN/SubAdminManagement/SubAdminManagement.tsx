@@ -130,6 +130,7 @@ export default function SubAdminManagement() {
             {chip("Daily Videos", Number(row?.can_daily_videos) === 1)}
             {chip("Promotion Videos", Number(row?.can_promotion_videos) === 1)}
             {chip("Pin Requests", Number(row?.can_pin_requests) === 1)}
+            {chip("Suggestions", Number(row?.can_suggestions) === 1)}
           </div>
         );
       },
