@@ -139,7 +139,11 @@ const AdminRoutes = {
     },
     {
       path: "suggestions",
-      element: <SuperOnly><Suggestions /></SuperOnly>,
+      element: (
+        <PermissionGuard need="suggestions">
+          <Suggestions />
+        </PermissionGuard>
+      ),
     },
   ],
 };

@@ -25,14 +25,19 @@ const buildSchema = (isEdit: boolean) =>
             .oneOf([Yup.ref("password"), null], "Passwords must match"),
         otherwise: (schema) => schema.notRequired(),
       }),
-    // Permission grid: at least one of the three must be ticked. Field-level
+    // Permission grid: at least one of the four must be ticked. Field-level
     // error attached to permissions for inline display.
     permissions: Yup.mixed().test(
       "at-least-one",
-      "Grant at least one permission (Daily Videos, Promotion Videos, or Pin Requests).",
+      "Grant at least one permission (Daily Videos, Promotion Videos, Pin Requests, or Suggestions).",
       function () {
-        const { can_daily_videos, can_promotion_videos, can_pin_requests } = this.parent;
-        return Boolean(can_daily_videos) || Boolean(can_promotion_videos) || Boolean(can_pin_requests);
+        const { can_daily_videos, can_promotion_videos, can_pin_requests, can_suggestions } = this.parent;
+        return (
+          Boolean(can_daily_videos) ||
+          Boolean(can_promotion_videos) ||
+          Boolean(can_pin_requests) ||
+          Boolean(can_suggestions)
+        );
       }
     ),
   });
@@ -65,6 +70,7 @@ const SubAdminForm = ({
       can_daily_videos: Number(data?.can_daily_videos ?? 0) === 1 ? 1 : 0,
       can_promotion_videos: Number(data?.can_promotion_videos ?? 0) === 1 ? 1 : 0,
       can_pin_requests: Number(data?.can_pin_requests ?? 0) === 1 ? 1 : 0,
+      can_suggestions: Number(data?.can_suggestions ?? 0) === 1 ? 1 : 0,
     },
     onSubmit: (formValues: any) => {
       // Drop empty password fields on edit so we don't send blank strings.
@@ -77,6 +83,7 @@ const SubAdminForm = ({
       payload.can_daily_videos = payload.can_daily_videos ? 1 : 0;
       payload.can_promotion_videos = payload.can_promotion_videos ? 1 : 0;
       payload.can_pin_requests = payload.can_pin_requests ? 1 : 0;
+      payload.can_suggestions = payload.can_suggestions ? 1 : 0;
       onAction(payload);
     },
     validateOnChange: false,
@@ -154,7 +161,7 @@ const SubAdminForm = ({
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Permissions <span className="text-gray-400">(grant at least one)</span>
         </label>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 rounded-lg border border-gray-200 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded-lg border border-gray-200 p-4">
           <CheckboxInput
             label="Daily Videos"
             name="can_daily_videos"
@@ -172,6 +179,13 @@ const SubAdminForm = ({
           <CheckboxInput
             label="Pin Requests"
             name="can_pin_requests"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+          <CheckboxInput
+            label="Suggestions"
+            name="can_suggestions"
             value={values}
             onChange={handleChange}
             error={errors}
