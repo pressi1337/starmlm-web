@@ -6,6 +6,8 @@ export const SERVICE: any = {
 
     // Auth Routes
     DAILYVIDEOS: "daily-videos",
+    // On/off toggle for the single "default new-user video" (set from the list).
+    DAILYVIDEO_DEFAULT_UPDATE: "daily-videos/default-update",
     YOUTUBECHANNELS: "youtube-channels",
     SCRATCHSETUP: "scratch-setup",
     TRAININGVIDEOS: "training-videos",
