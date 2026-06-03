@@ -120,6 +120,39 @@ export default function DailyVideos() {
       },
     },
     {
+      // On/off switch for membership of the daily rotation pool. Unlike
+      // Default, any number of videos can be on; the fallback on no-upload
+      // days is drawn only from the rows switched on here.
+      title: "Rotation",
+      key: "is_rotational",
+      render: (index: any, row: any) => {
+        const on = Number(row?.is_rotational) === 1;
+        return (
+          <button
+            type="button"
+            role="switch"
+            aria-checked={on}
+            disabled={rotationUpdating}
+            onClick={() => handleToggleRotational(row)}
+            title={
+              on
+                ? "In the daily rotation — click to remove"
+                : "Add to the daily rotation (shown on days with no scheduled video)"
+            }
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+              on ? "bg-emerald-500" : "bg-gray-300"
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                on ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
+        );
+      },
+    },
+    {
       title: "Action",
       key: "video_path",
       render: (index: any, row: any) => (
@@ -179,6 +212,9 @@ export default function DailyVideos() {
   const { loading: defaultUpdating, Patch: SetDefaultVideo } = useActionCall(
     SERVICE.DAILYVIDEO_DEFAULT_UPDATE
   );
+  const { loading: rotationUpdating, Patch: SetRotationalVideo } = useActionCall(
+    SERVICE.DAILYVIDEO_ROTATIONAL_UPDATE
+  );
   const DailyVideoAPI = () => {
     setQuery(filter);
   };
@@ -191,6 +227,14 @@ export default function DailyVideos() {
   const handleToggleDefault = async (row: any) => {
     const next = Number(row?.is_default) === 1 ? 0 : 1;
     const resp = await SetDefaultVideo({ id: row.id, is_default: next });
+    if (resp) DailyVideoAPI();
+  };
+
+  // Add/remove a video from the daily rotation pool. Multiple allowed — no
+  // single-row enforcement, so just refresh the row's state after toggling.
+  const handleToggleRotational = async (row: any) => {
+    const next = Number(row?.is_rotational) === 1 ? 0 : 1;
+    const resp = await SetRotationalVideo({ id: row.id, is_rotational: next });
     if (resp) DailyVideoAPI();
   };
 

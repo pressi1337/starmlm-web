@@ -8,6 +8,8 @@ export const SERVICE: any = {
     DAILYVIDEOS: "daily-videos",
     // On/off toggle for the single "default new-user video" (set from the list).
     DAILYVIDEO_DEFAULT_UPDATE: "daily-videos/default-update",
+    // On/off toggle for membership of the daily rotation pool (multiple allowed).
+    DAILYVIDEO_ROTATIONAL_UPDATE: "daily-videos/rotational-update",
     YOUTUBECHANNELS: "youtube-channels",
     SCRATCHSETUP: "scratch-setup",
     TRAININGVIDEOS: "training-videos",
