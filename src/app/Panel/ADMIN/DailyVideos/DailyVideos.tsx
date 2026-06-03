@@ -67,7 +67,7 @@ export default function DailyVideos() {
       render: (index: any, row: any) => (
         <div className="flex items-center text-sm text-gray-900">
           <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-          {UIHelpers.DateFormat(row.showing_date)}
+          {row.showing_date ? UIHelpers.DateFormat(row.showing_date) : "—"}
         </div>
       ),
     },
@@ -85,6 +85,39 @@ export default function DailyVideos() {
           {row.video_path ? "Direct Upload" : "YouTube"}
         </span>
       ),
+    },
+    {
+      // On/off switch for the single "default new-user video". Turning one on
+      // turns every other off (enforced server-side); the list refreshes so
+      // the change is reflected across rows.
+      title: "Default",
+      key: "is_default",
+      render: (index: any, row: any) => {
+        const on = Number(row?.is_default) === 1;
+        return (
+          <button
+            type="button"
+            role="switch"
+            aria-checked={on}
+            disabled={defaultUpdating}
+            onClick={() => handleToggleDefault(row)}
+            title={
+              on
+                ? "Default new-user video — click to unset"
+                : "Set as the default video shown to brand-new users"
+            }
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+              on ? "bg-amber-500" : "bg-gray-300"
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                on ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
+        );
+      },
     },
     {
       title: "Action",
@@ -143,12 +176,23 @@ export default function DailyVideos() {
   const { loading: deleteLoading, Delete: DeleteDailyVideo } = useActionCall(
     SERVICE.DAILYVIDEOS
   );
+  const { loading: defaultUpdating, Patch: SetDefaultVideo } = useActionCall(
+    SERVICE.DAILYVIDEO_DEFAULT_UPDATE
+  );
   const DailyVideoAPI = () => {
     setQuery(filter);
   };
   useEffect(() => {
     DailyVideoAPI();
   }, [filter]);
+
+  // Toggle which video is the default for new users. Only one can be on at a
+  // time — the backend clears the others — so refresh the list after a change.
+  const handleToggleDefault = async (row: any) => {
+    const next = Number(row?.is_default) === 1 ? 0 : 1;
+    const resp = await SetDefaultVideo({ id: row.id, is_default: next });
+    if (resp) DailyVideoAPI();
+  };
 
   const ConfirmDeleteModal = async (value: string) => {
     const swalWithTailwind = Swal.mixin({
