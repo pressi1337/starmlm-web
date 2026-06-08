@@ -15,6 +15,8 @@ export const SERVICE: any = {
     TRAININGVIDEOS: "training-videos",
     TRAININGVIDEOQUIZES: "training-video-quizzes",
     PROMOTIONVIDEOS: "promotion-videos",
+    // On/off toggle for "Basic (L0-L2)" video eligibility (set from the list).
+    PROMOTIONVIDEO_BASIC_LEVEL_UPDATE: "promotion-videos/basic-level-update",
     PROMOTIONVIDEOQUIZES: "promotion-video-quizzes",
     GET_PROFILE: "auth-user",
     GET_BANK_INFO: 'user-bank-detail',
