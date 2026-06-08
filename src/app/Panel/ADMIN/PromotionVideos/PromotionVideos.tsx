@@ -3,7 +3,6 @@ import {
   Plus,
   Edit,
   Trash2,
-  Calendar,
   HelpCircle,
   Eye,
   Trophy,
@@ -24,15 +23,6 @@ export default function PROMOTIONVIDEOS() {
   const { role } = useAuth();
   // Delete is super-admin only — sub-admin can view/create/edit but not remove.
   const canDelete = role === ROLE.SUPER_ADMIN;
-  const getSessionIcon = (session) => {
-    return session === 1 ? "🌅" : "🌙";
-  };
-
-  const getSessionColor = (session) => {
-    return session === 1
-      ? "bg-yellow-100 text-yellow-800"
-      : "bg-indigo-100 text-indigo-800";
-  };
   const Columns: any = [
     {
       title: "Video",
@@ -64,36 +54,6 @@ export default function PROMOTIONVIDEOS() {
           </div>
         </div>
       ),
-    },
-    {
-      title: "Session",
-      key: "session",
-      render: (index: any, row: any) => (
-        <div>
-          <span
-            className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${getSessionColor(
-              row.session_type
-            )}`}
-          >
-            <span className="mr-1">{getSessionIcon(row.session_type)}</span>
-            {row.session_type === 1 ? "Morning" : "Evening"}
-          </span>
-        </div>
-      ),
-    },
-    {
-      title: "Date",
-      key: "showing_date",
-      dataIndex: "showing_date",
-      sortable: true,
-      render: (index: any, row: any) => {
-        return (
-          <div className="flex items-center text-sm text-gray-900 whitespace-nowrap">
-            <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-            {row.showing_date}
-          </div>
-        );
-      },
     },
     {
       title: "Quiz",
@@ -135,13 +95,36 @@ export default function PROMOTIONVIDEOS() {
       ),
     },
     {
-      title: "Order",
-      key: "video_order",
-      render: (index: any, row: any) => (
-        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
-          {row.video_order}
-        </span>
-      ),
+      // On/off switch for "Basic (L0-L2)" eligibility. Any number of videos
+      // can be on. L0/L1/L2 only get videos that are ON; L3/L4 always see all.
+      title: "Basic (L0–L2)",
+      key: "is_basic_level",
+      render: (index: any, row: any) => {
+        const on = Number(row?.is_basic_level) === 1;
+        return (
+          <button
+            type="button"
+            role="switch"
+            aria-checked={on}
+            disabled={basicUpdating}
+            onClick={() => handleToggleBasic(row)}
+            title={
+              on
+                ? "Visible to Promoter L0–L2 — click to restrict to L3/L4 only"
+                : "L3/L4 only — click to also show to Promoter L0–L2"
+            }
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+              on ? "bg-emerald-500" : "bg-gray-300"
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                on ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
+        );
+      },
     },
     {
       title: "Action",
@@ -201,6 +184,9 @@ export default function PROMOTIONVIDEOS() {
   const { loading: deleteLoading, Delete: DeleteTrainingVideo } = useActionCall(
     SERVICE.PROMOTIONVIDEOS
   );
+  const { loading: basicUpdating, Patch: SetBasicLevel } = useActionCall(
+    SERVICE.PROMOTIONVIDEO_BASIC_LEVEL_UPDATE
+  );
 
   const PromotionVideoAPI = () => {
     setQuery(filter);
@@ -209,6 +195,14 @@ export default function PROMOTIONVIDEOS() {
   useEffect(() => {
     PromotionVideoAPI();
   }, [filter]);
+
+  // Toggle whether L0–L2 promoters can see this video. Multiple allowed, so
+  // just refresh the row state after the change.
+  const handleToggleBasic = async (row: any) => {
+    const next = Number(row?.is_basic_level) === 1 ? 0 : 1;
+    const resp = await SetBasicLevel({ id: row.id, is_basic_level: next });
+    if (resp) PromotionVideoAPI();
+  };
 
   const ConfirmDeleteModal = async (value: string) => {
     const swalWithTailwind = Swal.mixin({
@@ -266,7 +260,7 @@ export default function PROMOTIONVIDEOS() {
               Education & Promotion Videos
             </h1>
             <p className="mt-2 text-gray-600">
-              Manage session-based promotional content with quizzes
+              Manage promotional videos with quizzes
             </p>
           </div>
           <button
@@ -283,32 +277,6 @@ export default function PROMOTIONVIDEOS() {
         </div>
       </div>
 
-      {/* Training Program Overview */}
-      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 mb-6 border border-purple-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Daily Session Structure
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white rounded-lg p-4 shadow-sm">
-            <div className="flex items-center mb-2">
-              <span className="text-2xl mr-2">🌅</span>
-              <div className="text-sm font-medium text-yellow-600">
-                Morning Session
-              </div>
-            </div>
-            <div className="text-gray-900 font-medium">12:00 AM - 12:00 PM</div>
-          </div>
-          <div className="bg-white rounded-lg p-4 shadow-sm">
-            <div className="flex items-center mb-2">
-              <span className="text-2xl mr-2">🌙</span>
-              <div className="text-sm font-medium text-indigo-600">
-                Evening Session
-              </div>
-            </div>
-            <div className="text-gray-900 font-medium">12:00 PM - 12:00 AM</div>
-          </div>
-        </div>
-      </div>
       {/* Filters and Search */}
       <FilterTab
         filter={filter}
