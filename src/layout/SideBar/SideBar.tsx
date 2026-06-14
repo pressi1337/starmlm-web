@@ -105,6 +105,13 @@ const Sidebar = ({
           icon: Pin,
           color: "from-teal-500 to-cyan-600",
         });
+        baseItems.push({
+          id: "box-requests",
+          label: "Plan Product",
+          path: "/portal/admin/box-requests",
+          icon: PackageCheck,
+          color: "from-amber-500 to-orange-600",
+        });
       }
       if (can("suggestions")) {
         baseItems.push({

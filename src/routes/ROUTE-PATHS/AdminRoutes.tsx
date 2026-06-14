@@ -51,6 +51,9 @@ const TermsAndConditions = Loadable(
 const Suggestions = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/Suggestions/Suggestions"))
 );
+const BoxRequests = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/BoxRequests/BoxRequests"))
+);
 
 // Sub-Admin (role=1) is allowed only on these pages; the rest are wrapped in
 // <RoleGuard allow={[ROLE.SUPER_ADMIN]}> so direct URL access bounces them.
@@ -90,6 +93,15 @@ const AdminRoutes = {
       element: (
         <PermissionGuard need="pin_requests">
           <PinRequests />
+        </PermissionGuard>
+      ),
+    },
+    {
+      // Box fulfilment shares the pin_requests permission (same promoter team).
+      path: "box-requests",
+      element: (
+        <PermissionGuard need="pin_requests">
+          <BoxRequests />
         </PermissionGuard>
       ),
     },
