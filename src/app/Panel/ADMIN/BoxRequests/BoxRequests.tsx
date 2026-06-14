@@ -1,0 +1,316 @@
+import { useState, useEffect } from "react";
+import {
+  Package,
+  PackageCheck,
+  Truck,
+  CheckCircle2,
+  User as UserIcon,
+  MapPin,
+  Calendar,
+  Phone,
+} from "lucide-react";
+import Swal from "sweetalert2";
+import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
+import { SERVICE } from "@/constants/services";
+import DataTable from "@/components/DataTable";
+import FilterTab from "@/components/FilterTab";
+import UIHelpers from "@/utils/UIhelper";
+
+const STATUS_OPTIONS = [
+  { value: "1", label: "Requested" },
+  { value: "2", label: "Sent" },
+  { value: "3", label: "Delivered" },
+];
+
+const LEVEL_LABELS: Record<number, string> = {
+  0: "Promoter",
+  1: "Promoter L1",
+  2: "Promoter L2",
+  3: "Promoter L3",
+  4: "Promoter L4",
+};
+
+// Base Promoter (level 0) = "Energy Plus"; all other levels = "Health Plus".
+const productName = (lvl: any) => (Number(lvl) === 0 ? "Energy Plus" : "Health Plus");
+
+/**
+ * Admin Box Requests — every promoter box batch with its delivery status.
+ * The single admin action is "Mark as Sent"; the user then confirms delivery
+ * from their app.
+ */
+export default function BoxRequests() {
+  const { defaultFilter } = useQueryParams();
+  const [filter, setFilter] = useState({
+    ...defaultFilter,
+    sortBy: "created_at",
+    sortDir: "desc",
+  });
+
+  const { loading, setQuery, data } = useGetCall(SERVICE.ADMIN_BOX_REQUESTS, {
+    avoidFetch: true,
+  });
+  const { Patch: markSent, loading: marking } = useActionCall(
+    SERVICE.ADMIN_BOX_MARK_SENT
+  );
+
+  const refresh = () => setQuery(filter);
+  useEffect(() => {
+    refresh();
+  }, [filter]);
+
+  const confirmMarkSent = async (row: any) => {
+    if (Number(row.status) !== 1) return;
+    const swalT = Swal.mixin({
+      customClass: {
+        confirmButton:
+          "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md shadow-sm ml-3",
+        cancelButton:
+          "bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-md shadow-sm",
+        popup: "rounded-xl shadow-2xl border border-gray-200 bg-white p-6",
+        title: "text-lg font-semibold text-gray-800",
+        htmlContainer: "text-gray-600",
+      },
+      buttonsStyling: false,
+    });
+    const result = await swalT.fire({
+      title: "Mark as sent?",
+      text: `Confirm you've dispatched ${row.quantity} ${productName(row.level)}. The user will then be able to mark it delivered.`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, mark sent",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+    });
+    if (result.isConfirmed) {
+      const resp = await markSent({ id: row.id }, "Marked as sent");
+      if (resp) refresh();
+    }
+  };
+
+  const statusBadge = (status: number) => {
+    const n = Number(status);
+    const map: Record<number, { label: string; cls: string; Icon: any }> = {
+      1: { label: "Requested", cls: "bg-amber-100 text-amber-800", Icon: Package },
+      2: { label: "Sent", cls: "bg-blue-100 text-blue-800", Icon: Truck },
+      3: { label: "Delivered", cls: "bg-emerald-100 text-emerald-800", Icon: PackageCheck },
+    };
+    const s = map[n] || map[1];
+    const Icon = s.Icon;
+    return (
+      <span
+        className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${s.cls}`}
+      >
+        <Icon className="w-3 h-3 mr-1" />
+        {s.label}
+      </span>
+    );
+  };
+
+  const Columns: any = [
+    {
+      title: "User",
+      key: "user",
+      render: (_: any, row: any) => (
+        <div className="flex items-center">
+          <div className="w-9 h-9 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center">
+            <UserIcon className="w-4 h-4 text-white" />
+          </div>
+          <div className="ml-3">
+            <div className="text-sm font-medium text-gray-900">
+              {row?.user?.username ?? "—"}
+            </div>
+            {row?.user?.customer_id && (
+              <div className="text-xs text-emerald-700">
+                Customer ID:{" "}
+                <span className="font-mono font-semibold">
+                  {row.user.customer_id}
+                </span>
+              </div>
+            )}
+            <div className="text-xs text-gray-500">
+              {row?.user?.first_name} {row?.user?.last_name}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Level",
+      key: "level",
+      render: (_: any, row: any) => (
+        <span className="text-sm text-gray-800">
+          {LEVEL_LABELS[Number(row?.level)] ?? "—"}
+        </span>
+      ),
+    },
+    {
+      title: "Product",
+      key: "quantity",
+      sortable: true,
+      render: (_: any, row: any) => (
+        <span className="inline-flex items-center text-sm font-semibold text-gray-900">
+          <Package className="w-4 h-4 mr-1 text-amber-600" />
+          {row?.quantity} {productName(row?.level)}
+        </span>
+      ),
+    },
+    {
+      title: "Delivery",
+      key: "delivery",
+      render: (_: any, row: any) => (
+        <div className="text-xs text-gray-700 space-y-0.5 max-w-xs">
+          {Number(row?.delivery_type) === 2 ? (
+            <div className="flex items-start">
+              <MapPin className="w-3.5 h-3.5 mr-1 mt-0.5 text-gray-400 flex-shrink-0" />
+              <span className="break-words">Courier: {row?.delivery_address || "—"}</span>
+            </div>
+          ) : Number(row?.delivery_type) === 1 ? (
+            <div className="flex items-center">
+              <Calendar className="w-3.5 h-3.5 mr-1 text-gray-400" />
+              Direct pickup: {row?.pickup_date || "—"}
+            </div>
+          ) : (
+            <span className="text-gray-400">—</span>
+          )}
+          {row?.contact_number && (
+            <div className="flex items-center text-gray-500">
+              <Phone className="w-3.5 h-3.5 mr-1 text-gray-400" />
+              {row.contact_number}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: "Requested",
+      key: "created_at",
+      sortable: true,
+      render: (_: any, row: any) => (
+        <div className="text-sm text-gray-700 whitespace-nowrap">
+          {UIHelpers.DateFormat(row?.created_at)}
+        </div>
+      ),
+    },
+    {
+      title: "Status",
+      key: "status",
+      render: (_: any, row: any) => statusBadge(row?.status),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_: any, row: any) => {
+        const isRequested = Number(row?.status) === 1;
+        const isDelivered = Number(row?.status) === 3;
+        return (
+          <button
+            type="button"
+            disabled={!isRequested || marking}
+            onClick={() => confirmMarkSent(row)}
+            className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md ${
+              isRequested
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            }`}
+            title={
+              isRequested
+                ? "Mark as sent"
+                : isDelivered
+                ? "Delivered by user"
+                : "Already sent"
+            }
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+            {isRequested ? "Mark as Sent" : isDelivered ? "Delivered" : "Sent"}
+          </button>
+        );
+      },
+    },
+  ];
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+          <Package className="w-7 h-7 text-amber-600" />
+          Plan Product
+        </h1>
+        <p className="mt-2 text-gray-600">
+          Promoter plan product allocations (Energy Plus / Health Plus). Mark a
+          batch as sent once it's dispatched — the user then confirms delivery
+          from their app.
+        </p>
+      </div>
+
+      <FilterTab filter={filter} setFilter={setFilter} TABLE_FILTER={["SEARCH"]} />
+
+      {/* Status filter */}
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        <span className="text-sm text-gray-600">Status:</span>
+        <button
+          type="button"
+          onClick={() =>
+            setFilter((prv: any) => {
+              const { status: _drop, ...rest } = prv.filter || {};
+              return { ...prv, filter: rest, pageNo: 1 };
+            })
+          }
+          className={`px-3 py-1 text-xs rounded-full border ${
+            filter?.filter?.status === undefined
+              ? "bg-amber-100 text-amber-800 border-amber-300"
+              : "bg-white text-gray-700 border-gray-300"
+          }`}
+        >
+          All
+        </button>
+        {STATUS_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() =>
+              setFilter((prv: any) => ({
+                ...prv,
+                filter: { ...(prv.filter || {}), status: opt.value },
+                pageNo: 1,
+              }))
+            }
+            className={`px-3 py-1 text-xs rounded-full border ${
+              String(filter?.filter?.status) === opt.value
+                ? "bg-amber-100 text-amber-800 border-amber-300"
+                : "bg-white text-gray-700 border-gray-300"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+        <DataTable
+          columns={Columns}
+          data={data?.data ?? []}
+          pageSize={filter.pageSize}
+          currentPage={filter.pageNo}
+          totalRecords={data?.pageInfo?.total_records ?? 0}
+          onPageChange={(page: any) =>
+            setFilter((prv) => ({ ...prv, pageNo: page }))
+          }
+          sortBy={filter.sortBy}
+          sortDir={filter.sortDir}
+          setSort={(sortData: any) => {
+            setFilter((prv) => ({
+              ...prv,
+              sortBy: sortData.key ?? "",
+              sortDir: sortData.sort ?? "",
+            }));
+          }}
+          enableSerial={true}
+          isLoading={loading}
+          setPageSize={(pageSize: number) => {
+            setFilter((prv) => ({ ...prv, pageNo: 1, pageSize: pageSize }));
+          }}
+        />
+      </div>
+    </div>
+  );
+}
