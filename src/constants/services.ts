@@ -69,9 +69,10 @@ export const SERVICE: any = {
     ADMIN_SUGGESTIONS: "admin-suggestions",
     ADMIN_SUGGESTIONS_MARK_READ: "admin-suggestions/mark-read",
 
-    // Promoter box requests — admin list + mark-as-sent PATCH.
+    // Promoter box requests — admin list + mark-as-sent / mark-as-delivered.
     ADMIN_BOX_REQUESTS: "admin-box-requests",
     ADMIN_BOX_MARK_SENT: "admin-box-requests/mark-sent",
+    ADMIN_BOX_MARK_DELIVERED: "admin-box-requests/mark-delivered",
 
 
     //Export

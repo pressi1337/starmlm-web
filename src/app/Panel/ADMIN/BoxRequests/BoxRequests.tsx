@@ -52,6 +52,9 @@ export default function BoxRequests() {
   const { Patch: markSent, loading: marking } = useActionCall(
     SERVICE.ADMIN_BOX_MARK_SENT
   );
+  const { Patch: markDelivered, loading: deliveringAdmin } = useActionCall(
+    SERVICE.ADMIN_BOX_MARK_DELIVERED
+  );
 
   const refresh = () => setQuery(filter);
   useEffect(() => {
@@ -83,6 +86,37 @@ export default function BoxRequests() {
     });
     if (result.isConfirmed) {
       const resp = await markSent({ id: row.id }, "Marked as sent");
+      if (resp) refresh();
+    }
+  };
+
+  const confirmMarkDelivered = async (row: any) => {
+    if (Number(row.status) === 3) return;
+    const swalT = Swal.mixin({
+      customClass: {
+        confirmButton:
+          "bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-md shadow-sm ml-3",
+        cancelButton:
+          "bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-md shadow-sm",
+        popup: "rounded-xl shadow-2xl border border-gray-200 bg-white p-6",
+        title: "text-lg font-semibold text-gray-800",
+        htmlContainer: "text-gray-600",
+      },
+      buttonsStyling: false,
+    });
+    const result = await swalT.fire({
+      title: "Mark as delivered?",
+      text: `Confirm the user received ${row.quantity} ${productName(
+        row.level
+      )}. Use this when the user hasn't confirmed it themselves. This closes the request.`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, mark delivered",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+    });
+    if (result.isConfirmed) {
+      const resp = await markDelivered({ id: row.id }, "Marked as delivered");
       if (resp) refresh();
     }
   };
@@ -200,29 +234,40 @@ export default function BoxRequests() {
       title: "Action",
       key: "action",
       render: (_: any, row: any) => {
-        const isRequested = Number(row?.status) === 1;
-        const isDelivered = Number(row?.status) === 3;
+        const st = Number(row?.status);
+        if (st === 1) {
+          return (
+            <button
+              type="button"
+              disabled={marking}
+              onClick={() => confirmMarkSent(row)}
+              className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-blue-600 hover:bg-blue-700 text-white"
+              title="Mark as sent"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+              Mark as Sent
+            </button>
+          );
+        }
+        if (st === 2) {
+          return (
+            <button
+              type="button"
+              disabled={deliveringAdmin}
+              onClick={() => confirmMarkDelivered(row)}
+              className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-emerald-600 hover:bg-emerald-700 text-white"
+              title="Mark as delivered (on the user's behalf)"
+            >
+              <PackageCheck className="w-3.5 h-3.5 mr-1.5" />
+              Mark Delivered
+            </button>
+          );
+        }
         return (
-          <button
-            type="button"
-            disabled={!isRequested || marking}
-            onClick={() => confirmMarkSent(row)}
-            className={`inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md ${
-              isRequested
-                ? "bg-blue-600 hover:bg-blue-700 text-white"
-                : "bg-gray-100 text-gray-400 cursor-not-allowed"
-            }`}
-            title={
-              isRequested
-                ? "Mark as sent"
-                : isDelivered
-                ? "Delivered by user"
-                : "Already sent"
-            }
-          >
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-            {isRequested ? "Mark as Sent" : isDelivered ? "Delivered" : "Sent"}
-          </button>
+          <span className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-400">
+            <PackageCheck className="w-3.5 h-3.5 mr-1.5" />
+            Delivered
+          </span>
         );
       },
     },
