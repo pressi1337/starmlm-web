@@ -8,6 +8,7 @@ import {
   MapPin,
   Calendar,
   Phone,
+  Pencil,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
@@ -54,6 +55,9 @@ export default function BoxRequests() {
   );
   const { Patch: markDelivered, loading: deliveringAdmin } = useActionCall(
     SERVICE.ADMIN_BOX_MARK_DELIVERED
+  );
+  const { Patch: updateQuantity, loading: editingQty } = useActionCall(
+    SERVICE.ADMIN_BOX_UPDATE_QUANTITY
   );
 
   const refresh = () => setQuery(filter);
@@ -121,6 +125,43 @@ export default function BoxRequests() {
     }
   };
 
+  const editQuantity = async (row: any) => {
+    const opts: number[] = row?.editable_options || [];
+    if (!opts.length) return;
+    const inputOptions: Record<string, string> = {};
+    opts.forEach((o) => {
+      inputOptions[String(o)] = `${o} ${productName(row.level)}`;
+    });
+    const { value, isConfirmed } = await Swal.fire({
+      title: "Adjust quantity",
+      text: "Set this to the quantity you can fulfil. Reducing it frees the rest for the user to request again.",
+      input: "select",
+      inputOptions,
+      inputValue: String(row.quantity),
+      showCancelButton: true,
+      confirmButtonText: "Update",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+      customClass: {
+        confirmButton:
+          "bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-md shadow-sm ml-3",
+        cancelButton:
+          "bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-md shadow-sm",
+        popup: "rounded-xl shadow-2xl border border-gray-200 bg-white p-6",
+        title: "text-lg font-semibold text-gray-800",
+        htmlContainer: "text-gray-600",
+      },
+      buttonsStyling: false,
+    });
+    if (isConfirmed && value) {
+      const resp = await updateQuantity(
+        { id: row.id, quantity: Number(value) },
+        "Quantity updated"
+      );
+      if (resp) refresh();
+    }
+  };
+
   const statusBadge = (status: number) => {
     const n = Number(status);
     const map: Record<number, { label: string; cls: string; Icon: any }> = {
@@ -182,10 +223,23 @@ export default function BoxRequests() {
       key: "quantity",
       sortable: true,
       render: (_: any, row: any) => (
-        <span className="inline-flex items-center text-sm font-semibold text-gray-900">
-          <Package className="w-4 h-4 mr-1 text-amber-600" />
-          {row?.quantity} {productName(row?.level)}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center text-sm font-semibold text-gray-900">
+            <Package className="w-4 h-4 mr-1 text-amber-600" />
+            {row?.quantity} {productName(row?.level)}
+          </span>
+          {row?.can_edit_quantity && (
+            <button
+              type="button"
+              onClick={() => editQuantity(row)}
+              disabled={editingQty}
+              title="Adjust quantity to availability"
+              className="text-indigo-600 hover:text-indigo-800 disabled:opacity-50"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
       ),
     },
     {

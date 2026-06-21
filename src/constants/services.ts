@@ -73,6 +73,7 @@ export const SERVICE: any = {
     ADMIN_BOX_REQUESTS: "admin-box-requests",
     ADMIN_BOX_MARK_SENT: "admin-box-requests/mark-sent",
     ADMIN_BOX_MARK_DELIVERED: "admin-box-requests/mark-delivered",
+    ADMIN_BOX_UPDATE_QUANTITY: "admin-box-requests/update-quantity",
 
 
     //Export
