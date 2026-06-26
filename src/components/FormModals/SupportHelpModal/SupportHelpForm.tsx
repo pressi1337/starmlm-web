@@ -4,10 +4,21 @@ import { useMemo } from "react";
 import InputTextArea from "@/components/ui/InputTextArea";
 import CheckboxInput from "@/components/ui/CheckboxInput";
 import Btn from "@/components/ui/Btn";
+import FileUpload from "@/components/FileUpload";
 
 const VALIDATION_SCHEMA = Yup.object().shape({
   question: Yup.string().required("Question is required*"),
-  answer: Yup.string().required("Answer is required*"),
+  // Answer and video are both optional, but at least one must be provided.
+  answer: Yup.string().test(
+    "answer-or-video",
+    "Add an answer or a video*",
+    function (value) {
+      const { video } = this.parent;
+      const hasAnswer = !!(value && value.trim() !== "");
+      const hasVideo = !!(video && String(video).trim() !== "");
+      return hasAnswer || hasVideo;
+    }
+  ),
 });
 
 type Props = {
@@ -31,6 +42,7 @@ const SupportHelpForm = ({
     initialValues: {
       question: data?.question ?? "",
       answer: data?.answer ?? "",
+      video: data?.video ?? "",
       is_active: typeof data?.is_active === "number" ? data.is_active : 1,
     },
     onSubmit: (formValues: any) => {
@@ -63,13 +75,28 @@ const SupportHelpForm = ({
 
       <InputTextArea
         name="answer"
-        label="Answer *"
+        label="Answer (optional — answer or video required)"
         placeholder="Explain the answer in detail. Users will see this in the accordion on the Support & Help screen."
         onChange={handleChange}
         error={errors}
         value={values}
         rows={6}
       />
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Video (optional)
+        </label>
+        <p className="text-xs text-gray-500 mb-2">
+          Upload a help video
+        </p>
+        <FileUpload
+          name="video"
+          onChange={handleChange}
+          error={errors}
+          value={values}
+        />
+      </div>
 
       <CheckboxInput
         label="Is Active? (hidden from users when off)"
