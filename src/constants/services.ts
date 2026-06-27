@@ -69,6 +69,10 @@ export const SERVICE: any = {
     ADMIN_SUGGESTIONS: "admin-suggestions",
     ADMIN_SUGGESTIONS_MARK_READ: "admin-suggestions/mark-read",
 
+    // Promotion Log — read-only audit of promotion-video quiz attempts.
+    // Detail (full per-question answers) via key: admin-promotion-quiz-logs/{id}.
+    PROMOTION_QUIZ_LOGS: "admin-promotion-quiz-logs",
+
     // Promoter box requests — admin list + mark-as-sent / mark-as-delivered.
     ADMIN_BOX_REQUESTS: "admin-box-requests",
     ADMIN_BOX_MARK_SENT: "admin-box-requests/mark-sent",

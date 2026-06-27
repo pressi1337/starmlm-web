@@ -27,6 +27,9 @@ const TrainingVideos = Loadable(
 const DailyVideos = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/DailyVideos/DailyVideos"))
 );
+const PromotionLogs = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/PromotionLogs/PromotionLogs"))
+);
 const PromotionVideos = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/PromotionVideos/PromotionVideos"))
 );
@@ -85,6 +88,14 @@ const AdminRoutes = {
       element: (
         <PermissionGuard need="promotion_videos">
           <PromotionVideos />
+        </PermissionGuard>
+      ),
+    },
+    {
+      path: "promotion-logs",
+      element: (
+        <PermissionGuard need="promotion_videos">
+          <PromotionLogs />
         </PermissionGuard>
       ),
     },
