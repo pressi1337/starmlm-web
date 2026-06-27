@@ -25,6 +25,7 @@ import {
   HelpCircle,
   FileText,
   MessageSquare,
+  ClipboardList,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -95,6 +96,13 @@ const Sidebar = ({
           path: "/portal/admin/promotion-videos",
           icon: Trophy,
           color: "from-amber-500 to-orange-600",
+        });
+        baseItems.push({
+          id: "promotion-logs",
+          label: "Promotion Log",
+          path: "/portal/admin/promotion-logs",
+          icon: ClipboardList,
+          color: "from-sky-500 to-blue-600",
         });
       }
       if (can("pin_requests")) {
