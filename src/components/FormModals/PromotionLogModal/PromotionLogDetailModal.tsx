@@ -99,6 +99,7 @@ const PromotionLogDetailModal = () => {
               value={d.saving_amount != null ? `₹${d.saving_amount}` : "-"}
             />
             <Stat label="Retry offered" value={d.offered_retry ? "Yes" : "No"} />
+            <Stat label="Watched at" value={d.video_watched_at ?? "-"} />
             <Stat label="Attempted" value={d.attempted_at} />
             <Stat label="Confirmed" value={d.confirmed_at ?? "-"} />
           </div>
