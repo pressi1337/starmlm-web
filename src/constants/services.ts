@@ -73,6 +73,17 @@ export const SERVICE: any = {
     // Detail (full per-question answers) via key: admin-promotion-quiz-logs/{id}.
     PROMOTION_QUIZ_LOGS: "admin-promotion-quiz-logs",
 
+    // Offer module — master config, per-upgrade point values, and the
+    // per-user points tab. History drill-down via key: admin-offer-points/{userId}.
+    OFFER_CONFIG: "offers/config",
+    OFFER_SETTINGS: "offer-settings",
+    OFFER_SETTINGS_UPSERT: "offer-settings/upsert",
+    ADMIN_OFFER_POINTS: "admin-offer-points",
+    // Manual, display-only leaderboard rows + merged preview of the user list.
+    OFFER_DUMMY_ENTRIES: "offer-dummy-entries",
+    OFFER_DUMMY_UPSERT: "offer-dummy-entries/upsert",
+    ADMIN_OFFER_TOP_LIST: "admin-offer-top-list",
+
     // Promoter box requests — admin list + mark-as-sent / mark-as-delivered.
     ADMIN_BOX_REQUESTS: "admin-box-requests",
     ADMIN_BOX_MARK_SENT: "admin-box-requests/mark-sent",
