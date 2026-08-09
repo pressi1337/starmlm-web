@@ -26,6 +26,7 @@ import {
   FileText,
   MessageSquare,
   ClipboardList,
+  Gift,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -167,6 +168,13 @@ const Sidebar = ({
           path: "/portal/admin/withdraw-request",
           icon: Banknote,
           color: "from-purple-500 to-violet-600",
+        });
+        baseItems.push({
+          id: "offers",
+          label: "Offer",
+          path: "/portal/admin/offers",
+          icon: Gift,
+          color: "from-rose-500 to-pink-600",
         });
         baseItems.push({
           id: "support-help",
