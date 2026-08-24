@@ -65,6 +65,12 @@ export const SERVICE: any = {
     // Show / hide user-facing menus (generic — one row per menu).
     MENU_SETTINGS: "menu-settings",
 
+    // Company Personal Documents — internal docs (image / PDF / Excel).
+    // Sub-admin needs the personal_documents permission; status change is
+    // super-admin only.
+    COMPANY_PERSONAL_DOCUMENTS: "company-personal-documents",
+    COMPANY_PERSONAL_DOCUMENT_STATUS: "company-personal-documents/status-update",
+
     // Admin-side wipe of a user's locked bank details. POST { user_id }.
     CLEAR_USER_BANK_DETAIL: "user-bank-detail/clear",
 

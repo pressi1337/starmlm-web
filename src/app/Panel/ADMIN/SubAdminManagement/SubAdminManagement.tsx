@@ -131,6 +131,10 @@ export default function SubAdminManagement() {
             {chip("Promotion Videos", Number(row?.can_promotion_videos) === 1)}
             {chip("Pin Requests", Number(row?.can_pin_requests) === 1)}
             {chip("Suggestions", Number(row?.can_suggestions) === 1)}
+            {chip(
+              "Personal Docs",
+              Number(row?.can_personal_documents) === 1
+            )}
           </div>
         );
       },

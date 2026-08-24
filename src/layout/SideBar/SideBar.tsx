@@ -122,6 +122,15 @@ const Sidebar = ({
           color: "from-amber-500 to-orange-600",
         });
       }
+      if (can("personal_documents")) {
+        baseItems.push({
+          id: "personal-documents",
+          label: "Personal Documents",
+          path: "/portal/admin/personal-documents",
+          icon: ShieldCheck,
+          color: "from-violet-500 to-purple-600",
+        });
+      }
       if (can("suggestions")) {
         baseItems.push({
           id: "suggestions",
@@ -177,13 +186,6 @@ const Sidebar = ({
           color: "from-rose-500 to-pink-600",
         });
         baseItems.push({
-          id: "company-documents",
-          label: "Company Documents",
-          path: "/portal/admin/company-documents",
-          icon: FileText,
-          color: "from-cyan-500 to-teal-600",
-        });
-        baseItems.push({
           id: "support-help",
           label: "Support & Help",
           path: "/portal/admin/support-help",
@@ -196,6 +198,14 @@ const Sidebar = ({
           path: "/portal/admin/terms-and-conditions",
           icon: FileText,
           color: "from-slate-500 to-gray-600",
+        });
+        // Sits directly below Terms & Conditions, matching the user app.
+        baseItems.push({
+          id: "company-documents",
+          label: "Company Documents",
+          path: "/portal/admin/company-documents",
+          icon: FileText,
+          color: "from-cyan-500 to-teal-600",
         });
         baseItems.push({
           id: "referral-settings",

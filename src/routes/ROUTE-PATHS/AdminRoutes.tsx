@@ -49,6 +49,9 @@ const Offers = Loadable(lazy(() => import("@/app/Panel/ADMIN/Offers/Offers")));
 const CompanyDocuments = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/CompanyDocuments/CompanyDocuments"))
 );
+const PersonalDocuments = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/PersonalDocuments/PersonalDocuments"))
+);
 const SupportHelp = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/SupportHelp/SupportHelp"))
 );
@@ -163,6 +166,15 @@ const AdminRoutes = {
     {
       path: "company-documents",
       element: <SuperOnly><CompanyDocuments /></SuperOnly>,
+    },
+    {
+      // Not SuperOnly — a sub-admin granted `personal_documents` may use it.
+      path: "personal-documents",
+      element: (
+        <PermissionGuard need="personal_documents">
+          <PersonalDocuments />
+        </PermissionGuard>
+      ),
     },
     {
       path: "support-help",
