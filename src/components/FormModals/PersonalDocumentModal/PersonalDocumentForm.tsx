@@ -51,13 +51,6 @@ const PersonalDocumentForm = ({
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-      {!isEdit && !isSuperAdmin && (
-        <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-sm text-amber-900">
-          This document will be saved as <b>Inactive</b> — the main admin
-          reviews it and activates it.
-        </div>
-      )}
-
       <InputText
         name="title"
         label="Title *"
