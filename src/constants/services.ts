@@ -58,6 +58,13 @@ export const SERVICE: any = {
     SUPPORT_HELPS: "support-helps",
     SUPPORT_HELP_STATUS_UPDATE: "support-helps/status-update",
 
+    // Company Documents — admin CRUD + show/hide toggle.
+    COMPANY_DOCUMENTS: "company-documents",
+    COMPANY_DOCUMENT_STATUS_UPDATE: "company-documents/status-update",
+
+    // Show / hide user-facing menus (generic — one row per menu).
+    MENU_SETTINGS: "menu-settings",
+
     // Admin-side wipe of a user's locked bank details. POST { user_id }.
     CLEAR_USER_BANK_DETAIL: "user-bank-detail/clear",
 

@@ -177,6 +177,13 @@ const Sidebar = ({
           color: "from-rose-500 to-pink-600",
         });
         baseItems.push({
+          id: "company-documents",
+          label: "Company Documents",
+          path: "/portal/admin/company-documents",
+          icon: FileText,
+          color: "from-cyan-500 to-teal-600",
+        });
+        baseItems.push({
           id: "support-help",
           label: "Support & Help",
           path: "/portal/admin/support-help",

@@ -16,6 +16,14 @@ export default function FileUpload({
   onChange = () => {},
   showFileValue = true,
   setLoading = () => {},
+  // Defaults keep the original video behaviour for existing call sites
+  // (accept video, no size cap). Company Documents overrides these to take
+  // images/PDF with a cap.
+  accept = "video/*",
+  maxMb = 0, // 0 = no limit
+  title = "Video Source",
+  helpText = "",
+  kindLabel = "file",
 }: any) {
   const [fileName, setFileName] = useState(getRealFileName(value[name]) ?? "");
   const fileRef: any = useRef();
@@ -25,6 +33,17 @@ export default function FileUpload({
   const [uploadError, setUploadError] = useState("");
 
   const uploadFileInChunks = async (rawFile: any) => {
+    if (!rawFile) return;
+
+    // Only enforced when a caller opts in with maxMb (videos stay uncapped).
+    if (maxMb > 0 && rawFile.size / (1024 * 1024) > maxMb) {
+      if (fileRef.current) fileRef.current.value = "";
+      setUploadError(
+        `This ${kindLabel} is ${(rawFile.size / (1024 * 1024)).toFixed(0)} MB — too large (max ${maxMb} MB).`
+      );
+      return;
+    }
+
     setFileName(rawFile?.name);
     setProgress(0);
     setUploaded(true);
@@ -105,7 +124,7 @@ export default function FileUpload({
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        Video Source
+        {title}
       </label>
       {!Boolean(fileName) && (
         <div className="flex items-center space-x-3 p-3 border border-gray-300 rounded-lg cursor-pointer">
@@ -114,9 +133,12 @@ export default function FileUpload({
             <label className="block text-sm font-medium text-gray-700">
               Direct Upload
             </label>
+            {helpText ? (
+              <p className="text-xs text-gray-500">{helpText}</p>
+            ) : null}
             <input
               type="file"
-              accept="video/*"
+              accept={accept}
               className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               onChange={(event: any) =>
                 uploadFileInChunks(event.target.files[0])
