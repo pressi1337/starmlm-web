@@ -27,6 +27,7 @@ import {
   MessageSquare,
   ClipboardList,
   Gift,
+  ShieldCheck,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";

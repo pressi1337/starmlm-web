@@ -24,13 +24,13 @@ import PersonalDocumentFormModal from "@/components/FormModals/PersonalDocumentM
 const FILE_TYPE_PDF = 2;
 const FILE_TYPE_EXCEL = 3;
 
-const statusBadge = (isActive: number, label: string) => {
-  const active = Number(isActive) === 1;
-  const Icon = active ? Eye : EyeOff;
+const visibilityBadge = (isVisible: number, label: string) => {
+  const visible = Number(isVisible) === 1;
+  const Icon = visible ? Eye : EyeOff;
   return (
     <span
       className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${
-        active ? "bg-green-100 text-green-800" : "bg-gray-200 text-gray-700"
+        visible ? "bg-green-100 text-green-800" : "bg-gray-200 text-gray-700"
       }`}
     >
       <Icon className="w-3 h-3 mr-1" />
@@ -101,9 +101,12 @@ export default function PersonalDocuments() {
     }
   };
 
-  const toggleActive = async (row: any) => {
-    const next = Number(row.is_active) === 1 ? 0 : 1;
-    const resp = await ChangeStatus({ id: row.id, is_active: next });
+  const toggleVisibility = async (row: any) => {
+    const next = Number(row.is_sub_admin_visible) === 1 ? 0 : 1;
+    const resp = await ChangeStatus({
+      id: row.id,
+      is_sub_admin_visible: next,
+    });
     if (resp) refresh();
   };
 
@@ -165,25 +168,31 @@ export default function PersonalDocuments() {
         </div>
       ),
     },
-    {
-      title: "Status",
-      key: "is_active",
-      sortable: true,
-      render: (_: any, row: any) =>
-        isSuperAdmin ? (
-          <button
-            type="button"
-            onClick={() => toggleActive(row)}
-            title="Click to show / hide"
-            className="focus:outline-none"
-          >
-            {statusBadge(row.is_active, row.status_label)}
-          </button>
-        ) : (
-          // Sub-admins see the status but cannot change it.
-          statusBadge(row.is_active, row.status_label)
-        ),
-    },
+    // Visibility is a super-admin concern only. The column is omitted entirely
+    // for sub-admins — they never see that the flag exists (the API also
+    // withholds it from their payload).
+    ...(isSuperAdmin
+      ? [
+          {
+            title: "Sub Admin Visible",
+            key: "is_sub_admin_visible",
+            sortable: true,
+            render: (_: any, row: any) => (
+              <button
+                type="button"
+                onClick={() => toggleVisibility(row)}
+                title="Click to show / hide this document from sub admins"
+                className="focus:outline-none"
+              >
+                {visibilityBadge(
+                  row.is_sub_admin_visible,
+                  row.visibility_label
+                )}
+              </button>
+            ),
+          },
+        ]
+      : []),
     {
       title: "Action",
       key: "action",
@@ -230,8 +239,8 @@ export default function PersonalDocuments() {
             <p className="mt-2 text-gray-600">
               Internal documents (image, PDF or Excel). These are{" "}
               <b>never shown to users</b>.
-              {!isSuperAdmin &&
-                " Documents you add stay Inactive until the main admin activates them."}
+              {isSuperAdmin &&
+                " Use Sub Admin Visible to control which documents sub admins can see."}
             </p>
           </div>
           <button
