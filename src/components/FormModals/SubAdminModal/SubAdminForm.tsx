@@ -31,12 +31,13 @@ const buildSchema = (isEdit: boolean) =>
       "at-least-one",
       "Grant at least one permission (Daily Videos, Promotion Videos, Pin Requests, or Suggestions).",
       function () {
-        const { can_daily_videos, can_promotion_videos, can_pin_requests, can_suggestions } = this.parent;
+        const { can_daily_videos, can_promotion_videos, can_pin_requests, can_suggestions, can_personal_documents } = this.parent;
         return (
           Boolean(can_daily_videos) ||
           Boolean(can_promotion_videos) ||
           Boolean(can_pin_requests) ||
-          Boolean(can_suggestions)
+          Boolean(can_suggestions) ||
+          Boolean(can_personal_documents)
         );
       }
     ),
@@ -71,6 +72,8 @@ const SubAdminForm = ({
       can_promotion_videos: Number(data?.can_promotion_videos ?? 0) === 1 ? 1 : 0,
       can_pin_requests: Number(data?.can_pin_requests ?? 0) === 1 ? 1 : 0,
       can_suggestions: Number(data?.can_suggestions ?? 0) === 1 ? 1 : 0,
+      can_personal_documents:
+        Number(data?.can_personal_documents ?? 0) === 1 ? 1 : 0,
     },
     onSubmit: (formValues: any) => {
       // Drop empty password fields on edit so we don't send blank strings.
@@ -84,6 +87,7 @@ const SubAdminForm = ({
       payload.can_promotion_videos = payload.can_promotion_videos ? 1 : 0;
       payload.can_pin_requests = payload.can_pin_requests ? 1 : 0;
       payload.can_suggestions = payload.can_suggestions ? 1 : 0;
+      payload.can_personal_documents = payload.can_personal_documents ? 1 : 0;
       onAction(payload);
     },
     validateOnChange: false,
@@ -186,6 +190,13 @@ const SubAdminForm = ({
           <CheckboxInput
             label="Suggestions"
             name="can_suggestions"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+          <CheckboxInput
+            label="Personal Documents"
+            name="can_personal_documents"
             value={values}
             onChange={handleChange}
             error={errors}
