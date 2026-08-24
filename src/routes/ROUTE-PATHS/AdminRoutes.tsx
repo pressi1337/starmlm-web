@@ -46,6 +46,9 @@ const SubAdminManagement = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/SubAdminManagement/SubAdminManagement"))
 );
 const Offers = Loadable(lazy(() => import("@/app/Panel/ADMIN/Offers/Offers")));
+const CompanyDocuments = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/CompanyDocuments/CompanyDocuments"))
+);
 const SupportHelp = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/SupportHelp/SupportHelp"))
 );
@@ -156,6 +159,10 @@ const AdminRoutes = {
     {
       path: "offers",
       element: <SuperOnly><Offers /></SuperOnly>,
+    },
+    {
+      path: "company-documents",
+      element: <SuperOnly><CompanyDocuments /></SuperOnly>,
     },
     {
       path: "support-help",
