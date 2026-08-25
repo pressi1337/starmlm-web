@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   UserCog,
   User as UserIcon,
+  AlertTriangle,
 } from "lucide-react";
 import { useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
@@ -104,13 +105,46 @@ export default function LoginLogs() {
             </span>
             <div>
               <div className="text-sm text-gray-900">
-                {row.device ?? "Unknown"}
+                {row.device_model || row.device || "Unknown"}
               </div>
               <div className="text-xs text-gray-500">
                 {[row.os, row.browser].filter(Boolean).join(" · ")}
               </div>
             </div>
           </div>
+        );
+      },
+    },
+    {
+      title: "Accounts on Device",
+      key: "accounts_on_device",
+      render: (_, row) => {
+        if (!row.device_id) {
+          // Logged in before device tracking shipped, or storage was blocked.
+          return <span className="text-xs text-gray-400">no device id</span>;
+        }
+        const count = Number(row.accounts_on_device ?? 1);
+        const shared = count > 1;
+        return (
+          <button
+            type="button"
+            onClick={() =>
+              setFilter((prv) => ({
+                ...prv,
+                search: row.device_id,
+                pageNo: 1,
+              }))
+            }
+            title="Click to see every login from this device"
+            className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${
+              shared
+                ? "bg-red-100 text-red-800 hover:bg-red-200"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {shared && <AlertTriangle className="w-3 h-3 mr-1" />}
+            {count} {count === 1 ? "account" : "accounts"}
+          </button>
         );
       },
     },
@@ -134,7 +168,13 @@ export default function LoginLogs() {
         </h1>
         <p className="mt-2 text-gray-600">
           Every successful login — who signed in, when, and from which device.
-          Search by username, customer ID or IP.
+          Search by username, customer ID, IP or device.
+        </p>
+        <p className="mt-2 text-sm text-gray-500">
+          <b>Accounts on Device</b> counts how many different accounts have
+          signed in from that same phone — click it to see them all. An IP only
+          identifies a network (a whole household or mobile carrier shares
+          one), so the device count is the far stronger signal.
         </p>
       </div>
 
