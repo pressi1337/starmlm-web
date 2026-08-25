@@ -10,6 +10,8 @@ import {
   UserCog,
   User as UserIcon,
   AlertTriangle,
+  MapPin,
+  Wifi,
 } from "lucide-react";
 import { useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
@@ -104,8 +106,9 @@ export default function LoginLogs() {
               <Icon className="w-4 h-4" />
             </span>
             <div>
-              <div className="text-sm text-gray-900">
-                {row.device_model || row.device || "Unknown"}
+              {/* Brand + model, e.g. "Samsung SM-G991B". */}
+              <div className="text-sm font-medium text-gray-900">
+                {row.device_name || row.device_model || row.device || "Unknown"}
               </div>
               <div className="text-xs text-gray-500">
                 {[row.os, row.browser].filter(Boolean).join(" · ")}
@@ -157,6 +160,33 @@ export default function LoginLogs() {
         </span>
       ),
     },
+    {
+      title: "Location",
+      key: "location",
+      render: (_, row) => {
+        if (!row.location && !row.isp) {
+          return <span className="text-xs text-gray-400">-</span>;
+        }
+        return (
+          <div className="min-w-[150px]">
+            {row.location ? (
+              <div className="flex items-start text-sm text-gray-900">
+                <MapPin className="w-3.5 h-3.5 mr-1 mt-0.5 text-gray-400 shrink-0" />
+                <span>{row.location}</span>
+              </div>
+            ) : null}
+            {/* The network behind the IP — a mobile carrier here is why many
+                unrelated users can share one address. */}
+            {row.isp ? (
+              <div className="flex items-start text-xs text-gray-500 mt-0.5">
+                <Wifi className="w-3 h-3 mr-1 mt-0.5 text-gray-400 shrink-0" />
+                <span>{row.isp}</span>
+              </div>
+            ) : null}
+          </div>
+        );
+      },
+    },
   ];
 
   return (
@@ -168,13 +198,20 @@ export default function LoginLogs() {
         </h1>
         <p className="mt-2 text-gray-600">
           Every successful login — who signed in, when, and from which device.
-          Search by username, customer ID, IP or device.
+          Search by username, customer ID, IP, device or location.
         </p>
         <p className="mt-2 text-sm text-gray-500">
           <b>Accounts on Device</b> counts how many different accounts have
           signed in from that same phone — click it to see them all. An IP only
           identifies a network (a whole household or mobile carrier shares
           one), so the device count is the far stronger signal.
+        </p>
+        <p className="mt-1 text-sm text-gray-500">
+          <b>Location</b> is estimated from the IP address. Country is reliable;
+          the city is a good guess on home broadband but often wrong on mobile
+          data, where the carrier's routing city is shown instead of the user's.
+          The network name below it is the useful part — a mobile carrier there
+          explains why unrelated people share one IP.
         </p>
       </div>
 
