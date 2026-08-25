@@ -28,6 +28,7 @@ import {
   ClipboardList,
   Gift,
   ShieldCheck,
+  History,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -164,6 +165,13 @@ const Sidebar = ({
           path: "/portal/admin/users",
           icon: Users,
           color: "from-purple-500 to-violet-600",
+        });
+        baseItems.push({
+          id: "login-logs",
+          label: "Login History",
+          path: "/portal/admin/login-logs",
+          icon: History,
+          color: "from-indigo-500 to-blue-600",
         });
         baseItems.push({
           id: "sub-admins",
