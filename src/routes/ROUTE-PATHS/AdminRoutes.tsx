@@ -52,6 +52,9 @@ const CompanyDocuments = Loadable(
 const PersonalDocuments = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/PersonalDocuments/PersonalDocuments"))
 );
+const LoginLogs = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/LoginLogs/LoginLogs"))
+);
 const SupportHelp = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/SupportHelp/SupportHelp"))
 );
@@ -166,6 +169,11 @@ const AdminRoutes = {
     {
       path: "company-documents",
       element: <SuperOnly><CompanyDocuments /></SuperOnly>,
+    },
+    {
+      // Exposes IPs/devices for every account — super-admin only.
+      path: "login-logs",
+      element: <SuperOnly><LoginLogs /></SuperOnly>,
     },
     {
       // Not SuperOnly — a sub-admin granted `personal_documents` may use it.

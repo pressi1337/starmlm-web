@@ -65,6 +65,9 @@ export const SERVICE: any = {
     // Show / hide user-facing menus (generic — one row per menu).
     MENU_SETTINGS: "menu-settings",
 
+    // Login history — read-only audit list (super-admin only).
+    LOGIN_LOGS: "login-logs",
+
     // Company Personal Documents — internal docs (image / PDF / Excel).
     // Sub-admin needs the personal_documents permission; status change is
     // super-admin only.
