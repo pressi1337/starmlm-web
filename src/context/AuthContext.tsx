@@ -5,7 +5,7 @@ import axiosInstance from "@/utils/CustomAxios";
 import { API_AUTH_USER } from "@/utils/http/apiPaths";
 import Lib from "@/utils/Lib";
 import { useGetCall, useQueryParams } from "@/hooks";
-import { SERVICE } from "@/constants/services";
+import { BASE_URL, SERVICE } from "@/constants/services";
 import { ROLE } from "@/constants/others";
 
 // This frontend is the admin-only console. End users belong on the PWA.
@@ -105,7 +105,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Stale non-admin session was kicking around — surface why we're logging them out.
         toast.error("This portal is for administrators only.");
       }
-      logout();
+      clearSession();
+      setIsLoading(false);
     }
   }, []);
 
@@ -145,7 +146,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const token = Lib.getCookies("session-token");
 
     if (token) {
-      fetch(`${BASE_URL}/${SERVICE.LOGOUT}`, {
+      fetch(`${BASE_URL}${SERVICE.LOGOUT}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -164,12 +165,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = (token: string | undefined | null) => {
     let decordToken: JwtPayload = token ? Lib.DecodeJwt(token) : null;
     if (!token || decordToken?.role === undefined) {
-      logout();
+      clearSession();
       return;
     }
     if (!ALLOWED_ROLES.includes(decordToken.role)) {
       toast.error("This portal is for administrators only.");
-      logout();
+      clearSession();
       return;
     }
     Lib.setCookies({
