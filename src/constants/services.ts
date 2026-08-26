@@ -2,6 +2,9 @@ export const BASE_URL = import.meta.env.VITE_BASE_URL ?? "";
 export const SERVICE: any = {
     //Auth
     LOGIN: "auth/login",
+    // Clears the server-side session marker so the token dies immediately
+    // instead of staying valid for the rest of its lifetime.
+    LOGOUT: "api-logout",
     REGISTER: "auth/register",
 
     // Auth Routes
