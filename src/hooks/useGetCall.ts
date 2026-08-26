@@ -83,9 +83,11 @@ const useGetCall = (services: string, initialOptions: OptionsProps = {}) => {
                 if (!response.ok) {
                     if (response.status === 401) {
                         Lib.removeCookies("session-token");
-                        // router.replace("/login");
-                        navigate.replace("/login")
-                        // throw new Error("Session Expired please logisn"); // Temporarily
+                        navigate.replace("/login");
+                        // Stop here: without this the error payload falls
+                        // through and gets parsed as if it were real data.
+                        setLoading(false);
+                        return;
                     } else if (response.status === 500) {
                         throw new Error("Server Error, Please Try Later");
                     } else if (response.status === 400) {
