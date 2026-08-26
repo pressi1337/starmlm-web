@@ -123,12 +123,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(false);
   };
 
-  // Function to handle logout
-  const logout = (redirect: boolean = false) => {
-    setIsLoading(false);
+  /** Wipe the signed-in admin from this browser. No redirect — callers decide. */
+  const clearSession = () => {
+    Lib.removeCookies("session-token");
     setRole(null);
     setPermissions(NO_PERMISSIONS);
-    Lib.removeCookies("session-token");
+    setUser(null);
+  };
+
+  /**
+   * Admin logout.
+   *
+   * The server call is the part that matters: a JWT stays valid on its own for
+   * days, so clearing it locally only looks like a logout. Telling the backend
+   * clears the session marker, which kills the token everywhere — reopening the
+   * console with a leftover copy can no longer get past the API.
+   *
+   * Fire-and-forget: a dead connection must not trap someone in the console.
+   */
+  const logout = (redirect: boolean = false) => {
+    const token = Lib.getCookies("session-token");
+
+    if (token) {
+      fetch(`${BASE_URL}/${SERVICE.LOGOUT}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+        keepalive: true,
+      }).catch(() => {
+        /* offline or server down — the local session is cleared regardless */
+      });
+    }
+
+    clearSession();
+    setIsLoading(false);
   };
 
   const login = (token: string | undefined | null) => {
