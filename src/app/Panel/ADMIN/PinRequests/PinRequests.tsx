@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  HeartHandshake,
   Clock,
   CheckCircle,
   XCircle,
@@ -186,15 +185,6 @@ export default function PROMOTIONVIDEOS() {
       key: "action",
       render: (index: any, row: any) => (
         <div className="flex items-center justify-start space-x-2">
-          {row?.user?.promoter_status === 0 && row?.status === 0 && (
-            <button
-              className="whitespace-nowrap inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              onClick={() => handleRaiseTerm(row.id)}
-            >
-              <HeartHandshake className="w-3 h-3 mr-1" />
-              Raise Term
-            </button>
-          )}
           {row?.user?.promoter_status === 2 && row?.status === 0 && (
             <button
               className="whitespace-nowrap inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -203,7 +193,7 @@ export default function PROMOTIONVIDEOS() {
               Generate Pin
             </button>
           )}
-          {![1, 3, 4].includes(row?.user?.promoter_status) &&
+          {![3, 4].includes(row?.user?.promoter_status) &&
             row?.status === 0 && (
               <button
                 className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
@@ -240,10 +230,6 @@ export default function PROMOTIONVIDEOS() {
   // Stats ride along with the list response (data.stats) and reflect the
   // active filter (search + date range), so the cards update on every
   // filter change.
-
-  const { loading: raiseTermLoading, Post: RaiseTerm } = useActionCall(
-    SERVICE.RIASE_TERM
-  );
 
   const { loading: generatePinLoading, Post: GeneratePin } = useActionCall(
     SERVICE.GENERATE_PIN
@@ -306,36 +292,6 @@ export default function PROMOTIONVIDEOS() {
           }
         }
       });
-  };
-
-  const handleRaiseTerm = async (userPromoterId: number) => {
-    try {
-      const response = await RaiseTerm({ id: userPromoterId });
-      if (response) {
-        PinRequestApi();
-        Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: "Term raised successfully.",
-          confirmButtonText: "OK",
-          customClass: {
-            confirmButton:
-              "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
-          },
-        });
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "Failed to raise term. Please try again.",
-        confirmButtonText: "OK",
-        customClass: {
-          confirmButton:
-            "bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-md transition-all duration-200",
-        },
-      });
-    }
   };
 
   const handleGeneratePin = (rowData: any) => {
