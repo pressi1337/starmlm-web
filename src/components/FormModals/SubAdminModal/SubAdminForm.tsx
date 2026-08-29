@@ -29,15 +29,16 @@ const buildSchema = (isEdit: boolean) =>
     // error attached to permissions for inline display.
     permissions: Yup.mixed().test(
       "at-least-one",
-      "Grant at least one permission (Daily Videos, Promotion Videos, Pin Requests, or Suggestions).",
+      "Grant at least one permission (Daily Videos, Promotion Videos, Promotion Log, Pin Requests, Suggestions, or Personal Documents).",
       function () {
-        const { can_daily_videos, can_promotion_videos, can_pin_requests, can_suggestions, can_personal_documents } = this.parent;
+        const { can_daily_videos, can_promotion_videos, can_pin_requests, can_suggestions, can_personal_documents, can_promotion_logs } = this.parent;
         return (
           Boolean(can_daily_videos) ||
           Boolean(can_promotion_videos) ||
           Boolean(can_pin_requests) ||
           Boolean(can_suggestions) ||
-          Boolean(can_personal_documents)
+          Boolean(can_personal_documents) ||
+          Boolean(can_promotion_logs)
         );
       }
     ),
@@ -74,6 +75,7 @@ const SubAdminForm = ({
       can_suggestions: Number(data?.can_suggestions ?? 0) === 1 ? 1 : 0,
       can_personal_documents:
         Number(data?.can_personal_documents ?? 0) === 1 ? 1 : 0,
+      can_promotion_logs: Number(data?.can_promotion_logs ?? 0) === 1 ? 1 : 0,
     },
     onSubmit: (formValues: any) => {
       // Drop empty password fields on edit so we don't send blank strings.
@@ -88,6 +90,7 @@ const SubAdminForm = ({
       payload.can_pin_requests = payload.can_pin_requests ? 1 : 0;
       payload.can_suggestions = payload.can_suggestions ? 1 : 0;
       payload.can_personal_documents = payload.can_personal_documents ? 1 : 0;
+      payload.can_promotion_logs = payload.can_promotion_logs ? 1 : 0;
       onAction(payload);
     },
     validateOnChange: false,
@@ -197,6 +200,13 @@ const SubAdminForm = ({
           <CheckboxInput
             label="Personal Documents"
             name="can_personal_documents"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+          <CheckboxInput
+            label="Promotion Log"
+            name="can_promotion_logs"
             value={values}
             onChange={handleChange}
             error={errors}
