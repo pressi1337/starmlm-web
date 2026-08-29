@@ -104,7 +104,7 @@ const AdminRoutes = {
     {
       path: "promotion-logs",
       element: (
-        <PermissionGuard need="promotion_videos">
+        <PermissionGuard need="promotion_logs">
           <PromotionLogs />
         </PermissionGuard>
       ),

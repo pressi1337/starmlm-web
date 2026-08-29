@@ -18,6 +18,8 @@ export type AdminPermissions = {
   promotion_videos: boolean;
   pin_requests: boolean;
   suggestions: boolean;
+  personal_documents: boolean;
+  promotion_logs: boolean;
 };
 
 interface User {
@@ -46,6 +48,8 @@ const FULL_PERMISSIONS: AdminPermissions = {
   promotion_videos: true,
   pin_requests: true,
   suggestions: true,
+  personal_documents: true,
+  promotion_logs: true,
 };
 
 const NO_PERMISSIONS: AdminPermissions = {
@@ -53,6 +57,8 @@ const NO_PERMISSIONS: AdminPermissions = {
   promotion_videos: false,
   pin_requests: false,
   suggestions: false,
+  personal_documents: false,
+  promotion_logs: false,
 };
 
 // Normalize the permissions claim from the JWT into a strict boolean map.
@@ -69,6 +75,8 @@ const derivePermissions = (decoded: JwtPayload | null): AdminPermissions => {
     promotion_videos: !!claim.promotion_videos,
     pin_requests: !!claim.pin_requests,
     suggestions: !!claim.suggestions,
+    personal_documents: !!claim.personal_documents,
+    promotion_logs: !!claim.promotion_logs,
   };
 };
 

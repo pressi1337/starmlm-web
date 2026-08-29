@@ -100,6 +100,8 @@ const Sidebar = ({
           icon: Trophy,
           color: "from-amber-500 to-orange-600",
         });
+      }
+      if (can("promotion_logs")) {
         baseItems.push({
           id: "promotion-logs",
           label: "Promotion Log",
