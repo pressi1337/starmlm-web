@@ -4,11 +4,11 @@ import { useMemo, useState } from "react";
 import InputText from "@/components/ui/InputText";
 import InputTextArea from "@/components/ui/InputTextArea";
 import Btn from "@/components/ui/Btn";
-import FileUpload from "@/components/FileUpload";
+import MultiFileUpload from "@/components/MultiFileUpload";
 
 const VALIDATION_SCHEMA = Yup.object().shape({
   title: Yup.string().required("Title is required*"),
-  file_path: Yup.string().required("Please upload a document*"),
+  files: Yup.array().min(1, "Please upload at least one document*"),
 });
 
 type Props = {
@@ -19,6 +19,17 @@ type Props = {
   RequestError?: any;
   isSuperAdmin?: boolean;
 };
+
+/** API rows carry extra fields; the form only submits what the server needs. */
+const toFormFiles = (rows: any) =>
+  Array.isArray(rows)
+    ? rows
+        .filter((row: any) => row?.file_path)
+        .map((row: any) => ({
+          file_path: row.file_path,
+          original_name: row.original_name ?? "",
+        }))
+    : [];
 
 const PersonalDocumentForm = ({
   data = {},
@@ -34,7 +45,9 @@ const PersonalDocumentForm = ({
   const { values, handleChange, errors, handleSubmit, setErrors } = useFormik({
     initialValues: {
       title: data?.title ?? "",
-      file_path: data?.file_path ?? "",
+      // A set can hold many files. Older single-file records come back with a
+      // one-entry `files` array from the API, so there's one code path here.
+      files: toFormFiles(data?.files),
       remark: data?.remark ?? "",
     },
     onSubmit: (formValues: any) => onAction({ ...formValues }),
@@ -54,29 +67,28 @@ const PersonalDocumentForm = ({
       <InputText
         name="title"
         label="Title *"
-        placeholder="e.g. GST Certificate 2026"
+        placeholder="e.g. GST Bills 2026"
         onChange={handleChange}
         error={errors}
         value={values}
       />
 
-      <FileUpload
-        name="file_path"
+      <MultiFileUpload
+        name="files"
         onChange={handleChange}
         error={errors}
         value={values}
         setLoading={setUploading}
         accept="image/*,application/pdf,.pdf,.xls,.xlsx,.xlsm,.csv"
         maxMb={100}
-        title="Document (Image / PDF / Excel) *"
-        kindLabel="document"
-        helpText="Image, PDF or Excel file, up to 100 MB."
+        title="Documents (Image / PDF / Excel) *"
+        helpText="Pick one or many. Up to 100 MB each — add more any time before saving."
       />
 
       <InputTextArea
         name="remark"
         label="Remark"
-        placeholder="Optional note about this document"
+        placeholder="Optional note about this document set"
         onChange={handleChange}
         error={errors}
         value={values}

@@ -4,7 +4,7 @@ import {
   Plus,
   Edit,
   Trash2,
-  ExternalLink,
+  Download,
   FileText,
   Image as ImageIcon,
   Sheet,
@@ -20,6 +20,7 @@ import DataTable from "@/components/DataTable";
 import FilterTab from "@/components/FilterTab";
 import Lib from "@/utils/Lib";
 import PersonalDocumentFormModal from "@/components/FormModals/PersonalDocumentModal/PersonalDocumentFormModal";
+import DocumentFilesModal from "@/components/FormModals/PersonalDocumentModal/DocumentFilesModal";
 
 const FILE_TYPE_PDF = 2;
 const FILE_TYPE_EXCEL = 3;
@@ -51,6 +52,9 @@ export default function PersonalDocuments() {
   const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
   const [filter, setFilter] = useState({ ...defaultFilter });
+  // Row whose files are open in the viewer; null = closed. The list
+  // response already carries each set's files, so opening costs no fetch.
+  const [filesDoc, setFilesDoc] = useState<any>(null);
 
   const { loading, setQuery, data } = useGetCall(
     SERVICE.COMPANY_PERSONAL_DOCUMENTS,
@@ -144,19 +148,27 @@ export default function PersonalDocuments() {
       ),
     },
     {
-      title: "File",
-      key: "file_path",
-      render: (_: any, row: any) => (
-        <a
-          href={Lib.CloudPath(row.file_path)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-900"
-        >
-          <ExternalLink className="w-4 h-4 mr-1" />
-          Open
-        </a>
-      ),
+      title: "Files",
+      key: "file_count",
+      render: (_: any, row: any) => {
+        const count = Number(row.file_count ?? 0);
+        return (
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 whitespace-nowrap">
+              {count} file{count === 1 ? "" : "s"}
+            </span>
+            <button
+              type="button"
+              onClick={() => setFilesDoc(row)}
+              disabled={!count}
+              className="text-indigo-600 hover:text-indigo-900 p-1 disabled:opacity-40 disabled:cursor-not-allowed"
+              title="View documents"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+          </div>
+        );
+      },
     },
     {
       title: "Added",
@@ -196,34 +208,46 @@ export default function PersonalDocuments() {
     {
       title: "Action",
       key: "action",
-      render: (_: any, row: any) =>
-        row.can_modify ? (
+      render: (_: any, row: any) => {
+        const showEdit = Boolean(row.can_modify);
+        // Deleting is super-admin only. A sub-admin never sees the button —
+        // not even on a document they uploaded themselves.
+        const showDelete = Boolean(row.can_delete);
+
+        if (!showEdit && !showDelete) {
+          return <span className="text-xs text-gray-400">—</span>;
+        }
+
+        return (
           <div className="flex items-center space-x-2">
-            <button
-              onClick={() =>
-                updateSearchParam({
-                  options: {
-                    Modal: MODAL_OPEN.PERSONAL_DOCUMENT_MODAL,
-                    Edit: row.id,
-                  },
-                })
-              }
-              className="text-indigo-600 hover:text-indigo-900 p-1"
-              title="Edit"
-            >
-              <Edit className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => confirmDelete(row.id)}
-              className="text-red-600 hover:text-red-900 p-1"
-              title="Delete"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
+            {showEdit && (
+              <button
+                onClick={() =>
+                  updateSearchParam({
+                    options: {
+                      Modal: MODAL_OPEN.PERSONAL_DOCUMENT_MODAL,
+                      Edit: row.id,
+                    },
+                  })
+                }
+                className="text-indigo-600 hover:text-indigo-900 p-1"
+                title="Edit"
+              >
+                <Edit className="w-4 h-4" />
+              </button>
+            )}
+            {showDelete && (
+              <button
+                onClick={() => confirmDelete(row.id)}
+                className="text-red-600 hover:text-red-900 p-1"
+                title="Delete"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
           </div>
-        ) : (
-          <span className="text-xs text-gray-400">—</span>
-        ),
+        );
+      },
     },
   ];
 
@@ -294,6 +318,13 @@ export default function PersonalDocuments() {
         <PersonalDocumentFormModal
           recoilApi={refresh}
           isSuperAdmin={isSuperAdmin}
+        />
+      )}
+
+      {filesDoc && (
+        <DocumentFilesModal
+          document={filesDoc}
+          onClose={() => setFilesDoc(null)}
         />
       )}
     </div>
