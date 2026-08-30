@@ -115,6 +115,7 @@ export const SERVICE: any = {
     EXPORT_WITHDRAW_FILTERED: 'withdraws/export/filtered/excel',
     EXPORT_USERS: 'all-referrals/export/excel',
     EXPORT_PIN_REQUESTS: 'user-promoters/export/excel',
+    EXPORT_BOX_REQUESTS: 'admin-box-requests/export/excel',
 
     //User Service endpoint
     DAILY_VIDEO_STATUS: 'daily-videos-status',

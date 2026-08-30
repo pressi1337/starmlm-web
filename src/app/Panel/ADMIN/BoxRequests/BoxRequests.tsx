@@ -9,19 +9,37 @@ import {
   Calendar,
   Phone,
   Pencil,
+  Download,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import FilterTab from "@/components/FilterTab";
-import UIHelpers from "@/utils/UIhelper";
 
 const STATUS_OPTIONS = [
   { value: "1", label: "Requested" },
   { value: "2", label: "Sent" },
   { value: "3", label: "Delivered" },
 ];
+
+/**
+ * A lifecycle date cell. The API sends "-" for a stage the batch hasn't
+ * reached yet; show a muted "--" so an empty cell reads as "hasn't happened"
+ * rather than "missing data".
+ */
+const dateCell = (value: any) => {
+  const hasValue = Boolean(value) && value !== "-";
+  return (
+    <div
+      className={`text-sm whitespace-nowrap ${
+        hasValue ? "text-gray-700" : "text-gray-400"
+      }`}
+    >
+      {hasValue ? value : "--"}
+    </div>
+  );
+};
 
 const LEVEL_LABELS: Record<number, string> = {
   0: "Promoter",
@@ -50,6 +68,13 @@ export default function BoxRequests() {
   const { loading, setQuery, data } = useGetCall(SERVICE.ADMIN_BOX_REQUESTS, {
     avoidFetch: true,
   });
+
+  // Filter-aware Excel export — the same `filter` object drives the list, so
+  // the file always matches what is on screen.
+  const { loading: exportLoading, fetchApi: exportBoxRequests } = useGetCall(
+    SERVICE.EXPORT_BOX_REQUESTS,
+    { avoidFetch: true }
+  );
   const { Patch: markSent, loading: marking } = useActionCall(
     SERVICE.ADMIN_BOX_MARK_SENT
   );
@@ -271,13 +296,21 @@ export default function BoxRequests() {
     },
     {
       title: "Requested",
-      key: "created_at",
+      key: "requested_at",
       sortable: true,
-      render: (_: any, row: any) => (
-        <div className="text-sm text-gray-700 whitespace-nowrap">
-          {UIHelpers.DateFormat(row?.created_at)}
-        </div>
-      ),
+      render: (_: any, row: any) => dateCell(row?.requested_at_formatted),
+    },
+    {
+      title: "Sent",
+      key: "sent_at",
+      sortable: true,
+      render: (_: any, row: any) => dateCell(row?.sent_at_formatted),
+    },
+    {
+      title: "Delivered",
+      key: "delivered_at",
+      sortable: true,
+      render: (_: any, row: any) => dateCell(row?.delivered_at_formatted),
     },
     {
       title: "Status",
@@ -330,18 +363,50 @@ export default function BoxRequests() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-          <Package className="w-7 h-7 text-amber-600" />
-          Plan Product
-        </h1>
-        <p className="mt-2 text-gray-600">
-          Promoter plan product allocations (Energy Plus / Health Plus). Mark a
-          batch as sent once it's dispatched — the user then confirms delivery
-          from their app.
-        </p>
+        <div className="flex justify-between items-start gap-4 flex-wrap">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+              <Package className="w-7 h-7 text-amber-600" />
+              Plan Product
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Promoter plan product allocations (Energy Plus / Health Plus).
+              Mark a batch as sent once it's dispatched — the user then confirms
+              delivery from their app.
+            </p>
+          </div>
+          {/* Exports exactly what is on screen: the status tab, the date
+              filters, the search and the current sort. */}
+          <button
+            onClick={() =>
+              exportBoxRequests({
+                query: filter,
+                exports: true,
+                downloadFilename: "plan_product.xlsx",
+              })
+            }
+            disabled={exportLoading}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-all duration-200"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {exportLoading ? "Exporting..." : "Export Excel"}
+          </button>
+        </div>
       </div>
 
-      <FilterTab filter={filter} setFilter={setFilter} TABLE_FILTER={["SEARCH"]} />
+      <FilterTab
+        filter={filter}
+        setFilter={setFilter}
+        TABLE_FILTER={[
+          "SEARCH",
+          "BOX_REQUESTED_FROM",
+          "BOX_REQUESTED_TO",
+          "BOX_SENT_FROM",
+          "BOX_SENT_TO",
+          "BOX_DELIVERED_FROM",
+          "BOX_DELIVERED_TO",
+        ]}
+      />
 
       {/* Status filter */}
       <div className="flex items-center gap-2 mb-4 flex-wrap">
