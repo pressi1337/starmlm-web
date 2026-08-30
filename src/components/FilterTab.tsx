@@ -91,6 +91,39 @@ const FILTER_FIELD = {
     options: OPTIONS.ACTIVE_STATUS,
     label: "Select Status",
   },
+
+  // Plan Product (box requests) — one independent range per lifecycle date,
+  // so an admin can ask e.g. "sent last week but still not delivered".
+  BOX_REQUESTED_FROM: {
+    type: "date",
+    name: "requested_from",
+    label: "Requested From",
+  },
+  BOX_REQUESTED_TO: {
+    type: "date",
+    name: "requested_to",
+    label: "Requested To",
+  },
+  BOX_SENT_FROM: {
+    type: "date",
+    name: "sent_from",
+    label: "Sent From",
+  },
+  BOX_SENT_TO: {
+    type: "date",
+    name: "sent_to",
+    label: "Sent To",
+  },
+  BOX_DELIVERED_FROM: {
+    type: "date",
+    name: "delivered_from",
+    label: "Delivered From",
+  },
+  BOX_DELIVERED_TO: {
+    type: "date",
+    name: "delivered_to",
+    label: "Delivered To",
+  },
 };
 const FilterTab = ({ filter, setFilter, TABLE_FILTER }) => {
   const { defaultFilter } = useQueryParams();
