@@ -71,6 +71,7 @@ const MethodCard = ({
 export default function MarkSentModal({
   row,
   productName = "",
+  isResend = false,
   loading = false,
   onSubmit = (_values: any) => {},
   onClose = () => {},
@@ -131,16 +132,30 @@ export default function MarkSentModal({
   };
 
   return (
-    <Modal title="Mark as sent" modalSize="md" onClose={onClose}>
+    <Modal
+      title={isResend ? "Send again" : "Mark as sent"}
+      modalSize="md"
+      onClose={onClose}
+    >
       <form className="space-y-4" onSubmit={handleSubmit}>
         <p className="text-sm text-gray-600">
-          Dispatching{" "}
+          {isResend ? "Re-dispatching" : "Dispatching"}{" "}
           <b>
             {row?.quantity} {productName}
           </b>{" "}
           to <b>{row?.user?.username ?? "this user"}</b>. Record how it was sent
           — the user will see this on their screen.
         </p>
+
+        {isResend ? (
+          <p className="rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-xs text-red-700">
+            The user reported this batch as not received
+            {row?.not_received_at_formatted
+              ? ` on ${row.not_received_at_formatted}`
+              : ""}
+            . Sending again moves it back to Sent.
+          </p>
+        ) : null}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -196,7 +211,11 @@ export default function MarkSentModal({
 
         <div className="flex justify-end space-x-3 pt-2">
           <Btn title="Cancel" onClick={onClose} uiType="secondary" />
-          <Btn title="Mark as sent" isLoading={loading} onClick={handleSubmit} />
+          <Btn
+            title={isResend ? "Send again" : "Mark as sent"}
+            isLoading={loading}
+            onClick={handleSubmit}
+          />
         </div>
       </form>
     </Modal>

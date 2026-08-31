@@ -124,6 +124,16 @@ const FILTER_FIELD = {
     name: "delivered_to",
     label: "Delivered To",
   },
+  BOX_NOT_RECEIVED_FROM: {
+    type: "date",
+    name: "not_received_from",
+    label: "Not Received From",
+  },
+  BOX_NOT_RECEIVED_TO: {
+    type: "date",
+    name: "not_received_to",
+    label: "Not Received To",
+  },
 };
 const FilterTab = ({ filter, setFilter, TABLE_FILTER }) => {
   const { defaultFilter } = useQueryParams();

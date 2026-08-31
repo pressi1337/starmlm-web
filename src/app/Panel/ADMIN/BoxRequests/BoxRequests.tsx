@@ -10,6 +10,7 @@ import {
   Phone,
   Pencil,
   Download,
+  PackageX,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
@@ -22,6 +23,7 @@ const STATUS_OPTIONS = [
   { value: "1", label: "Requested" },
   { value: "2", label: "Sent" },
   { value: "3", label: "Delivered" },
+  { value: "4", label: "Not Received" },
 ];
 
 /**
@@ -101,7 +103,9 @@ export default function BoxRequests() {
   // This used to be a yes/no confirm. It now has to record HOW the batch went
   // out (direct or courier, plus that method's details), so it opens a form.
   const confirmMarkSent = (row: any) => {
-    if (Number(row.status) !== 1) return;
+    // Requested (first send) or Not Received (send again) — both open the
+    // same dispatch form.
+    if (![1, 4].includes(Number(row.status))) return;
     setSentRow(row);
   };
 
@@ -187,6 +191,7 @@ export default function BoxRequests() {
       1: { label: "Requested", cls: "bg-amber-100 text-amber-800", Icon: Package },
       2: { label: "Sent", cls: "bg-blue-100 text-blue-800", Icon: Truck },
       3: { label: "Delivered", cls: "bg-emerald-100 text-emerald-800", Icon: PackageCheck },
+      4: { label: "Not Received", cls: "bg-red-100 text-red-800", Icon: PackageX },
     };
     const s = map[n] || map[1];
     const Icon = s.Icon;
@@ -307,6 +312,12 @@ export default function BoxRequests() {
       render: (_: any, row: any) => dateCell(row?.delivered_at_formatted),
     },
     {
+      title: "Not Received",
+      key: "not_received_at",
+      sortable: true,
+      render: (_: any, row: any) => dateCell(row?.not_received_at_formatted),
+    },
+    {
       title: "Dispatch",
       key: "dispatch_method",
       render: (_: any, row: any) => {
@@ -371,6 +382,34 @@ export default function BoxRequests() {
             </button>
           );
         }
+        if (st === 4) {
+          // Reported missing by the user. Either send it again (same dispatch
+          // form as a first send) or mark it delivered if it turned up.
+          return (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={marking}
+                onClick={() => confirmMarkSent(row)}
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap"
+                title="Dispatch this batch again"
+              >
+                <Truck className="w-3.5 h-3.5 mr-1.5" />
+                Send Again
+              </button>
+              <button
+                type="button"
+                disabled={deliveringAdmin}
+                onClick={() => confirmMarkDelivered(row)}
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-emerald-600 hover:bg-emerald-700 text-white whitespace-nowrap"
+                title="Mark as delivered (on the user's behalf)"
+              >
+                <PackageCheck className="w-3.5 h-3.5 mr-1.5" />
+                Mark Delivered
+              </button>
+            </div>
+          );
+        }
         return (
           <span className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-400">
             <PackageCheck className="w-3.5 h-3.5 mr-1.5" />
@@ -418,6 +457,7 @@ export default function BoxRequests() {
       {sentRow && (
         <MarkSentModal
           row={sentRow}
+          isResend={Number(sentRow.status) === 4}
           productName={productName(sentRow.level)}
           loading={marking}
           RequestError={markSentError}
@@ -437,6 +477,8 @@ export default function BoxRequests() {
           "BOX_SENT_TO",
           "BOX_DELIVERED_FROM",
           "BOX_DELIVERED_TO",
+          "BOX_NOT_RECEIVED_FROM",
+          "BOX_NOT_RECEIVED_TO",
         ]}
       />
 
