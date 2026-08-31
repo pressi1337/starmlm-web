@@ -10,17 +10,20 @@ import {
   Phone,
   Pencil,
   Download,
+  PackageX,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import FilterTab from "@/components/FilterTab";
+import MarkSentModal from "@/components/FormModals/BoxRequestModal/MarkSentModal";
 
 const STATUS_OPTIONS = [
   { value: "1", label: "Requested" },
   { value: "2", label: "Sent" },
   { value: "3", label: "Delivered" },
+  { value: "4", label: "Not Received" },
 ];
 
 /**
@@ -75,7 +78,14 @@ export default function BoxRequests() {
     SERVICE.EXPORT_BOX_REQUESTS,
     { avoidFetch: true }
   );
-  const { Patch: markSent, loading: marking } = useActionCall(
+  // Row whose dispatch form is open; null = closed.
+  const [sentRow, setSentRow] = useState<any>(null);
+
+  const {
+    Patch: markSent,
+    loading: marking,
+    error: markSentError,
+  } = useActionCall(
     SERVICE.ADMIN_BOX_MARK_SENT
   );
   const { Patch: markDelivered, loading: deliveringAdmin } = useActionCall(
@@ -90,32 +100,20 @@ export default function BoxRequests() {
     refresh();
   }, [filter]);
 
-  const confirmMarkSent = async (row: any) => {
-    if (Number(row.status) !== 1) return;
-    const swalT = Swal.mixin({
-      customClass: {
-        confirmButton:
-          "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md shadow-sm ml-3",
-        cancelButton:
-          "bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-md shadow-sm",
-        popup: "rounded-xl shadow-2xl border border-gray-200 bg-white p-6",
-        title: "text-lg font-semibold text-gray-800",
-        htmlContainer: "text-gray-600",
-      },
-      buttonsStyling: false,
-    });
-    const result = await swalT.fire({
-      title: "Mark as sent?",
-      text: `Confirm you've dispatched ${row.quantity} ${productName(row.level)}. The user will then be able to mark it delivered.`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, mark sent",
-      cancelButtonText: "Cancel",
-      reverseButtons: true,
-    });
-    if (result.isConfirmed) {
-      const resp = await markSent({ id: row.id }, "Marked as sent");
-      if (resp) refresh();
+  // This used to be a yes/no confirm. It now has to record HOW the batch went
+  // out (direct or courier, plus that method's details), so it opens a form.
+  const confirmMarkSent = (row: any) => {
+    // Requested (first send) or Not Received (send again) — both open the
+    // same dispatch form.
+    if (![1, 4].includes(Number(row.status))) return;
+    setSentRow(row);
+  };
+
+  const submitMarkSent = async (payload: any) => {
+    const resp = await markSent(payload, "Marked as sent");
+    if (resp) {
+      setSentRow(null);
+      refresh();
     }
   };
 
@@ -193,6 +191,7 @@ export default function BoxRequests() {
       1: { label: "Requested", cls: "bg-amber-100 text-amber-800", Icon: Package },
       2: { label: "Sent", cls: "bg-blue-100 text-blue-800", Icon: Truck },
       3: { label: "Delivered", cls: "bg-emerald-100 text-emerald-800", Icon: PackageCheck },
+      4: { label: "Not Received", cls: "bg-red-100 text-red-800", Icon: PackageX },
     };
     const s = map[n] || map[1];
     const Icon = s.Icon;
@@ -313,6 +312,39 @@ export default function BoxRequests() {
       render: (_: any, row: any) => dateCell(row?.delivered_at_formatted),
     },
     {
+      title: "Not Received",
+      key: "not_received_at",
+      sortable: true,
+      render: (_: any, row: any) => dateCell(row?.not_received_at_formatted),
+    },
+    {
+      title: "Dispatch",
+      key: "dispatch_method",
+      render: (_: any, row: any) => {
+        if (!row?.dispatch_label) {
+          return <div className="text-sm text-gray-400">--</div>;
+        }
+        return (
+          <div className="text-sm">
+            <span
+              className={`inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full ${
+                Number(row.dispatch_method) === 2
+                  ? "bg-indigo-100 text-indigo-800"
+                  : "bg-teal-100 text-teal-800"
+              }`}
+            >
+              {row.dispatch_label}
+            </span>
+            {row?.dispatch_summary ? (
+              <div className="text-xs text-gray-600 mt-1 whitespace-nowrap">
+                {row.dispatch_summary}
+              </div>
+            ) : null}
+          </div>
+        );
+      },
+    },
+    {
       title: "Status",
       key: "status",
       render: (_: any, row: any) => statusBadge(row?.status),
@@ -348,6 +380,34 @@ export default function BoxRequests() {
               <PackageCheck className="w-3.5 h-3.5 mr-1.5" />
               Mark Delivered
             </button>
+          );
+        }
+        if (st === 4) {
+          // Reported missing by the user. Either send it again (same dispatch
+          // form as a first send) or mark it delivered if it turned up.
+          return (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={marking}
+                onClick={() => confirmMarkSent(row)}
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap"
+                title="Dispatch this batch again"
+              >
+                <Truck className="w-3.5 h-3.5 mr-1.5" />
+                Send Again
+              </button>
+              <button
+                type="button"
+                disabled={deliveringAdmin}
+                onClick={() => confirmMarkDelivered(row)}
+                className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-emerald-600 hover:bg-emerald-700 text-white whitespace-nowrap"
+                title="Mark as delivered (on the user's behalf)"
+              >
+                <PackageCheck className="w-3.5 h-3.5 mr-1.5" />
+                Mark Delivered
+              </button>
+            </div>
           );
         }
         return (
@@ -394,6 +454,18 @@ export default function BoxRequests() {
         </div>
       </div>
 
+      {sentRow && (
+        <MarkSentModal
+          row={sentRow}
+          isResend={Number(sentRow.status) === 4}
+          productName={productName(sentRow.level)}
+          loading={marking}
+          RequestError={markSentError}
+          onSubmit={submitMarkSent}
+          onClose={() => setSentRow(null)}
+        />
+      )}
+
       <FilterTab
         filter={filter}
         setFilter={setFilter}
@@ -405,6 +477,8 @@ export default function BoxRequests() {
           "BOX_SENT_TO",
           "BOX_DELIVERED_FROM",
           "BOX_DELIVERED_TO",
+          "BOX_NOT_RECEIVED_FROM",
+          "BOX_NOT_RECEIVED_TO",
         ]}
       />
 
