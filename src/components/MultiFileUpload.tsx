@@ -1,6 +1,11 @@
 import { useRef, useState } from "react";
-import { Upload, Trash2, FileText, Image as ImageIcon, Sheet } from "lucide-react";
+import { Upload, Trash2 } from "lucide-react";
 import Lib from "@/utils/Lib";
+import {
+  fileTypeIcon,
+  typeFromName,
+  isBlockedFileName,
+} from "@/constants/fileTypes";
 
 const VITE_BASE_URL = import.meta.env.VITE_BASE_URL ?? "";
 const CHUNK_SIZE = 1 * 1024 * 1024; // 1MB, matching the single-file uploader
@@ -12,16 +17,7 @@ export type UploadedFile = {
   original_name: string;
 };
 
-const extOf = (name: string) =>
-  String(name).split(".").pop()?.toLowerCase() ?? "";
-
-const iconFor = (name: string) => {
-  const ext = extOf(name);
-  if (ext === "pdf") return { Icon: FileText, cls: "bg-red-50 text-red-600" };
-  if (["xls", "xlsx", "xlsm", "csv"].includes(ext))
-    return { Icon: Sheet, cls: "bg-emerald-50 text-emerald-600" };
-  return { Icon: ImageIcon, cls: "bg-blue-50 text-blue-600" };
-};
+const iconFor = (name: string) => fileTypeIcon(typeFromName(name));
 
 /**
  * Multi-file uploader for document SETS.
@@ -41,8 +37,8 @@ export default function MultiFileUpload({
   error = {} as any,
   onChange = (_e: any) => {},
   setLoading = (_b: boolean) => {},
-  accept = "image/*,application/pdf,.pdf,.xls,.xlsx,.xlsm,.csv",
-  maxMb = 100,
+  accept = "",
+  maxMb = 0,
   title = "Documents",
   helpText = "",
 }: any) {
@@ -94,13 +90,34 @@ export default function MultiFileUpload({
 
     setUploadError("");
 
-    const tooBig = picked.filter((f) => maxMb > 0 && f.size / (1024 * 1024) > maxMb);
-    if (tooBig.length) {
-      setUploadError(
-        `${tooBig.map((f) => f.name).join(", ")} — too large (max ${maxMb} MB each).`
+    const problems: string[] = [];
+
+    // Refused server-side too; caught here so the user finds out immediately
+    // rather than after uploading a large file.
+    const blocked = picked.filter((f) => isBlockedFileName(f.name));
+    if (blocked.length) {
+      problems.push(
+        `${blocked.map((f) => f.name).join(", ")} — this file type can't be uploaded.`
       );
     }
-    const queue = picked.filter((f) => !tooBig.includes(f));
+
+    const tooBig = picked.filter(
+      (f) => maxMb > 0 && f.size / (1024 * 1024) > maxMb
+    );
+    if (tooBig.length) {
+      // Show "2 GB" rather than "2048 MB".
+      const limit =
+        maxMb >= 1024 ? `${+(maxMb / 1024).toFixed(1)} GB` : `${maxMb} MB`;
+      problems.push(
+        `${tooBig.map((f) => f.name).join(", ")} — too large (max ${limit} each).`
+      );
+    }
+
+    if (problems.length) setUploadError(problems.join(" "));
+
+    const queue = picked.filter(
+      (f) => !tooBig.includes(f) && !blocked.includes(f)
+    );
     if (!queue.length) {
       if (fileRef.current) fileRef.current.value = "";
       return;

@@ -1,29 +1,12 @@
 import { useEffect, useState } from "react";
-import {
-  Download,
-  ExternalLink,
-  FileText,
-  Image as ImageIcon,
-  Sheet,
-  Archive,
-} from "lucide-react";
+import { Download, ExternalLink, Archive } from "lucide-react";
 import toast from "react-hot-toast";
 import Modal from "@/components/ui/Modal";
 import { downloadFromApi, fetchBlobUrl } from "@/utils/download";
+import { fileTypeIcon, isImageType } from "@/constants/fileTypes";
 
-const FILE_TYPE_PDF = 2;
-const FILE_TYPE_EXCEL = 3;
-
-const typeIcon = (fileType: number) => {
-  if (Number(fileType) === FILE_TYPE_PDF)
-    return { Icon: FileText, cls: "bg-red-50 text-red-600" };
-  if (Number(fileType) === FILE_TYPE_EXCEL)
-    return { Icon: Sheet, cls: "bg-emerald-50 text-emerald-600" };
-  return { Icon: ImageIcon, cls: "bg-blue-50 text-blue-600" };
-};
-
-const isImage = (fileType: number) =>
-  Number(fileType) !== FILE_TYPE_PDF && Number(fileType) !== FILE_TYPE_EXCEL;
+const typeIcon = fileTypeIcon;
+const isImage = isImageType;
 
 const viewPath = (docId: number, fileId: number) =>
   `company-personal-documents/${docId}/files/${fileId}/view`;

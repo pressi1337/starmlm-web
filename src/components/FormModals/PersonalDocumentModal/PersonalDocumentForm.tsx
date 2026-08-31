@@ -79,10 +79,9 @@ const PersonalDocumentForm = ({
         error={errors}
         value={values}
         setLoading={setUploading}
-        accept="image/*,application/pdf,.pdf,.xls,.xlsx,.xlsm,.csv"
-        maxMb={100}
-        title="Documents (Image / PDF / Excel) *"
-        helpText="Pick one or many. Up to 100 MB each — add more any time before saving."
+        maxMb={2048}
+        title="Documents *"
+        helpText="Almost any file — documents, spreadsheets, images, video, audio, archives. Up to 2 GB each. Pick one or many; add more any time before saving."
       />
 
       <InputTextArea
