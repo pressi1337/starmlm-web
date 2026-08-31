@@ -16,6 +16,7 @@ import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import FilterTab from "@/components/FilterTab";
+import MarkSentModal from "@/components/FormModals/BoxRequestModal/MarkSentModal";
 
 const STATUS_OPTIONS = [
   { value: "1", label: "Requested" },
@@ -75,7 +76,14 @@ export default function BoxRequests() {
     SERVICE.EXPORT_BOX_REQUESTS,
     { avoidFetch: true }
   );
-  const { Patch: markSent, loading: marking } = useActionCall(
+  // Row whose dispatch form is open; null = closed.
+  const [sentRow, setSentRow] = useState<any>(null);
+
+  const {
+    Patch: markSent,
+    loading: marking,
+    error: markSentError,
+  } = useActionCall(
     SERVICE.ADMIN_BOX_MARK_SENT
   );
   const { Patch: markDelivered, loading: deliveringAdmin } = useActionCall(
@@ -90,32 +98,18 @@ export default function BoxRequests() {
     refresh();
   }, [filter]);
 
-  const confirmMarkSent = async (row: any) => {
+  // This used to be a yes/no confirm. It now has to record HOW the batch went
+  // out (direct or courier, plus that method's details), so it opens a form.
+  const confirmMarkSent = (row: any) => {
     if (Number(row.status) !== 1) return;
-    const swalT = Swal.mixin({
-      customClass: {
-        confirmButton:
-          "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md shadow-sm ml-3",
-        cancelButton:
-          "bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-md shadow-sm",
-        popup: "rounded-xl shadow-2xl border border-gray-200 bg-white p-6",
-        title: "text-lg font-semibold text-gray-800",
-        htmlContainer: "text-gray-600",
-      },
-      buttonsStyling: false,
-    });
-    const result = await swalT.fire({
-      title: "Mark as sent?",
-      text: `Confirm you've dispatched ${row.quantity} ${productName(row.level)}. The user will then be able to mark it delivered.`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, mark sent",
-      cancelButtonText: "Cancel",
-      reverseButtons: true,
-    });
-    if (result.isConfirmed) {
-      const resp = await markSent({ id: row.id }, "Marked as sent");
-      if (resp) refresh();
+    setSentRow(row);
+  };
+
+  const submitMarkSent = async (payload: any) => {
+    const resp = await markSent(payload, "Marked as sent");
+    if (resp) {
+      setSentRow(null);
+      refresh();
     }
   };
 
@@ -313,6 +307,33 @@ export default function BoxRequests() {
       render: (_: any, row: any) => dateCell(row?.delivered_at_formatted),
     },
     {
+      title: "Dispatch",
+      key: "dispatch_method",
+      render: (_: any, row: any) => {
+        if (!row?.dispatch_label) {
+          return <div className="text-sm text-gray-400">--</div>;
+        }
+        return (
+          <div className="text-sm">
+            <span
+              className={`inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full ${
+                Number(row.dispatch_method) === 2
+                  ? "bg-indigo-100 text-indigo-800"
+                  : "bg-teal-100 text-teal-800"
+              }`}
+            >
+              {row.dispatch_label}
+            </span>
+            {row?.dispatch_summary ? (
+              <div className="text-xs text-gray-600 mt-1 whitespace-nowrap">
+                {row.dispatch_summary}
+              </div>
+            ) : null}
+          </div>
+        );
+      },
+    },
+    {
       title: "Status",
       key: "status",
       render: (_: any, row: any) => statusBadge(row?.status),
@@ -393,6 +414,17 @@ export default function BoxRequests() {
           </button>
         </div>
       </div>
+
+      {sentRow && (
+        <MarkSentModal
+          row={sentRow}
+          productName={productName(sentRow.level)}
+          loading={marking}
+          RequestError={markSentError}
+          onSubmit={submitMarkSent}
+          onClose={() => setSentRow(null)}
+        />
+      )}
 
       <FilterTab
         filter={filter}

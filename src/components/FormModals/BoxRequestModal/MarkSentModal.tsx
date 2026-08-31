@@ -1,0 +1,204 @@
+import { useMemo, useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { Truck, Hand } from "lucide-react";
+import Modal from "@/components/ui/Modal";
+import InputText from "@/components/ui/InputText";
+import Btn from "@/components/ui/Btn";
+
+export const DISPATCH_DIRECT = 1;
+export const DISPATCH_COURIER = 2;
+
+/**
+ * Mirrors the server rules in BoxRequestController::markSent — each branch's
+ * fields are required only for that branch, so choosing Courier can't be saved
+ * without tracking details and choosing Direct can't be saved without a date.
+ */
+const SCHEMA = Yup.object().shape({
+  dispatch_method: Yup.number().required("Choose Direct or Courier"),
+  collected_date: Yup.string().when("dispatch_method", {
+    is: DISPATCH_DIRECT,
+    then: (s) => s.required("Collected date is required*"),
+    otherwise: (s) => s.notRequired(),
+  }),
+  courier_name: Yup.string().when("dispatch_method", {
+    is: DISPATCH_COURIER,
+    then: (s) => s.trim().required("Courier name is required*"),
+    otherwise: (s) => s.notRequired(),
+  }),
+  courier_number: Yup.string().when("dispatch_method", {
+    is: DISPATCH_COURIER,
+    then: (s) => s.trim().required("Courier number is required*"),
+    otherwise: (s) => s.notRequired(),
+  }),
+});
+
+const MethodCard = ({
+  active,
+  Icon,
+  title,
+  subtitle,
+  onClick,
+}: any) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`flex-1 text-left rounded-xl border-2 p-3 transition-colors ${
+      active
+        ? "border-blue-600 bg-blue-50"
+        : "border-gray-200 hover:border-gray-300"
+    }`}
+  >
+    <span className="flex items-center gap-2">
+      <Icon className={`w-4 h-4 ${active ? "text-blue-600" : "text-gray-400"}`} />
+      <span
+        className={`text-sm font-semibold ${
+          active ? "text-blue-800" : "text-gray-700"
+        }`}
+      >
+        {title}
+      </span>
+    </span>
+    <span className="mt-1 block text-xs text-gray-500">{subtitle}</span>
+  </button>
+);
+
+/**
+ * Captures HOW a plan-product batch was dispatched, at the moment the admin
+ * marks it Sent. The details are shown back to the user on their own screen,
+ * so they can see when they collected it or chase the courier.
+ */
+export default function MarkSentModal({
+  row,
+  productName = "",
+  loading = false,
+  onSubmit = (_values: any) => {},
+  onClose = () => {},
+  RequestError = {},
+}: any) {
+  const [serverError, setServerError] = useState<any>({});
+
+  const { values, errors, handleChange, handleSubmit, setFieldValue, setErrors } =
+    useFormik({
+      initialValues: {
+        dispatch_method: DISPATCH_DIRECT,
+        collected_date: "",
+        courier_name: "",
+        courier_number: "",
+      },
+      validationSchema: SCHEMA,
+      validateOnChange: false,
+      validateOnBlur: false,
+      onSubmit: (formValues: any) => {
+        // Send only the fields for the chosen method — the server ignores the
+        // rest, but this keeps the payload honest about what was entered.
+        const isDirect = Number(formValues.dispatch_method) === DISPATCH_DIRECT;
+        onSubmit({
+          id: row?.id,
+          dispatch_method: Number(formValues.dispatch_method),
+          ...(isDirect
+            ? { collected_date: formValues.collected_date }
+            : {
+                courier_name: formValues.courier_name,
+                courier_number: formValues.courier_number,
+              }),
+        });
+      },
+    });
+
+  // Surface 422 field errors from the server alongside the local ones.
+  useMemo(() => {
+    if (RequestError && Object.keys(RequestError).length) {
+      setErrors(RequestError);
+      setServerError(RequestError);
+    }
+  }, [RequestError]);
+
+  const isDirect = Number(values.dispatch_method) === DISPATCH_DIRECT;
+  const shown = { ...serverError, ...errors };
+
+  const pick = (method: number) => {
+    setFieldValue("dispatch_method", method);
+    // Clear the other branch so a half-filled switch can't be submitted.
+    if (method === DISPATCH_DIRECT) {
+      setFieldValue("courier_name", "");
+      setFieldValue("courier_number", "");
+    } else {
+      setFieldValue("collected_date", "");
+    }
+    setErrors({});
+    setServerError({});
+  };
+
+  return (
+    <Modal title="Mark as sent" modalSize="md" onClose={onClose}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <p className="text-sm text-gray-600">
+          Dispatching{" "}
+          <b>
+            {row?.quantity} {productName}
+          </b>{" "}
+          to <b>{row?.user?.username ?? "this user"}</b>. Record how it was sent
+          — the user will see this on their screen.
+        </p>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            How was it sent? *
+          </label>
+          <div className="flex gap-3">
+            <MethodCard
+              active={isDirect}
+              Icon={Hand}
+              title="Direct"
+              subtitle="Handed over / collected in person"
+              onClick={() => pick(DISPATCH_DIRECT)}
+            />
+            <MethodCard
+              active={!isDirect}
+              Icon={Truck}
+              title="Courier"
+              subtitle="Sent through a courier service"
+              onClick={() => pick(DISPATCH_COURIER)}
+            />
+          </div>
+        </div>
+
+        {isDirect ? (
+          <InputText
+            type="date"
+            name="collected_date"
+            label="Collected date *"
+            onChange={handleChange}
+            value={values}
+            error={shown}
+          />
+        ) : (
+          <>
+            <InputText
+              name="courier_name"
+              label="Courier name *"
+              placeholder="e.g. DTDC, Blue Dart, India Post"
+              onChange={handleChange}
+              value={values}
+              error={shown}
+            />
+            <InputText
+              name="courier_number"
+              label="Courier / tracking number *"
+              placeholder="e.g. DT1234567890"
+              onChange={handleChange}
+              value={values}
+              error={shown}
+            />
+          </>
+        )}
+
+        <div className="flex justify-end space-x-3 pt-2">
+          <Btn title="Cancel" onClick={onClose} uiType="secondary" />
+          <Btn title="Mark as sent" isLoading={loading} onClick={handleSubmit} />
+        </div>
+      </form>
+    </Modal>
+  );
+}
