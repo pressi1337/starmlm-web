@@ -5,9 +5,6 @@ import {
   Edit,
   Trash2,
   Download,
-  FileText,
-  Image as ImageIcon,
-  Sheet,
   ShieldCheck,
   Eye,
   EyeOff,
@@ -20,10 +17,10 @@ import DataTable from "@/components/DataTable";
 import FilterTab from "@/components/FilterTab";
 import Lib from "@/utils/Lib";
 import PersonalDocumentFormModal from "@/components/FormModals/PersonalDocumentModal/PersonalDocumentFormModal";
+import { fileTypeIcon } from "@/constants/fileTypes";
 import DocumentFilesModal from "@/components/FormModals/PersonalDocumentModal/DocumentFilesModal";
 
-const FILE_TYPE_PDF = 2;
-const FILE_TYPE_EXCEL = 3;
+
 
 const visibilityBadge = (isVisible: number, label: string) => {
   const visible = Number(isVisible) === 1;
@@ -40,13 +37,7 @@ const visibilityBadge = (isVisible: number, label: string) => {
   );
 };
 
-const typeIcon = (fileType: number) => {
-  if (Number(fileType) === FILE_TYPE_PDF)
-    return { Icon: FileText, cls: "bg-red-50 text-red-600" };
-  if (Number(fileType) === FILE_TYPE_EXCEL)
-    return { Icon: Sheet, cls: "bg-emerald-50 text-emerald-600" };
-  return { Icon: ImageIcon, cls: "bg-blue-50 text-blue-600" };
-};
+const typeIcon = fileTypeIcon;
 
 export default function PersonalDocuments() {
   const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
@@ -261,7 +252,8 @@ export default function PersonalDocuments() {
               Company Personal Documents
             </h1>
             <p className="mt-2 text-gray-600">
-              Internal documents (image, PDF or Excel). These are{" "}
+              Internal document sets — documents, spreadsheets, images, video,{" "}
+              audio or archives. These are{" "}
               <b>never shown to users</b>.
               {isSuperAdmin &&
                 " Use Sub Admin Visible to control which documents sub admins can see."}
