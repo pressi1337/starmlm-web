@@ -27,14 +27,13 @@ const FIELDS: Array<[string, string, string?]> = [
   ["email", "Email", "care@company.com"],
   ["phone", "Phone", "9000000000"],
   ["invoice_prefix", "Invoice Prefix", "INV-"],
-  ["hsn_code", "HSN Code", "2106"],
   ["place_of_supply", "Place of Supply", "Tamil Nadu"],
   ["country_of_supply", "Country of Supply", "India"],
 ];
 
 /**
  * Seller details for the plan-product invoice — the "Billed by" block, plus
- * the invoice number prefix and HSN.
+ * the invoice number prefix.
  *
  * Single record: saving updates the one template every invoice renders from.
  * The buyer side comes from the user's own record and is not editable here.

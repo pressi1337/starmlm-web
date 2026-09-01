@@ -182,7 +182,7 @@ export default function MarkSentModal({
           <InputText
             type="number"
             name="rate_per_qty"
-            label="Rate per qty (₹) *"
+            label="Sales price / qty (₹) *"
             placeholder="e.g. 1000"
             onChange={handleChange}
             value={values}
