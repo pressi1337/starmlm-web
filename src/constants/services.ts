@@ -81,6 +81,10 @@ export const SERVICE: any = {
     CLEAR_USER_BANK_DETAIL: "user-bank-detail/clear",
 
     // Terms & Conditions — single-document admin editor.
+    // Bill template — seller block + invoice settings for the
+    // plan-product invoice. Single document, upsert like T&C.
+    BILL_TEMPLATE: "bill-template",
+    BILL_TEMPLATE_UPSERT: "bill-template/upsert",
     TERMS_AND_CONDITIONS: "terms-and-conditions",
     TERMS_AND_CONDITIONS_UPSERT: "terms-and-conditions/upsert",
 

@@ -16,6 +16,16 @@ export const DISPATCH_COURIER = 2;
  */
 const SCHEMA = Yup.object().shape({
   dispatch_method: Yup.number().required("Choose Direct or Courier"),
+  // Priced here because this is when the admin knows what actually shipped;
+  // the invoice the user downloads after delivery is built from these.
+  rate_per_qty: Yup.number()
+    .typeError("Enter a number")
+    .min(0, "Cannot be negative")
+    .required("Rate per quantity is required*"),
+  mrp: Yup.number()
+    .typeError("Enter a number")
+    .min(0, "Cannot be negative")
+    .required("MRP is required*"),
   collected_date: Yup.string().when("dispatch_method", {
     is: DISPATCH_DIRECT,
     then: (s) => s.required("Collected date is required*"),
@@ -86,6 +96,8 @@ export default function MarkSentModal({
         collected_date: "",
         courier_name: "",
         courier_number: "",
+        rate_per_qty: "",
+        mrp: "",
       },
       validationSchema: SCHEMA,
       validateOnChange: false,
@@ -97,6 +109,9 @@ export default function MarkSentModal({
         onSubmit({
           id: row?.id,
           dispatch_method: Number(formValues.dispatch_method),
+          // Pricing applies to both methods.
+          rate_per_qty: Number(formValues.rate_per_qty),
+          mrp: Number(formValues.mrp),
           ...(isDirect
             ? { collected_date: formValues.collected_date }
             : {
@@ -117,6 +132,12 @@ export default function MarkSentModal({
 
   const isDirect = Number(values.dispatch_method) === DISPATCH_DIRECT;
   const shown = { ...serverError, ...errors };
+
+  // Mirrors InvoiceBuilder on the server: qty x rate is taxable, then 9% CGST
+  // + 9% SGST on top. Preview only — the invoice itself is computed server-side.
+  const taxable = Number(row?.quantity ?? 0) * Number(values.rate_per_qty || 0);
+  const gstHalf = taxable * 0.09;
+  const invoiceTotal = taxable + gstHalf * 2;
 
   const pick = (method: number) => {
     setFieldValue("dispatch_method", method);
@@ -155,6 +176,37 @@ export default function MarkSentModal({
               : ""}
             . Sending again moves it back to Sent.
           </p>
+        ) : null}
+
+        <div className="grid grid-cols-2 gap-3">
+          <InputText
+            type="number"
+            name="rate_per_qty"
+            label="Rate per qty (₹) *"
+            placeholder="e.g. 1000"
+            onChange={handleChange}
+            value={values}
+            error={shown}
+          />
+          <InputText
+            type="number"
+            name="mrp"
+            label="MRP (₹) *"
+            placeholder="e.g. 1200"
+            onChange={handleChange}
+            value={values}
+            error={shown}
+          />
+        </div>
+
+        {/* Live preview so the admin sees the invoice total before saving. */}
+        {Number(values.rate_per_qty) > 0 ? (
+          <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2 text-xs text-gray-700">
+            {row?.quantity} x ₹{Number(values.rate_per_qty).toFixed(2)} = ₹
+            {taxable.toFixed(2)} taxable &middot; GST 18% (CGST ₹
+            {gstHalf.toFixed(2)} + SGST ₹{gstHalf.toFixed(2)}) &middot;{" "}
+            <b>Invoice total ₹{invoiceTotal.toFixed(2)}</b>
+          </div>
         ) : null}
 
         <div>

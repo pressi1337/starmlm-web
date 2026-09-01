@@ -29,6 +29,7 @@ import {
   Gift,
   ShieldCheck,
   History,
+  ReceiptText,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -202,6 +203,13 @@ const Sidebar = ({
           path: "/portal/admin/support-help",
           icon: HelpCircle,
           color: "from-blue-500 to-indigo-600",
+        });
+        baseItems.push({
+          id: "bill-template",
+          label: "Bill Template",
+          path: "/portal/admin/bill-template",
+          icon: ReceiptText,
+          color: "from-cyan-500 to-blue-600",
         });
         baseItems.push({
           id: "terms-and-conditions",

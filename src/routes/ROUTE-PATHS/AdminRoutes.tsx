@@ -58,6 +58,9 @@ const LoginLogs = Loadable(
 const SupportHelp = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/SupportHelp/SupportHelp"))
 );
+const BillTemplate = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/BillTemplate/BillTemplate"))
+);
 const TermsAndConditions = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/TermsAndConditions/TermsAndConditions"))
 );
@@ -187,6 +190,10 @@ const AdminRoutes = {
     {
       path: "support-help",
       element: <SuperOnly><SupportHelp /></SuperOnly>,
+    },
+    {
+      path: "bill-template",
+      element: <SuperOnly><BillTemplate /></SuperOnly>,
     },
     {
       path: "terms-and-conditions",
