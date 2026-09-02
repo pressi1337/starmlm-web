@@ -83,6 +83,9 @@ export const SERVICE: any = {
     // Terms & Conditions — single-document admin editor.
     // Bill template — seller block + invoice settings for the
     // plan-product invoice. Single document, upsert like T&C.
+    // Product price master — one price + MRP per promoter level.
+    PRODUCT_PRICES: "product-prices",
+    PRODUCT_PRICES_UPSERT: "product-prices/upsert",
     BILL_TEMPLATE: "bill-template",
     BILL_TEMPLATE_UPSERT: "bill-template/upsert",
     TERMS_AND_CONDITIONS: "terms-and-conditions",

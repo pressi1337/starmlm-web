@@ -26,7 +26,7 @@ const FIELDS: Array<[string, string, string?]> = [
   ["pan", "PAN", "ABCDE1234F"],
   ["email", "Email", "care@company.com"],
   ["phone", "Phone", "9000000000"],
-  ["invoice_prefix", "Invoice Prefix", "INV-"],
+  ["invoice_prefix", "Invoice Prefix", "startup"],
   ["place_of_supply", "Place of Supply", "Tamil Nadu"],
   ["country_of_supply", "Country of Supply", "India"],
 ];
@@ -97,7 +97,9 @@ export default function BillTemplate() {
         <p className="mt-2 text-gray-600">
           These details appear as <b>Billed by</b> on the invoice a user
           downloads after their plan product is delivered. Tax is fixed at 18%
-          (9% CGST + 9% SGST) and isn't editable.
+          (9% CGST + 9% SGST) and isn't editable. Invoice numbers run as{" "}
+          <b>prefix/financial-year/sequence</b> &mdash; e.g.{" "}
+          <b>startup/26-27/001</b> &mdash; and the sequence restarts each April.
         </p>
       </div>
 

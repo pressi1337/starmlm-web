@@ -30,6 +30,7 @@ import {
   ShieldCheck,
   History,
   ReceiptText,
+  IndianRupee,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -203,6 +204,13 @@ const Sidebar = ({
           path: "/portal/admin/support-help",
           icon: HelpCircle,
           color: "from-blue-500 to-indigo-600",
+        });
+        baseItems.push({
+          id: "product-prices",
+          label: "Product Price",
+          path: "/portal/admin/product-prices",
+          icon: IndianRupee,
+          color: "from-emerald-500 to-green-600",
         });
         baseItems.push({
           id: "bill-template",
