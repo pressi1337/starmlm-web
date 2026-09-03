@@ -58,6 +58,9 @@ const LoginLogs = Loadable(
 const SupportHelp = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/SupportHelp/SupportHelp"))
 );
+const AppSettings = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/AppSettings/AppSettings"))
+);
 const ProductPrices = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/ProductPrices/ProductPrices"))
 );
@@ -193,6 +196,10 @@ const AdminRoutes = {
     {
       path: "support-help",
       element: <SuperOnly><SupportHelp /></SuperOnly>,
+    },
+    {
+      path: "app-settings",
+      element: <SuperOnly><AppSettings /></SuperOnly>,
     },
     {
       path: "product-prices",

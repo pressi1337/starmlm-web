@@ -6,6 +6,8 @@ import Modal from "@/components/ui/Modal";
 import InputText from "@/components/ui/InputText";
 import Btn from "@/components/ui/Btn";
 
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
 export const DISPATCH_DIRECT = 1;
 export const DISPATCH_COURIER = 2;
 
@@ -123,9 +125,13 @@ export default function MarkSentModal({
   // not from anything typed here. Shown so the admin can see what the batch
   // will bill at before committing.
   const hasPrice = row?.master_price !== null && row?.master_price !== undefined;
-  const taxable = Number(row?.quantity ?? 0) * Number(row?.master_price ?? 0);
-  const gstHalf = taxable * 0.09;
-  const invoiceTotal = taxable + gstHalf * 2;
+  // Mirrors InvoiceBuilder, round-off included, so the figure shown here is
+  // the one that will appear on the invoice.
+  const taxable = round2(Number(row?.quantity ?? 0) * Number(row?.master_price ?? 0));
+  const gstHalf = round2(taxable * 0.09);
+  const beforeRounding = round2(taxable + gstHalf * 2);
+  const invoiceTotal = Math.round(beforeRounding);
+  const roundOff = round2(invoiceTotal - beforeRounding);
 
   const pick = (method: number) => {
     setFieldValue("dispatch_method", method);
@@ -179,8 +185,12 @@ export default function MarkSentModal({
             <p className="mt-1">
               {row?.quantity} x ₹{Number(row.master_price).toFixed(2)} = ₹
               {taxable.toFixed(2)} taxable &middot; GST 18% (CGST ₹
-              {gstHalf.toFixed(2)} + SGST ₹{gstHalf.toFixed(2)}) &middot;{" "}
-              <b>Invoice total ₹{invoiceTotal.toFixed(2)}</b>
+              {gstHalf.toFixed(2)} + SGST ₹{gstHalf.toFixed(2)})
+              {roundOff !== 0 ? (
+                <> &middot; round off {roundOff > 0 ? "+" : "−"}₹
+                  {Math.abs(roundOff).toFixed(2)}</>
+              ) : null}{" "}
+              &middot; <b>Invoice total ₹{invoiceTotal.toFixed(2)}</b>
             </p>
             <p className="mt-1 text-[11px] text-gray-500">
               From Product Price. Editing it later won't change this invoice.
