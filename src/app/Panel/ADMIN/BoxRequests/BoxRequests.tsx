@@ -11,6 +11,7 @@ import {
   Pencil,
   Download,
   PackageX,
+  FileText,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
@@ -18,6 +19,9 @@ import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import FilterTab from "@/components/FilterTab";
 import MarkSentModal from "@/components/FormModals/BoxRequestModal/MarkSentModal";
+import InvoiceViewModal from "@/components/FormModals/BoxRequestModal/InvoiceViewModal";
+import { downloadFromApi } from "@/utils/download";
+import toast from "react-hot-toast";
 
 const STATUS_OPTIONS = [
   { value: "1", label: "Requested" },
@@ -80,6 +84,10 @@ export default function BoxRequests() {
   );
   // Row whose dispatch form is open; null = closed.
   const [sentRow, setSentRow] = useState<any>(null);
+  // Row whose invoice is open in the viewer; null = closed.
+  const [invoiceRow, setInvoiceRow] = useState<any>(null);
+  // Which row's PDF is currently being fetched, so only that button spins.
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
   const {
     Patch: markSent,
@@ -107,6 +115,24 @@ export default function BoxRequests() {
     // same dispatch form.
     if (![1, 4].includes(Number(row.status))) return;
     setSentRow(row);
+  };
+
+  // Pulls the same PDF the user would get. Errors surface the server's own
+  // message (e.g. pricing missing, or downloads switched off) rather than a
+  // generic failure.
+  const downloadInvoice = async (row: any) => {
+    setDownloadingId(row.id);
+    try {
+      const safeNo = String(row?.invoice_no ?? row.id).replace(/\//g, "-");
+      await downloadFromApi(
+        `admin-box-requests/${row.id}/invoice/download`,
+        `invoice-${safeNo}.pdf`
+      );
+    } catch (e: any) {
+      toast.error(e?.message || "Could not download the invoice");
+    } finally {
+      setDownloadingId(null);
+    }
   };
 
   const submitMarkSent = async (payload: any) => {
@@ -410,11 +436,39 @@ export default function BoxRequests() {
             </div>
           );
         }
+        // Delivered. The batch is finished, so the useful actions here are
+        // the invoice ones — but only once pricing exists and downloads are
+        // switched on, which is exactly what has_invoice tells us.
         return (
-          <span className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-400">
-            <PackageCheck className="w-3.5 h-3.5 mr-1.5" />
-            Delivered
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-500 whitespace-nowrap">
+              <PackageCheck className="w-3.5 h-3.5 mr-1.5" />
+              Delivered
+            </span>
+            {row?.has_invoice ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setInvoiceRow(row)}
+                  className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-indigo-600 hover:bg-indigo-700 text-white whitespace-nowrap"
+                  title="View invoice"
+                >
+                  <FileText className="w-3.5 h-3.5 mr-1.5" />
+                  Invoice
+                </button>
+                <button
+                  type="button"
+                  onClick={() => downloadInvoice(row)}
+                  disabled={downloadingId === row.id}
+                  className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-60 whitespace-nowrap"
+                  title="Download invoice PDF"
+                >
+                  <Download className="w-3.5 h-3.5 mr-1.5" />
+                  {downloadingId === row.id ? "…" : "PDF"}
+                </button>
+              </>
+            ) : null}
+          </div>
         );
       },
     },
@@ -453,6 +507,13 @@ export default function BoxRequests() {
           </button>
         </div>
       </div>
+
+      {invoiceRow && (
+        <InvoiceViewModal
+          row={invoiceRow}
+          onClose={() => setInvoiceRow(null)}
+        />
+      )}
 
       {sentRow && (
         <MarkSentModal
