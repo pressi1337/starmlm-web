@@ -130,7 +130,7 @@ const AdminRoutes = {
       // Box fulfilment shares the pin_requests permission (same promoter team).
       path: "box-requests",
       element: (
-        <PermissionGuard need="pin_requests">
+        <PermissionGuard need="plan_product">
           <BoxRequests />
         </PermissionGuard>
       ),
@@ -195,7 +195,11 @@ const AdminRoutes = {
     },
     {
       path: "support-help",
-      element: <SuperOnly><SupportHelp /></SuperOnly>,
+      element: (
+        <PermissionGuard need="support_help">
+          <SupportHelp />
+        </PermissionGuard>
+      ),
     },
     {
       path: "app-settings",

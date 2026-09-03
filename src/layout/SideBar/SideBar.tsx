@@ -121,6 +121,8 @@ const Sidebar = ({
           icon: Pin,
           color: "from-teal-500 to-cyan-600",
         });
+      }
+      if (can("plan_product")) {
         baseItems.push({
           id: "box-requests",
           label: "Plan Product",
@@ -225,6 +227,11 @@ const Sidebar = ({
           icon: Gift,
           color: "from-rose-500 to-pink-600",
         });
+      }
+      // Support & Help is grantable to a sub-admin now, so it needs its own
+      // gate rather than riding inside the super-admin block. can() returns
+      // true for a super-admin, so their menu is unchanged.
+      if (can("support_help")) {
         baseItems.push({
           id: "support-help",
           label: "Support & Help",
@@ -232,6 +239,8 @@ const Sidebar = ({
           icon: HelpCircle,
           color: "from-blue-500 to-indigo-600",
         });
+      }
+      if (isSuperAdmin) {
         baseItems.push({
           id: "terms-and-conditions",
           label: "Terms & Conditions",

@@ -29,16 +29,18 @@ const buildSchema = (isEdit: boolean) =>
     // error attached to permissions for inline display.
     permissions: Yup.mixed().test(
       "at-least-one",
-      "Grant at least one permission (Daily Videos, Promotion Videos, Promotion Log, Pin Requests, Suggestions, or Personal Documents).",
+      "Grant at least one permission (Daily Videos, Promotion Videos, Promotion Log, Pin Requests, Plan Product, Support & Help, Suggestions, or Personal Documents).",
       function () {
-        const { can_daily_videos, can_promotion_videos, can_pin_requests, can_suggestions, can_personal_documents, can_promotion_logs } = this.parent;
+        const { can_daily_videos, can_promotion_videos, can_pin_requests, can_suggestions, can_personal_documents, can_promotion_logs, can_plan_product, can_support_help } = this.parent;
         return (
           Boolean(can_daily_videos) ||
           Boolean(can_promotion_videos) ||
           Boolean(can_pin_requests) ||
           Boolean(can_suggestions) ||
           Boolean(can_personal_documents) ||
-          Boolean(can_promotion_logs)
+          Boolean(can_promotion_logs) ||
+          Boolean(can_plan_product) ||
+          Boolean(can_support_help)
         );
       }
     ),
@@ -76,6 +78,8 @@ const SubAdminForm = ({
       can_personal_documents:
         Number(data?.can_personal_documents ?? 0) === 1 ? 1 : 0,
       can_promotion_logs: Number(data?.can_promotion_logs ?? 0) === 1 ? 1 : 0,
+      can_plan_product: Number(data?.can_plan_product ?? 0) === 1 ? 1 : 0,
+      can_support_help: Number(data?.can_support_help ?? 0) === 1 ? 1 : 0,
     },
     onSubmit: (formValues: any) => {
       // Drop empty password fields on edit so we don't send blank strings.
@@ -91,6 +95,8 @@ const SubAdminForm = ({
       payload.can_suggestions = payload.can_suggestions ? 1 : 0;
       payload.can_personal_documents = payload.can_personal_documents ? 1 : 0;
       payload.can_promotion_logs = payload.can_promotion_logs ? 1 : 0;
+      payload.can_plan_product = payload.can_plan_product ? 1 : 0;
+      payload.can_support_help = payload.can_support_help ? 1 : 0;
       onAction(payload);
     },
     validateOnChange: false,
@@ -207,6 +213,20 @@ const SubAdminForm = ({
           <CheckboxInput
             label="Promotion Log"
             name="can_promotion_logs"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+          <CheckboxInput
+            label="Plan Product"
+            name="can_plan_product"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+          <CheckboxInput
+            label="Support & Help"
+            name="can_support_help"
             value={values}
             onChange={handleChange}
             error={errors}
