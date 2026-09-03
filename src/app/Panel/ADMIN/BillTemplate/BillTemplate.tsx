@@ -27,7 +27,6 @@ const FIELDS: Array<[string, string, string?]> = [
   ["email", "Email", "care@company.com"],
   ["phone", "Phone", "9000000000"],
   ["invoice_prefix", "Invoice Prefix", "startup"],
-  ["place_of_supply", "Place of Supply", "Tamil Nadu"],
   ["country_of_supply", "Country of Supply", "India"],
 ];
 
