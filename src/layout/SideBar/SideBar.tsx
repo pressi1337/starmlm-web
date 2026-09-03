@@ -29,6 +29,9 @@ import {
   Gift,
   ShieldCheck,
   History,
+  ReceiptText,
+  IndianRupee,
+  SlidersHorizontal,
 } from "lucide-react";
 import { ROLE } from "@/constants/others";
 import { Button } from "@/components/ui/button";
@@ -124,6 +127,32 @@ const Sidebar = ({
           path: "/portal/admin/box-requests",
           icon: PackageCheck,
           color: "from-amber-500 to-orange-600",
+        });
+      }
+      // Invoice setup sits with Plan Product — both feed the bill the user
+      // downloads after delivery. Super-admin only, matching their routes;
+      // a sub-admin would just be bounced to the dashboard.
+      if (isSuperAdmin) {
+        baseItems.push({
+          id: "product-prices",
+          label: "Product Price",
+          path: "/portal/admin/product-prices",
+          icon: IndianRupee,
+          color: "from-emerald-500 to-green-600",
+        });
+        baseItems.push({
+          id: "bill-template",
+          label: "Bill Template",
+          path: "/portal/admin/bill-template",
+          icon: ReceiptText,
+          color: "from-cyan-500 to-blue-600",
+        });
+        baseItems.push({
+          id: "app-settings",
+          label: "App Settings",
+          path: "/portal/admin/app-settings",
+          icon: SlidersHorizontal,
+          color: "from-violet-500 to-purple-600",
         });
       }
       if (can("personal_documents")) {

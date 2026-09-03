@@ -6,6 +6,8 @@ import Modal from "@/components/ui/Modal";
 import InputText from "@/components/ui/InputText";
 import Btn from "@/components/ui/Btn";
 
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
 export const DISPATCH_DIRECT = 1;
 export const DISPATCH_COURIER = 2;
 
@@ -16,6 +18,7 @@ export const DISPATCH_COURIER = 2;
  */
 const SCHEMA = Yup.object().shape({
   dispatch_method: Yup.number().required("Choose Direct or Courier"),
+
   collected_date: Yup.string().when("dispatch_method", {
     is: DISPATCH_DIRECT,
     then: (s) => s.required("Collected date is required*"),
@@ -118,6 +121,18 @@ export default function MarkSentModal({
   const isDirect = Number(values.dispatch_method) === DISPATCH_DIRECT;
   const shown = { ...serverError, ...errors };
 
+  // The price comes from the Product Price master for this promoter level,
+  // not from anything typed here. Shown so the admin can see what the batch
+  // will bill at before committing.
+  const hasPrice = row?.master_price !== null && row?.master_price !== undefined;
+  // Mirrors InvoiceBuilder, round-off included, so the figure shown here is
+  // the one that will appear on the invoice.
+  const taxable = round2(Number(row?.quantity ?? 0) * Number(row?.master_price ?? 0));
+  const gstHalf = round2(taxable * 0.09);
+  const beforeRounding = round2(taxable + gstHalf * 2);
+  const invoiceTotal = Math.round(beforeRounding);
+  const roundOff = round2(invoiceTotal - beforeRounding);
+
   const pick = (method: number) => {
     setFieldValue("dispatch_method", method);
     // Clear the other branch so a half-filled switch can't be submitted.
@@ -156,6 +171,38 @@ export default function MarkSentModal({
             . Sending again moves it back to Sent.
           </p>
         ) : null}
+
+        {/* What this batch will bill at, straight from the price master. */}
+        {hasPrice ? (
+          <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-xs text-gray-700">
+            <p className="font-semibold text-gray-800">
+              {row?.master_product || productName} &middot; ₹
+              {Number(row.master_price).toFixed(2)} / qty
+              <span className="ml-2 font-normal text-gray-500">
+                MRP ₹{Number(row?.master_mrp ?? 0).toFixed(2)}
+              </span>
+            </p>
+            <p className="mt-1">
+              {row?.quantity} x ₹{Number(row.master_price).toFixed(2)} = ₹
+              {taxable.toFixed(2)} taxable &middot; GST 18% (CGST ₹
+              {gstHalf.toFixed(2)} + SGST ₹{gstHalf.toFixed(2)})
+              {roundOff !== 0 ? (
+                <> &middot; round off {roundOff > 0 ? "+" : "−"}₹
+                  {Math.abs(roundOff).toFixed(2)}</>
+              ) : null}{" "}
+              &middot; <b>Invoice total ₹{invoiceTotal.toFixed(2)}</b>
+            </p>
+            <p className="mt-1 text-[11px] text-gray-500">
+              From Product Price. Editing it later won't change this invoice.
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-xs text-red-800">
+            No price is set for this promoter level. Add it under{" "}
+            <b>Product Price</b> before dispatching — the invoice can't be
+            raised without it.
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -214,6 +261,7 @@ export default function MarkSentModal({
           <Btn
             title={isResend ? "Send again" : "Mark as sent"}
             isLoading={loading}
+            isDisable={!hasPrice}
             onClick={handleSubmit}
           />
         </div>
