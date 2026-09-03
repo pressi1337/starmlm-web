@@ -136,6 +136,8 @@ export default function SubAdminManagement() {
               Number(row?.can_personal_documents) === 1
             )}
             {chip("Promotion Log", Number(row?.can_promotion_logs) === 1)}
+            {chip("Plan Product", Number(row?.can_plan_product) === 1)}
+            {chip("Support & Help", Number(row?.can_support_help) === 1)}
           </div>
         );
       },
