@@ -1,9 +1,20 @@
 //@ts-nocheck
 import React, { useState, useEffect, useMemo } from "react";
-import { Save, XCircle, CheckCircle, Gift } from "lucide-react";
+import {
+  Save,
+  XCircle,
+  CheckCircle,
+  Gift,
+  Plus,
+  Trash2,
+  Shuffle,
+} from "lucide-react";
 import { useActionCall, useGetCall } from "@/hooks";
 import { SERVICE } from "@/constants/services";
 import Loader from "@/components/ui/Loader";
+
+// A blank row in the amount pool.
+const emptyRow = () => ({ id: null, amount: "", msg: "" });
 
 export default function ReferralSettings() {
   const promotorLevels = useMemo(
@@ -25,8 +36,9 @@ export default function ReferralSettings() {
 
   const [activeTabKey, setActiveTabKey] = useState(0); // promoter level
   const [referralLevel, setReferralLevel] = useState(1); // referral depth
-  const [amount, setAmount] = useState("");
-  const [msg, setMsg] = useState("");
+  // The pool of cashback amounts for this combination. One is drawn at random
+  // per scratch card, so the payout is not fixed.
+  const [rows, setRows] = useState([emptyRow()]);
   const [saveStatus, setSaveStatus] = useState(null); // 'success' | 'error' | null
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,14 +53,28 @@ export default function ReferralSettings() {
 
   const { Put: updateReward } = useActionCall(SERVICE.GET_SCRATCH);
 
-  // Load the single amount + message for the selected (promoter, referral) combo.
+  // Load the pool for the selected (promoter, referral) combo. A combination
+  // configured before pools existed comes back with no `amounts` — show its
+  // single amount as the first (and only) row so nothing looks lost.
   useEffect(() => {
-    if (scratchData?.success) {
-      const d = scratchData.data;
-      setAmount(d?.amount != null ? String(d.amount) : "");
-      setMsg(d?.msg ?? "");
-      setSaveStatus(null);
+    if (!scratchData?.success) return;
+    const d = scratchData.data;
+    const pool = Array.isArray(d?.amounts) ? d.amounts : [];
+
+    if (pool.length > 0) {
+      setRows(
+        pool.map((a) => ({
+          id: a.id,
+          amount: a.amount != null ? String(Number(a.amount)) : "",
+          msg: a.msg ?? "",
+        }))
+      );
+    } else if (d?.amount != null && Number(d.amount) > 0) {
+      setRows([{ id: null, amount: String(Number(d.amount)), msg: d.msg ?? "" }]);
+    } else {
+      setRows([emptyRow()]);
     }
+    setSaveStatus(null);
   }, [scratchData]);
 
   const refetch = (promoter, ref) => getConfig({ key: `${promoter}_${ref}` });
@@ -65,9 +91,36 @@ export default function ReferralSettings() {
     setSaveStatus(null);
   };
 
+  const updateRow = (index, field, value) => {
+    setRows((prev) =>
+      prev.map((r, i) => (i === index ? { ...r, [field]: value } : r))
+    );
+    setSaveStatus(null);
+  };
+
+  const addRow = () => {
+    setRows((prev) => [...prev, emptyRow()]);
+    setSaveStatus(null);
+  };
+
+  const removeRow = (index) => {
+    // Always leave one row behind so the form is never empty.
+    setRows((prev) =>
+      prev.length <= 1 ? [emptyRow()] : prev.filter((_, i) => i !== index)
+    );
+    setSaveStatus(null);
+  };
+
+  // Rows the admin actually filled in with a usable number.
+  const validRows = rows.filter(
+    (r) => String(r.amount).trim() !== "" && !isNaN(Number(r.amount)) && Number(r.amount) >= 0
+  );
+  // Only amounts above zero can be won — a zero would hand out an empty card.
+  const payingRows = validRows.filter((r) => Number(r.amount) > 0);
+
   const saveSettings = async () => {
     setSaveStatus(null);
-    if (amount === "" || isNaN(Number(amount)) || Number(amount) < 0) {
+    if (validRows.length !== rows.length || validRows.length === 0) {
       setSaveStatus("error");
       return;
     }
@@ -76,8 +129,17 @@ export default function ReferralSettings() {
       const payload = {
         promotor_level: activeTabKey,
         level: referralLevel,
-        amount: Number(amount),
-        msg: msg,
+        // The pool. Empty means "no cashback for this combination", which the
+        // API stores as a flat zero.
+        amounts: payingRows.map((r) => ({
+          id: r.id || null,
+          amount: Number(r.amount),
+          msg: r.msg || "",
+        })),
+        // Mirrors the first pool entry; also the fallback for any pool entry
+        // saved without a message of its own.
+        amount: payingRows.length ? Number(payingRows[0].amount) : 0,
+        msg: payingRows.length ? payingRows[0].msg || "" : "",
         is_active: 1,
       };
       const response = await updateReward(
@@ -101,6 +163,10 @@ export default function ReferralSettings() {
     (p) => p.levelId === activeTabKey
   )?.name;
 
+  const poolPreview = payingRows
+    .map((r) => `₹${Number(r.amount)}`)
+    .join(" / ");
+
   const tabClass = (active) =>
     `inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
       active
@@ -118,8 +184,9 @@ export default function ReferralSettings() {
               Promotion Cashback Settings
             </h1>
             <p className="mt-2 text-base text-gray-600">
-              Set one cashback amount and message per referral level (1–7) and
-              promoter level. Level 7 is the admin commission.
+              Add one or more cashback amounts per referral level (1–7) and
+              promoter level. Each scratch card wins one of them at random.
+              Level 7 is the admin commission.
             </p>
           </div>
           <button
@@ -176,7 +243,7 @@ export default function ReferralSettings() {
           </div>
         </div>
 
-        {/* Content: single cashback amount + message */}
+        {/* Content: the pool of cashback amounts */}
         <div className="p-6 min-h-[220px]">
           {loading ? (
             <div className="flex items-center justify-center h-48">
@@ -210,40 +277,94 @@ export default function ReferralSettings() {
                 <div className="p-4 bg-red-50 border-l-4 border-red-400 rounded-lg flex">
                   <XCircle className="h-5 w-5 text-red-400" />
                   <p className="ml-3 text-sm font-medium text-red-800">
-                    Enter a valid cashback amount (0 or more) before saving.
+                    Every row needs a valid cashback amount (0 or more). Remove
+                    the blank rows or fill them in before saving.
                   </p>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Cashback (₹) *
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder="e.g. 0.50"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900">
+                      Cashback Amounts
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      One of these is picked at random for every scratch card.
+                      Add a single amount to keep it fixed.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addRow}
+                    disabled={isSubmitting}
+                    className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 disabled:opacity-50"
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add Amount
+                  </button>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Message
-                  </label>
-                  <input
-                    type="text"
-                    maxLength={50}
-                    value={msg}
-                    onChange={(e) => setMsg(e.target.value)}
-                    placeholder="e.g. New Reward"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+
+                <div className="space-y-3">
+                  {rows.map((row, index) => (
+                    <div
+                      key={row.id ?? `new-${index}`}
+                      className="grid grid-cols-1 md:grid-cols-[1fr_2fr_auto] gap-3 items-end p-3 rounded-lg border border-gray-200 bg-gray-50/60"
+                    >
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">
+                          Cashback (₹) *
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={row.amount}
+                          onChange={(e) =>
+                            updateRow(index, "amount", e.target.value)
+                          }
+                          placeholder="e.g. 0.50"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">
+                          Message
+                        </label>
+                        <input
+                          type="text"
+                          maxLength={50}
+                          value={row.msg}
+                          onChange={(e) =>
+                            updateRow(index, "msg", e.target.value)
+                          }
+                          placeholder="e.g. New Reward"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeRow(index)}
+                        disabled={isSubmitting}
+                        title="Remove this amount"
+                        className="inline-flex items-center justify-center h-10 w-10 rounded-lg text-red-600 bg-white border border-gray-300 hover:bg-red-50 hover:border-red-300 disabled:opacity-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
+
+              {payingRows.length > 1 && (
+                <div className="p-4 bg-amber-50 border-l-4 border-amber-400 rounded-lg flex items-start">
+                  <Shuffle className="w-5 h-5 text-amber-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-amber-800">
+                    Each card wins one of <b>{poolPreview}</b> — picked at
+                    random, with an equal chance for every amount.
+                  </p>
+                </div>
+              )}
 
               <div className="p-4 bg-indigo-50 border-l-4 border-indigo-400 rounded-lg flex items-start">
                 <Gift className="w-5 h-5 text-indigo-500 mr-2 mt-0.5 flex-shrink-0" />
@@ -252,15 +373,27 @@ export default function ReferralSettings() {
                     <>
                       <b>Level 7 = admin commission.</b> When a{" "}
                       <b>{activePromoterName}</b> activates, the admin
-                      (additional-scratch-referral) users each receive a ₹
-                      {amount || 0} scratch card.
+                      (additional-scratch-referral) users each receive a scratch
+                      card worth{" "}
+                      {payingRows.length > 1 ? (
+                        <b>one of {poolPreview}</b>
+                      ) : (
+                        <>₹{payingRows.length ? Number(payingRows[0].amount) : 0}</>
+                      )}
+                      .
                     </>
                   ) : (
                     <>
                       When a <b>{activePromoterName}</b> activates, their{" "}
-                      <b>Level {referralLevel}</b> referrer receives a ₹
-                      {amount || 0} scratch card (if that referrer is at promoter
-                      level ≥ the activating user's level).
+                      <b>Level {referralLevel}</b> referrer receives a scratch
+                      card worth{" "}
+                      {payingRows.length > 1 ? (
+                        <b>one of {poolPreview}</b>
+                      ) : (
+                        <>₹{payingRows.length ? Number(payingRows[0].amount) : 0}</>
+                      )}{" "}
+                      (if that referrer is at promoter level ≥ the activating
+                      user's level).
                     </>
                   )}
                 </p>
