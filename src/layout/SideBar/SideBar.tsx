@@ -256,6 +256,8 @@ const Sidebar = ({
           icon: FileText,
           color: "from-cyan-500 to-teal-600",
         });
+      }
+      if (can("promotion_settings")) {
         baseItems.push({
           id: "referral-settings",
           label: "Promotion Settings",

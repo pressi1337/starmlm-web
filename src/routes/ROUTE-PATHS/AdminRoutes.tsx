@@ -165,7 +165,11 @@ const AdminRoutes = {
     },
     {
       path: "referral-settings",
-      element: <SuperOnly><ReferralSettings /></SuperOnly>,
+      element: (
+        <PermissionGuard need="promotion_settings">
+          <ReferralSettings />
+        </PermissionGuard>
+      ),
     },
     {
       path: "withdraw-request",
