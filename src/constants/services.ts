@@ -86,6 +86,9 @@ export const SERVICE: any = {
     // Product price master — one price + MRP per promoter level.
     PRODUCT_PRICES: "product-prices",
     PRODUCT_PRICES_UPSERT: "product-prices/upsert",
+    PAYMENT_GATEWAY_CONFIG: "payment-gateway/config",
+    PAYMENT_GATEWAY_TEST_INITIATE: "payment-gateway/test-initiate",
+    PAYMENT_GATEWAY_TRANSACTIONS: "payment-gateway/transactions",
     BILL_TEMPLATE: "bill-template",
     BILL_TEMPLATE_UPSERT: "bill-template/upsert",
     TERMS_AND_CONDITIONS: "terms-and-conditions",

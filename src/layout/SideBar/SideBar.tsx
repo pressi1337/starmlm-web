@@ -143,6 +143,13 @@ const Sidebar = ({
           color: "from-emerald-500 to-green-600",
         });
         baseItems.push({
+          id: "payment-gateway",
+          label: "Payment Gateway",
+          path: "/portal/admin/payment-gateway",
+          icon: CreditCard,
+          color: "from-blue-500 to-indigo-600",
+        });
+        baseItems.push({
           id: "bill-template",
           label: "Bill Template",
           path: "/portal/admin/bill-template",
