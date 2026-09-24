@@ -20,6 +20,8 @@ export const SERVICE: any = {
     PROMOTIONVIDEOS: "promotion-videos",
     // On/off toggle for "Basic (L0-L2)" video eligibility (set from the list).
     PROMOTIONVIDEO_BASIC_LEVEL_UPDATE: "promotion-videos/basic-level-update",
+    // Optional: make one video THE first video every user sees on a date.
+    PROMOTIONVIDEO_FEATURED_UPDATE: "promotion-videos/featured-update",
     PROMOTIONVIDEOQUIZES: "promotion-video-quizzes",
     GET_PROFILE: "auth-user",
     GET_BANK_INFO: 'user-bank-detail',
@@ -86,6 +88,9 @@ export const SERVICE: any = {
     // Product price master — one price + MRP per promoter level.
     PRODUCT_PRICES: "product-prices",
     PRODUCT_PRICES_UPSERT: "product-prices/upsert",
+    PAYMENT_GATEWAY_CONFIG: "payment-gateway/config",
+    PAYMENT_GATEWAY_TEST_INITIATE: "payment-gateway/test-initiate",
+    PAYMENT_GATEWAY_TRANSACTIONS: "payment-gateway/transactions",
     BILL_TEMPLATE: "bill-template",
     BILL_TEMPLATE_UPSERT: "bill-template/upsert",
     TERMS_AND_CONDITIONS: "terms-and-conditions",

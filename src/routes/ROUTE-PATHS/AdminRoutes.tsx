@@ -64,6 +64,9 @@ const AppSettings = Loadable(
 const ProductPrices = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/ProductPrices/ProductPrices"))
 );
+const PaymentGateway = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/PaymentGateway/PaymentGateway"))
+);
 const BillTemplate = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/BillTemplate/BillTemplate"))
 );
@@ -212,6 +215,12 @@ const AdminRoutes = {
     {
       path: "product-prices",
       element: <SuperOnly><ProductPrices /></SuperOnly>,
+    },
+    {
+      // Omniware (Federal Bank) config + live test payments. The gateway
+      // return lands back here with ?order_id=.
+      path: "payment-gateway",
+      element: <SuperOnly><PaymentGateway /></SuperOnly>,
     },
     {
       path: "bill-template",
