@@ -6,6 +6,7 @@ import {
   HelpCircle,
   Eye,
   Trophy,
+  X,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { MODAL_OPEN, ROLE } from "@/constants/others";
@@ -127,6 +128,41 @@ export default function PROMOTIONVIDEOS() {
       },
     },
     {
+      // Optional. A video with a date here is shown FIRST to every user on
+      // that day, once, before the usual random videos. Only one video can
+      // hold a date — picking a date another video already has moves it.
+      title: "Show First On",
+      key: "featured_date",
+      render: (index: any, row: any) => {
+        const value = row?.featured_date
+          ? String(row.featured_date).slice(0, 10)
+          : "";
+        return (
+          <div className="flex items-center space-x-1">
+            <input
+              type="date"
+              value={value}
+              disabled={featuredUpdating}
+              onChange={(e) => handleSetFeatured(row, e.target.value)}
+              title="Pick a date to show this video first to everyone that day"
+              className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+            />
+            {value && (
+              <button
+                type="button"
+                disabled={featuredUpdating}
+                onClick={() => handleSetFeatured(row, "")}
+                title="Stop showing this video first"
+                className="text-gray-400 hover:text-red-600 p-1 disabled:opacity-50"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       title: "Action",
       key: "video_path",
       render: (index: any, row: any) => (
@@ -187,6 +223,9 @@ export default function PROMOTIONVIDEOS() {
   const { loading: basicUpdating, Patch: SetBasicLevel } = useActionCall(
     SERVICE.PROMOTIONVIDEO_BASIC_LEVEL_UPDATE
   );
+  const { loading: featuredUpdating, Patch: SetFeatured } = useActionCall(
+    SERVICE.PROMOTIONVIDEO_FEATURED_UPDATE
+  );
 
   const PromotionVideoAPI = () => {
     setQuery(filter);
@@ -201,6 +240,17 @@ export default function PROMOTIONVIDEOS() {
   const handleToggleBasic = async (row: any) => {
     const next = Number(row?.is_basic_level) === 1 ? 0 : 1;
     const resp = await SetBasicLevel({ id: row.id, is_basic_level: next });
+    if (resp) PromotionVideoAPI();
+  };
+
+  // Set (or clear, with an empty date) the day this video is shown first to
+  // everyone. The API moves the date off whichever video held it, so the list
+  // has to be refetched — another row may have changed too.
+  const handleSetFeatured = async (row: any, date: string) => {
+    const resp = await SetFeatured({
+      id: row.id,
+      featured_date: date || null,
+    });
     if (resp) PromotionVideoAPI();
   };
 

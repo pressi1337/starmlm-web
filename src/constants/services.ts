@@ -20,6 +20,8 @@ export const SERVICE: any = {
     PROMOTIONVIDEOS: "promotion-videos",
     // On/off toggle for "Basic (L0-L2)" video eligibility (set from the list).
     PROMOTIONVIDEO_BASIC_LEVEL_UPDATE: "promotion-videos/basic-level-update",
+    // Optional: make one video THE first video every user sees on a date.
+    PROMOTIONVIDEO_FEATURED_UPDATE: "promotion-videos/featured-update",
     PROMOTIONVIDEOQUIZES: "promotion-video-quizzes",
     GET_PROFILE: "auth-user",
     GET_BANK_INFO: 'user-bank-detail',

@@ -142,13 +142,10 @@ const Sidebar = ({
           icon: IndianRupee,
           color: "from-emerald-500 to-green-600",
         });
-        baseItems.push({
-          id: "payment-gateway",
-          label: "Payment Gateway",
-          path: "/portal/admin/payment-gateway",
-          icon: CreditCard,
-          color: "from-blue-500 to-indigo-600",
-        });
+        // Payment Gateway (/portal/admin/payment-gateway) is deliberately NOT
+        // listed. It runs real test payments against Omniware, so it is kept
+        // out of the menu and reached by typing the URL. The route itself is
+        // still super-admin only (see AdminRoutes).
         baseItems.push({
           id: "bill-template",
           label: "Bill Template",
