@@ -212,8 +212,9 @@ export default function WithdrawImportModal({
                 <ol className="list-decimal list-inside space-y-1">
                   <li>Export the withdraw list from this page.</li>
                   <li>
-                    Set the <b>Status</b> column to <b>Processing</b>,{" "}
-                    <b>Completed</b> or <b>Rejected</b>.
+                    In the <b>New Status</b> column, pick{" "}
+                    <b>Processing</b>, <b>Completed</b> or <b>Rejected</b> from
+                    the dropdown. Leave a row blank to leave it alone.
                   </li>
                   <li>
                     For <b>Rejected</b> rows, fill in the <b>Reason</b> column —
