@@ -26,7 +26,9 @@ import {
   HandCoins,
   ListChecks,
   Hourglass,
+  Upload,
 } from "lucide-react";
+import WithdrawImportModal from "@/components/FormModals/WithdrawImportModal/WithdrawImportModal";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
@@ -267,6 +269,10 @@ export default function WithDrawRequest() {
     setQuery(filter);
   };
 
+  // Bulk status update from an edited export. The modal handles its own
+  // upload/validate/confirm steps and calls back so the list refreshes.
+  const [importOpen, setImportOpen] = useState(false);
+
   useEffect(() => {
     getWithDrawAPI();
   }, [filter]);
@@ -391,6 +397,13 @@ export default function WithDrawRequest() {
           </div>
           <div className="flex items-center gap-3">
             <button
+              onClick={() => setImportOpen(true)}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Import Status
+            </button>
+            <button
               onClick={() =>
                 exportWithdrawFiltered({
                   query: filter,
@@ -514,6 +527,12 @@ export default function WithDrawRequest() {
           }}
         />
       </div>
+
+      <WithdrawImportModal
+        isOpen={importOpen}
+        onClose={() => setImportOpen(false)}
+        onApplied={getWithDrawAPI}
+      />
     </div>
   );
 }

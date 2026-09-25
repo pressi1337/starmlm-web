@@ -20,6 +20,10 @@ export const SERVICE: any = {
     PROMOTIONVIDEOS: "promotion-videos",
     // On/off toggle for "Basic (L0-L2)" video eligibility (set from the list).
     PROMOTIONVIDEO_BASIC_LEVEL_UPDATE: "promotion-videos/basic-level-update",
+    // Bulk withdraw status update from an edited export. Validate says what a
+    // file would do and changes nothing; confirm re-checks and applies it.
+    WITHDRAW_IMPORT_VALIDATE: "withdraws/import/validate",
+    WITHDRAW_IMPORT_CONFIRM: "withdraws/import/confirm",
     // Optional: make one video THE first video every user sees on a date.
     PROMOTIONVIDEO_FEATURED_UPDATE: "promotion-videos/featured-update",
     PROMOTIONVIDEOQUIZES: "promotion-video-quizzes",
