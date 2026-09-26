@@ -9,7 +9,7 @@ import {
   Download,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
-import { OPTIONS, ROLE } from "@/constants/others";
+import { OPTIONS } from "@/constants/others";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import Swal from "sweetalert2";
@@ -17,7 +17,6 @@ import FilterTab from "@/components/FilterTab";
 import CopyClipBoard from "@/components/CopyClip";
 import AdminPinFormModal from "@/components/FormModals/AdminGeneratePinModal/AdminPinFormModal";
 import UIHelpers from "@/utils/UIhelper";
-import { useAuth } from "@/context/AuthContext";
 
 export default function PROMOTIONVIDEOS() {
   const getStatusBadge = (status) => {
@@ -210,8 +209,6 @@ export default function PROMOTIONVIDEOS() {
 
   const { defaultFilter, updateSearchParam, searchParams } = useQueryParams();
   const Modal = searchParams.get("Modal") || undefined;
-  const { role } = useAuth();
-  const isSubAdmin = role === ROLE.SUB_ADMIN;
   const [filter, setFilter] = useState(defaultFilter);
 
   const { loading, setQuery, data } = useGetCall(SERVICE.ADMIN_PIN_REQUESTS, {
@@ -344,11 +341,6 @@ export default function PROMOTIONVIDEOS() {
             <p className="mt-2 text-gray-600">
               Manage user level upgrade requests and pin generation
             </p>
-            {isSubAdmin && (
-              <p className="mt-1 text-xs text-amber-600">
-                You can only manage Promoter and Level 1 requests.
-              </p>
-            )}
           </div>
           <button
             onClick={() =>
@@ -423,21 +415,18 @@ export default function PROMOTIONVIDEOS() {
         </div>
       </div>
 
-      {/* Filters and Search — hide the level filter for sub-admin since it's locked to 0/1. */}
+      {/* Filters and Search. A sub-admin granted Pin Requests now has full
+          access at every promoter level, so they get the level filter too. */}
       <FilterTab
         filter={filter}
         setFilter={setFilter}
-        TABLE_FILTER={
-          isSubAdmin
-            ? ["SEARCH", "PIN_STATUS", "FROM_DATE_PIN", "TO_DATE_PIN"]
-            : [
-                "SEARCH",
-                "PROMOTER_LEVEL_PIN",
-                "PIN_STATUS",
-                "FROM_DATE_PIN",
-                "TO_DATE_PIN",
-              ]
-        }
+        TABLE_FILTER={[
+          "SEARCH",
+          "PROMOTER_LEVEL_PIN",
+          "PIN_STATUS",
+          "FROM_DATE_PIN",
+          "TO_DATE_PIN",
+        ]}
       />
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <DataTable
