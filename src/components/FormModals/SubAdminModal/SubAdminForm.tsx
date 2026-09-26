@@ -29,9 +29,9 @@ const buildSchema = (isEdit: boolean) =>
     // error attached to permissions for inline display.
     permissions: Yup.mixed().test(
       "at-least-one",
-      "Grant at least one permission (Daily Videos, Promotion Videos, Promotion Log, Promotion Settings, Pin Requests, Plan Product, Support & Help, Suggestions, or Personal Documents).",
+      "Grant at least one permission (Daily Videos, Promotion Videos, Promotion Log, Promotion Settings, Pin Requests, Plan Product, Withdraw Request, Support & Help, Suggestions, or Personal Documents).",
       function () {
-        const { can_daily_videos, can_promotion_videos, can_pin_requests, can_suggestions, can_personal_documents, can_promotion_logs, can_plan_product, can_support_help, can_promotion_settings } = this.parent;
+        const { can_daily_videos, can_promotion_videos, can_pin_requests, can_suggestions, can_personal_documents, can_promotion_logs, can_plan_product, can_support_help, can_promotion_settings, can_withdraw_requests } = this.parent;
         return (
           Boolean(can_daily_videos) ||
           Boolean(can_promotion_videos) ||
@@ -41,7 +41,8 @@ const buildSchema = (isEdit: boolean) =>
           Boolean(can_promotion_logs) ||
           Boolean(can_plan_product) ||
           Boolean(can_support_help) ||
-          Boolean(can_promotion_settings)
+          Boolean(can_promotion_settings) ||
+          Boolean(can_withdraw_requests)
         );
       }
     ),
@@ -83,6 +84,8 @@ const SubAdminForm = ({
       can_support_help: Number(data?.can_support_help ?? 0) === 1 ? 1 : 0,
       can_promotion_settings:
         Number(data?.can_promotion_settings ?? 0) === 1 ? 1 : 0,
+      can_withdraw_requests:
+        Number(data?.can_withdraw_requests ?? 0) === 1 ? 1 : 0,
     },
     onSubmit: (formValues: any) => {
       // Drop empty password fields on edit so we don't send blank strings.
@@ -101,6 +104,7 @@ const SubAdminForm = ({
       payload.can_plan_product = payload.can_plan_product ? 1 : 0;
       payload.can_support_help = payload.can_support_help ? 1 : 0;
       payload.can_promotion_settings = payload.can_promotion_settings ? 1 : 0;
+      payload.can_withdraw_requests = payload.can_withdraw_requests ? 1 : 0;
       onAction(payload);
     },
     validateOnChange: false,
@@ -238,6 +242,13 @@ const SubAdminForm = ({
           <CheckboxInput
             label="Promotion Settings"
             name="can_promotion_settings"
+            value={values}
+            onChange={handleChange}
+            error={errors}
+          />
+          <CheckboxInput
+            label="Withdraw Request"
+            name="can_withdraw_requests"
             value={values}
             onChange={handleChange}
             error={errors}

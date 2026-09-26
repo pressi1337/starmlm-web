@@ -142,6 +142,10 @@ export default function SubAdminManagement() {
               "Promotion Settings",
               Number(row?.can_promotion_settings) === 1
             )}
+            {chip(
+              "Withdraw Request",
+              Number(row?.can_withdraw_requests) === 1
+            )}
           </div>
         );
       },

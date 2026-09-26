@@ -218,18 +218,22 @@ const Sidebar = ({
           color: "from-fuchsia-500 to-pink-600",
         });
         baseItems.push({
-          id: "withdraw-request",
-          label: "Withdraw Request",
-          path: "/portal/admin/withdraw-request",
-          icon: Banknote,
-          color: "from-purple-500 to-violet-600",
-        });
-        baseItems.push({
           id: "offers",
           label: "Offer",
           path: "/portal/admin/offers",
           icon: Gift,
           color: "from-rose-500 to-pink-600",
+        });
+      }
+      // Grantable to a sub-admin now, so out of the super-admin block and
+      // behind its own gate. can() is true for a super-admin either way.
+      if (can("withdraw_requests")) {
+        baseItems.push({
+          id: "withdraw-request",
+          label: "Withdraw Request",
+          path: "/portal/admin/withdraw-request",
+          icon: Banknote,
+          color: "from-purple-500 to-violet-600",
         });
       }
       // Support & Help is grantable to a sub-admin now, so it needs its own

@@ -193,11 +193,16 @@ export default function WithDrawRequest() {
     {
       title: "Amount",
       key: "amount",
+      // Display only — deliberately has no click handler.
+      //
+      // It used to call the status-update handler with a single argument. That
+      // handler takes (id, status = 2), so the argument landed in `id` and the
+      // status defaulted: clicking the amount on ANY row offered to complete
+      // request number 2. Status changes belong to the Action column, which
+      // passes the row's real id and hides itself once a request is Completed
+      // or Rejected.
       render: (index: any, row: any) => (
-        <div
-          className="flex items-center justify-start space-x-2"
-          onClick={() => handleStatusUpdate(2)}
-        >
+        <div className="flex items-center justify-start space-x-2">
           <b>{formatAmount(row.amount)}</b>
         </div>
       ),
