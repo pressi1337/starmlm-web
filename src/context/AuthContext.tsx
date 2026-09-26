@@ -23,6 +23,7 @@ export type AdminPermissions = {
   plan_product: boolean;
   support_help: boolean;
   promotion_settings: boolean;
+  withdraw_requests: boolean;
 };
 
 interface User {
@@ -56,6 +57,7 @@ const FULL_PERMISSIONS: AdminPermissions = {
   plan_product: true,
   support_help: true,
   promotion_settings: true,
+  withdraw_requests: true,
 };
 
 const NO_PERMISSIONS: AdminPermissions = {
@@ -68,6 +70,7 @@ const NO_PERMISSIONS: AdminPermissions = {
   plan_product: false,
   support_help: false,
   promotion_settings: false,
+  withdraw_requests: false,
 };
 
 // Normalize the permissions claim from the JWT into a strict boolean map.
@@ -89,6 +92,7 @@ const derivePermissions = (decoded: JwtPayload | null): AdminPermissions => {
     plan_product: !!claim.plan_product,
     support_help: !!claim.support_help,
     promotion_settings: !!claim.promotion_settings,
+    withdraw_requests: !!claim.withdraw_requests,
   };
 };
 

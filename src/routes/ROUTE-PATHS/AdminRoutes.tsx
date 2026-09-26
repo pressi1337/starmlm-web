@@ -176,7 +176,11 @@ const AdminRoutes = {
     },
     {
       path: "withdraw-request",
-      element: <SuperOnly><WithDrawRequest /></SuperOnly>,
+      element: (
+        <PermissionGuard need="withdraw_requests">
+          <WithDrawRequest />
+        </PermissionGuard>
+      ),
     },
     {
       path: "offers",
