@@ -12,12 +12,13 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   gift_delivery_type: Yup.string().required("Required Gift Delivery Type*"),
   wh_number: Yup.string().required("Required Mobile Number*"),
   direct_pick_date: Yup.string().when("gift_delivery_type", {
-    is: "1",
+    // String() so a numeric 1 from the API still counts as Direct.
+    is: (v: any) => String(v) === "1",
     then: (schema) => schema.required("Required Direct Pick Date*"),
     otherwise: (schema) => schema.optional(),
   }),
   gift_delivery_address: Yup.string().when("gift_delivery_type", {
-    is: "2",
+    is: (v: any) => String(v) === "2",
     then: (schema) => schema.required("Required Gift Delivery Address*"),
     otherwise: (schema) => schema.optional(),
   }),
@@ -34,8 +35,17 @@ const ActivatePinForm = ({
     initialValues: {
       id: data?.id ?? "",
       pin: data?.pin ?? "",
-      gift_delivery_type: data?.gift_delivery_type ?? "",
+      // MUST be a string. The API sends a number, and a numeric 1 makes the
+      // <select> show "Direct" (the DOM coerces it) while comparisons against
+      // "1" fail — hiding the Direct Pick Date field and silently skipping its
+      // required rule until the user changed the dropdown.
+      gift_delivery_type:
+        data?.gift_delivery_type != null && data?.gift_delivery_type !== ""
+          ? String(data.gift_delivery_type)
+          : "",
       gift_delivery_address: data?.gift_delivery_address ?? "",
+      // Was missing, leaving the date input uncontrolled.
+      direct_pick_date: data?.direct_pick_date ?? "",
       wh_number: data?.user?.mobile ?? "",
     },
     onSubmit: async (values: any) => {
@@ -88,7 +98,7 @@ const ActivatePinForm = ({
         error={errors}
         value={values}
       />
-      {values.gift_delivery_type === "2" && (
+      {String(values.gift_delivery_type) === "2" && (
         <InputTextArea
           name="gift_delivery_address"
           label="Product Delivery Address *"
@@ -98,7 +108,7 @@ const ActivatePinForm = ({
           value={values}
         />
       )}
-      {values.gift_delivery_type === "1" && (
+      {String(values.gift_delivery_type) === "1" && (
         <InputText
           name="direct_pick_date"
           label="Direct Pick Date *"
