@@ -26,6 +26,8 @@ export const SERVICE: any = {
     WITHDRAW_IMPORT_CONFIRM: "withdraws/import/confirm",
     // Tax / invoice tracking (super-admin only).
     TAX_REPORT: "tax-report",
+    // Tax remitted to the government (CRUD, super-admin only).
+    TAX_PAYMENTS: "tax-payments",
     // Optional: make one video THE first video every user sees on a date.
     PROMOTIONVIDEO_FEATURED_UPDATE: "promotion-videos/featured-update",
     PROMOTIONVIDEOQUIZES: "promotion-video-quizzes",

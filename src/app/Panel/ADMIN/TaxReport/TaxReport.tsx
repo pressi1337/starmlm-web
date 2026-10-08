@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import {
-  Receipt,
+  ReceiptIndianRupee,
   IndianRupee,
   Percent,
   Package,
   AlertTriangle,
+  Plus,
+  Pencil,
+  Trash2,
+  Scale,
+  Landmark,
 } from "lucide-react";
-import { useGetCall, useQueryParams } from "@/hooks";
+import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
+import Swal from "sweetalert2";
+import TaxPaymentFormModal from "@/components/FormModals/TaxPaymentModal/TaxPaymentFormModal";
 import { SERVICE } from "@/constants/services";
 import DataTable from "@/components/DataTable";
 import FilterTab from "@/components/FilterTab";
@@ -22,21 +29,66 @@ import Lib from "@/utils/Lib";
  */
 export default function TaxReport() {
   const { defaultFilter } = useQueryParams();
+  const [tab, setTab] = useState<"invoices" | "payments">("invoices");
   const [filter, setFilter] = useState(defaultFilter);
+  const [payFilter, setPayFilter] = useState(defaultFilter);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const { loading, setQuery, data } = useGetCall(SERVICE.TAX_REPORT, {
     avoidFetch: true,
   });
+  const {
+    loading: payLoading,
+    setQuery: setPayQuery,
+    data: payData,
+  } = useGetCall(SERVICE.TAX_PAYMENTS, { avoidFetch: true });
+  const { Delete: deletePayment } = useActionCall(SERVICE.TAX_PAYMENTS);
 
   useEffect(() => {
     setQuery(filter);
   }, [filter]);
+
+  // The payments tab carries both halves of the balance, so it is refetched
+  // on its own filter and after every add / edit / delete.
+  const loadPayments = () => setPayQuery(payFilter);
+  useEffect(() => {
+    loadPayments();
+  }, [payFilter]);
+
+  const confirmDelete = async (row: any) => {
+    const result = await Swal.fire({
+      title: "Delete this tax payment?",
+      text: `₹${Lib.formatAmount(row?.amount ?? 0)} paid on ${
+        row?.payment_date_formatted ?? ""
+      } will no longer count towards the balance.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+    });
+    if (!result.isConfirmed) return;
+    const response = await deletePayment(row.id, "Tax payment deleted");
+    if (response) loadPayments();
+  };
 
   const summary = data?.summary ?? {};
   const products = data?.products ?? [];
   const rates = data?.rates ?? {};
 
   const money = (v: any) => `₹${Lib.formatAmount(Number(v ?? 0))}`;
+
+  /**
+   * Round off, which can go either way. Sign outside the rupee sign (-₹0.01),
+   * and grouped like any other amount — the summary round off is the sum
+   * across every invoice in range, so it does get large.
+   */
+  const signedMoney = (v: any) => {
+    const n = Number(v ?? 0);
+    const sign = n < 0 ? "-" : n > 0 ? "+" : "";
+    return `${sign}₹${Lib.formatAmount(Math.abs(n))}`;
+  };
 
   const Columns: any = [
     {
@@ -142,8 +194,7 @@ export default function TaxReport() {
               v < 0 ? "text-red-600" : v > 0 ? "text-green-700" : "text-gray-400"
             }`}
           >
-            {v > 0 ? "+" : ""}
-            {v.toFixed(2)}
+            {signedMoney(v)}
           </span>
         );
       },
@@ -159,12 +210,149 @@ export default function TaxReport() {
     },
   ];
 
+  const paySummary = payData?.summary ?? {};
+
+  const PaymentColumns: any = [
+    {
+      title: "Payment Date",
+      key: "payment_date",
+      sortable: true,
+      render: (index: any, row: any) => (
+        <span className="whitespace-nowrap font-medium text-gray-900">
+          {row?.payment_date_formatted ?? "-"}
+        </span>
+      ),
+    },
+    {
+      title: "Amount Paid",
+      key: "amount",
+      sortable: true,
+      render: (index: any, row: any) => (
+        <span className="whitespace-nowrap font-bold text-gray-900">
+          {money(row?.amount)}
+        </span>
+      ),
+    },
+    {
+      title: "CGST",
+      key: "cgst",
+      render: (index: any, row: any) =>
+        Number(row?.cgst) > 0 ? (
+          <span className="whitespace-nowrap">{money(row?.cgst)}</span>
+        ) : (
+          <span className="text-gray-400">-</span>
+        ),
+    },
+    {
+      title: "SGST",
+      key: "sgst",
+      render: (index: any, row: any) =>
+        Number(row?.sgst) > 0 ? (
+          <span className="whitespace-nowrap">{money(row?.sgst)}</span>
+        ) : (
+          <span className="text-gray-400">-</span>
+        ),
+    },
+    {
+      title: "Challan / Ref",
+      key: "reference_no",
+      render: (index: any, row: any) => (
+        <span className="font-mono text-sm">{row?.reference_no || "-"}</span>
+      ),
+    },
+    {
+      title: "Mode",
+      key: "payment_mode",
+      render: (index: any, row: any) => (
+        <span className="whitespace-nowrap">{row?.payment_mode || "-"}</span>
+      ),
+    },
+    {
+      title: "FY",
+      key: "fy",
+      render: (index: any, row: any) => (
+        <span className="whitespace-nowrap">{row?.fy || "-"}</span>
+      ),
+    },
+    {
+      title: "Remarks",
+      key: "remarks",
+      render: (index: any, row: any) => (
+        <span className="block max-w-[220px] truncate" title={row?.remarks || ""}>
+          {row?.remarks || "-"}
+        </span>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (index: any, row: any) => (
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => {
+              setEditing(row);
+              setModalOpen(true);
+            }}
+            title="Edit"
+            className="text-blue-600 hover:text-blue-900 p-1"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => confirmDelete(row)}
+            title="Delete"
+            className="text-red-600 hover:text-red-900 p-1"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  // The balance trio, shown on the payments tab.
+  const paymentCards = [
+    {
+      label: "Tax Collected",
+      value: payLoading ? "..." : money(paySummary?.tax_collected),
+      sub: "billed on invoices",
+      icon: Percent,
+      tone: "bg-indigo-500",
+    },
+    {
+      label: "Tax Paid",
+      value: payLoading ? "..." : money(paySummary?.tax_paid),
+      sub: `${payData?.paid_totals?.payments ?? 0} payment${
+        Number(payData?.paid_totals?.payments) === 1 ? "" : "s"
+      }`,
+      icon: Landmark,
+      tone: "bg-green-600",
+    },
+    {
+      label: Number(paySummary?.balance) < 0 ? "Paid In Excess" : "Balance Payable",
+      value: payLoading ? "..." : money(Math.abs(Number(paySummary?.balance ?? 0))),
+      sub:
+        Number(paySummary?.balance) < 0
+          ? "more paid than collected"
+          : Number(paySummary?.balance) === 0
+          ? "fully paid"
+          : "still to pay",
+      icon: Scale,
+      tone:
+        Number(paySummary?.balance) > 0
+          ? "bg-red-500"
+          : Number(paySummary?.balance) < 0
+          ? "bg-amber-500"
+          : "bg-slate-600",
+    },
+  ];
+
   const cards = [
     {
       label: "Invoices",
       value: loading ? "..." : String(summary?.invoices ?? 0),
       sub: `${summary?.qty ?? 0} units delivered`,
-      icon: Receipt,
+      icon: ReceiptIndianRupee,
       tone: "bg-blue-500",
     },
     {
@@ -184,7 +372,7 @@ export default function TaxReport() {
     {
       label: "Grand Total",
       value: loading ? "..." : money(summary?.grand_total),
-      sub: `round off ${Number(summary?.round_off ?? 0).toFixed(2)}`,
+      sub: `round off ${signedMoney(summary?.round_off)}`,
       icon: IndianRupee,
       tone: "bg-green-600",
     },
@@ -205,9 +393,33 @@ export default function TaxReport() {
         </p>
       </div>
 
-      {/* Overall totals */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        {cards.map((c) => {
+      {/* Tabs */}
+      <div className="flex items-center gap-2 mb-6 border-b border-gray-200">
+        {[
+          { key: "invoices", label: "Invoices" },
+          { key: "payments", label: "Tax Paid" },
+        ].map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key as any)}
+            className={`px-5 py-2.5 text-sm font-medium -mb-px border-b-2 transition-colors ${
+              tab === t.key
+                ? "border-emerald-600 text-emerald-700"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Overall totals — the invoice breakdown, or the balance trio */}
+      <div
+        className={`grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 ${
+          tab === "invoices" ? "lg:grid-cols-4" : "lg:grid-cols-3"
+        }`}
+      >
+        {(tab === "invoices" ? cards : paymentCards).map((c) => {
           const Icon = c.icon;
           return (
             <div
@@ -233,6 +445,9 @@ export default function TaxReport() {
         })}
       </div>
 
+      {/* ── Invoices tab ── */}
+      {tab === "invoices" && (
+      <>
       {/* Per-product delivered totals */}
       {products.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -306,6 +521,57 @@ export default function TaxReport() {
           }}
         />
       </div>
+      </>
+      )}
+
+      {/* ── Tax paid tab ── */}
+      {tab === "payments" && (
+        <>
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => {
+                setEditing(null);
+                setModalOpen(true);
+              }}
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg shadow-sm hover:bg-emerald-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Record Tax Payment
+            </button>
+          </div>
+
+          <FilterTab
+            filter={payFilter}
+            setFilter={setPayFilter}
+            TABLE_FILTER={["SEARCH", "FROM_DATE", "TO_DATE"]}
+          />
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <DataTable
+              columns={PaymentColumns}
+              data={payData?.data ?? []}
+              pageInfo={payData?.pageInfo}
+              filter={payFilter}
+              setFilter={setPayFilter}
+              enableSerial={true}
+              isLoading={payLoading}
+              setPageSize={(pageSize: number) => {
+                setPayFilter((prv: any) => ({ ...prv, pageNo: 1, pageSize }));
+              }}
+            />
+          </div>
+        </>
+      )}
+
+      <TaxPaymentFormModal
+        isOpen={modalOpen}
+        payment={editing}
+        onClose={() => {
+          setModalOpen(false);
+          setEditing(null);
+        }}
+        onSaved={loadPayments}
+      />
     </div>
   );
 }
