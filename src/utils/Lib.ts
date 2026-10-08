@@ -263,9 +263,20 @@ const Lib = {
      * @param {number|string} amount - The amount to format
      * @returns {string} Formatted amount with 2 decimal places
      */
+    /**
+     * Money for display, grouped the Indian way: 12,34,567.89 — lakhs and
+     * crores, not 12,345,678.89. Always two decimals.
+     *
+     * Display only. Every caller interpolates the result into a string after
+     * a rupee sign; nothing parses it back, so the separators are safe.
+     */
     formatAmount(amount: number | string): string {
         const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-        return isNaN(num) ? '0.00' : num.toFixed(2);
+        if (isNaN(num)) return '0.00';
+        return num.toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
     }
 
 }

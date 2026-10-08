@@ -29,6 +29,7 @@ import {
   Gift,
   ShieldCheck,
   History,
+  Receipt,
   ReceiptText,
   IndianRupee,
   SlidersHorizontal,
@@ -223,6 +224,17 @@ const Sidebar = ({
           path: "/portal/admin/offers",
           icon: Gift,
           color: "from-rose-500 to-pink-600",
+        });
+      }
+      if (isSuperAdmin) {
+        // Tax / invoice tracking. Super-admin only for now — it exposes every
+        // customer's billing across the whole business.
+        baseItems.push({
+          id: "tax-report",
+          label: "Tax / Invoice",
+          path: "/portal/admin/tax-report",
+          icon: Receipt,
+          color: "from-emerald-500 to-teal-600",
         });
       }
       // Grantable to a sub-admin now, so out of the super-admin block and
