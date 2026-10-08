@@ -9,6 +9,9 @@ import RoleGuard from "@/routes/RoleGuard";
 import PermissionGuard from "@/routes/PermissionGuard";
 import { ROLE } from "@/constants/others";
 
+const TaxReport = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/TaxReport/TaxReport"))
+);
 const AdminDashboard = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/Dashboard/Dashboard"))
 );
@@ -181,6 +184,11 @@ const AdminRoutes = {
           <WithDrawRequest />
         </PermissionGuard>
       ),
+    },
+    {
+      // Tax / invoice tracking. Super-admin only for now.
+      path: "tax-report",
+      element: <SuperOnly><TaxReport /></SuperOnly>,
     },
     {
       path: "offers",

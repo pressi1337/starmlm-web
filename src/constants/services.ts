@@ -24,6 +24,8 @@ export const SERVICE: any = {
     // file would do and changes nothing; confirm re-checks and applies it.
     WITHDRAW_IMPORT_VALIDATE: "withdraws/import/validate",
     WITHDRAW_IMPORT_CONFIRM: "withdraws/import/confirm",
+    // Tax / invoice tracking (super-admin only).
+    TAX_REPORT: "tax-report",
     // Optional: make one video THE first video every user sees on a date.
     PROMOTIONVIDEO_FEATURED_UPDATE: "promotion-videos/featured-update",
     PROMOTIONVIDEOQUIZES: "promotion-video-quizzes",
