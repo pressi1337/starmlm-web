@@ -29,7 +29,7 @@ import {
   Gift,
   ShieldCheck,
   History,
-  Receipt,
+  ReceiptIndianRupee,
   ReceiptText,
   IndianRupee,
   SlidersHorizontal,
@@ -233,7 +233,7 @@ const Sidebar = ({
           id: "tax-report",
           label: "Tax / Invoice",
           path: "/portal/admin/tax-report",
-          icon: Receipt,
+          icon: ReceiptIndianRupee,
           color: "from-emerald-500 to-teal-600",
         });
       }
