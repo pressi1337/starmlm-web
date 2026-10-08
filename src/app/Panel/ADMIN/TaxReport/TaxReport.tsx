@@ -191,7 +191,11 @@ export default function TaxReport() {
   ];
 
   return (
-    <div className="p-6">
+    // Same bounded, centred wrapper every other admin page uses. Without the
+    // max-width the page grows to fit the widest row, and with twelve
+    // nowrap money columns that pushes the content out over the layout
+    // instead of letting the table scroll inside its own card.
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Tax / Invoice Report</h1>
@@ -237,22 +241,27 @@ export default function TaxReport() {
               key={p.product}
               className="bg-white rounded-xl shadow-sm border border-gray-200 p-5"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+              <div className="flex items-center justify-between gap-3">
+                {/* min-w-0 + truncate: product_name comes from the price
+                    master and can be up to 120 characters. */}
+                <div className="flex items-center min-w-0">
+                  <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Package className="w-5 h-5 text-white" />
                   </div>
-                  <div className="ml-3">
-                    <p className="text-sm font-semibold text-gray-900">
+                  <div className="ml-3 min-w-0">
+                    <p
+                      className="text-sm font-semibold text-gray-900 truncate"
+                      title={p.product}
+                    >
                       {p.product}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 truncate">
                       {p.qty} units delivered · {p.batches} invoice
                       {p.batches === 1 ? "" : "s"}
                     </p>
                   </div>
                 </div>
-                <p className="text-lg font-bold text-gray-900">
+                <p className="text-lg font-bold text-gray-900 whitespace-nowrap flex-shrink-0">
                   {money(p.grand_total)}
                 </p>
               </div>
