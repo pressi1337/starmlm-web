@@ -60,6 +60,7 @@ const DEFAULT_FORM = {
   name: "Rohith Test",
   email: "rsn7rohith@gmail.com",
   phone: "",
+  bank_code: "",
   description: "Starup gateway test payment",
 };
 
@@ -263,6 +264,7 @@ export default function PaymentGateway() {
             <Row label="Encryption IV" value={cfg?.enc_iv_masked} mono />
             <Row label="Service URL" value={cfg?.service_url} />
             <Row label="Integration" value={cfg?.integration} />
+            <Row label="Default bank code" value={cfg?.bank_code} mono />
             <Row
               label="Amount limits"
               value={cfg ? `₹${cfg.min_amount}${cfg.max_amount ? ` – ₹${cfg.max_amount}` : " and above"}` : ""}
@@ -323,6 +325,13 @@ export default function PaymentGateway() {
             <Input label="Email" value={form.email} onChange={set("email")} error={errors.email} type="email" required />
             <Input label="Phone (10 digits)" value={form.phone} onChange={set("phone")} error={errors.phone} inputMode="numeric" maxLength={10} required />
             <Input label="Description" value={form.description} onChange={set("description")} error={errors.description} />
+            <Input
+              label="Bank / payment code (optional)"
+              value={form.bank_code}
+              onChange={set("bank_code")}
+              error={errors.bank_code}
+              placeholder={cfg?.bank_code || "e.g. 470"}
+            />
           </div>
           {live && (
             <div className="mx-5 mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
