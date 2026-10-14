@@ -22,7 +22,7 @@ import Lib from "@/utils/Lib";
 import UIHelpers from "@/utils/UIhelper";
 
 /**
- * Payment Gateway — Omniware (Federal Bank).
+ * Payment Gateway — Worldline ePayments India (Paynimo).
  *
  * Shows the live gateway configuration and runs a REAL payment for any amount
  * so the full flow (hosted page → bank → return → verification) can be tried
@@ -36,7 +36,6 @@ type Payment = {
   purpose: "test" | "promoter";
   amount: number;
   mode: string;
-  level_label: string;
   status: number;
   status_label: string;
   transaction_id: string | null;
@@ -57,13 +56,10 @@ type Payment = {
 
 const FORM_KEY = "pg-test-form";
 const DEFAULT_FORM = {
-  amount: "10",
+  amount: "5",
   name: "Rohith Test",
   email: "rsn7rohith@gmail.com",
   phone: "",
-  city: "Chennai",
-  state: "Tamil Nadu",
-  zip_code: "600001",
   description: "Starup gateway test payment",
 };
 
@@ -261,26 +257,37 @@ export default function PaymentGateway() {
           <dl className="divide-y divide-gray-100 text-sm">
             <Row label="Provider" value={cfg?.provider} />
             <Row label="Mode" value={cfg?.mode} />
-            <Row label="API URL" value={cfg?.api_url} />
-            <Row label="API key" value={cfg?.api_key_masked} mono />
-            <Row label="SALT" value={cfg?.salt_masked} mono />
+            <Row label="Merchant code" value={cfg?.merchant_code} mono />
+            <Row label="Scheme code" value={cfg?.scheme_code} mono />
+            <Row label="Encryption key" value={cfg?.enc_key_masked} mono />
+            <Row label="Encryption IV" value={cfg?.enc_iv_masked} mono />
+            <Row label="Service URL" value={cfg?.service_url} />
             <Row label="Integration" value={cfg?.integration} />
-            <Row label="Minimum amount" value={cfg ? `₹${cfg.min_amount}` : ""} />
+            <Row
+              label="Amount limits"
+              value={cfg ? `₹${cfg.min_amount}${cfg.max_amount ? ` – ₹${cfg.max_amount}` : " and above"}` : ""}
+            />
+            {cfg?.test_bank_login && <Row label="Test bank login" value={cfg.test_bank_login} mono />}
             <Row label="Return URL" value={cfg?.return_url} copy />
-            <Row label="Callback URL" value={cfg?.callback_url} copy />
+            <Row label="S2S URL" value={cfg?.s2s_url} copy />
           </dl>
           <div className="px-5 py-4 bg-gray-50 text-xs text-gray-600 space-y-2">
             <p>
-              Set the <b>Callback URL</b> as "Payment Callback URL" in the Omniware dashboard so payments are recorded
-              even if the browser never returns.
+              Give the <b>S2S URL</b> to Worldline as the server-to-server callback so payments are recorded even if the
+              browser never returns.
             </p>
+            {cfg?.test_bank_login && (
+              <p>
+                On the gateway's test page, pay with the test bank login <b>{cfg.test_bank_login}</b>.
+              </p>
+            )}
             <a
               href={cfg?.dashboard_url}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium"
             >
-              Open Omniware dashboard <ExternalLink className="w-3.5 h-3.5" />
+              Open Worldline portal <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>
@@ -295,16 +302,26 @@ export default function PaymentGateway() {
             <p className="text-sm text-gray-600 mt-0.5">
               Creates a real payment page for this amount. You'll pick UPI / card / net banking on the gateway page and
               come back here with the result.
+              {cfg?.max_amount
+                ? ` The test merchant only accepts ₹${cfg.min_amount} to ₹${cfg.max_amount}.`
+                : ""}
             </p>
           </div>
           <div className="p-5 grid sm:grid-cols-2 gap-4">
-            <Input label="Amount (₹)" value={form.amount} onChange={set("amount")} error={errors.amount} type="number" min="1" step="0.01" required />
+            <Input
+              label={cfg?.max_amount ? `Amount (₹${cfg.min_amount}–₹${cfg.max_amount})` : "Amount (₹)"}
+              value={form.amount}
+              onChange={set("amount")}
+              error={errors.amount}
+              type="number"
+              min={cfg?.min_amount ?? 1}
+              max={cfg?.max_amount ?? undefined}
+              step="0.01"
+              required
+            />
             <Input label="Customer name" value={form.name} onChange={set("name")} error={errors.name} required />
             <Input label="Email" value={form.email} onChange={set("email")} error={errors.email} type="email" required />
             <Input label="Phone (10 digits)" value={form.phone} onChange={set("phone")} error={errors.phone} inputMode="numeric" maxLength={10} required />
-            <Input label="City" value={form.city} onChange={set("city")} error={errors.city} required />
-            <Input label="State" value={form.state} onChange={set("state")} error={errors.state} />
-            <Input label="Pincode" value={form.zip_code} onChange={set("zip_code")} error={errors.zip_code} inputMode="numeric" maxLength={6} required />
             <Input label="Description" value={form.description} onChange={set("description")} error={errors.description} />
           </div>
           {live && (
@@ -406,7 +423,7 @@ function TxRow({ p, open, onToggle, onRecheck, checking }: {
           {p.purpose === "test" ? (
             <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-700">Test</span>
           ) : (
-            <span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700">{p.level_label}</span>
+            <span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700">Plan</span>
           )}
           <div className="text-[11px] text-gray-400 mt-0.5">{p.mode}</div>
         </td>
