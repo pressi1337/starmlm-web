@@ -25,7 +25,9 @@ import PasswordInput from "@/components/ui/PasswordInput";
 export const USER_VALIDATION_SCHEMA = Yup.object().shape({
   first_name: Yup.string().required("Required First Name*"),
   last_name: Yup.string().required("Required Last Name*"),
-  mobile: Yup.string().required("Required Mobile number*"),
+  mobile: Yup.string()
+    .required("Required Mobile number*")
+    .matches(/^[0-9]{10}$/, "Enter a valid 10-digit mobile number"),
   dob: Yup.string().required("Required Date of Birth*"),
   nationality: Yup.string().required("Required Nationality*"),
   state: Yup.string().required("Required State*"),
