@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { Upload, Trash2 } from "lucide-react";
 import Lib from "@/utils/Lib";
-import { uploadFileInChunks } from "@/utils/chunkedUpload";
 import {
   fileTypeIcon,
   typeFromName,
@@ -9,6 +8,7 @@ import {
 } from "@/constants/fileTypes";
 
 const VITE_BASE_URL = import.meta.env.VITE_BASE_URL ?? "";
+const CHUNK_SIZE = 1 * 1024 * 1024; // 1MB, matching the single-file uploader
 
 export type UploadedFile = {
   /** Stored name on the server: "{uuid}_{original}". */
@@ -53,17 +53,35 @@ export default function MultiFileUpload({
 
   /** Upload one file in chunks; resolves to its stored name. */
   const uploadOne = async (raw: File, onPct: (pct: number) => void) => {
-    // Shared with the single-file uploader: 8 MB chunks, several in flight at
-    // once, with retries. This was a sequential 1 MB loop, which on a
-    // multi-file pick meant round-trip overhead stacked up per file.
-    const { storedFilename } = await uploadFileInChunks({
-      file: raw,
-      baseUrl: VITE_BASE_URL,
-      token: Lib.getCookies("session-token"),
-      onProgress: onPct,
-    });
+    const totalChunks = Math.ceil(raw.size / CHUNK_SIZE);
+    let stored = "";
 
-    return storedFilename;
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * CHUNK_SIZE;
+      const chunk = raw.slice(start, Math.min(raw.size, start + CHUNK_SIZE));
+
+      const formData = new FormData();
+      formData.append("videofile", chunk);
+      formData.append("filename", raw.name);
+      formData.append("chunkIndex", String(i));
+      formData.append("totalChunks", String(totalChunks));
+
+      const response = await fetch(`${VITE_BASE_URL}upload`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${Lib.getCookies("session-token")}`,
+        },
+        body: formData,
+      });
+      const data = await response.json();
+      onPct(Math.round(((i + 1) / totalChunks) * 100));
+
+      if (data?.status === "merged") {
+        stored = data.stored_filename;
+      }
+    }
+
+    return stored;
   };
 
   const handlePick = async (e: any) => {

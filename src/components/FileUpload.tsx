@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import { Upload, Trash2, Video } from "lucide-react";
 import Lib from "@/utils/Lib";
-import { uploadFileInChunks as sendChunkedUpload } from "@/utils/chunkedUpload";
 export const VITE_BASE_URL = import.meta.env.VITE_BASE_URL ?? "";
 
+const CHUNK_SIZE = 1 * 1024 * 1024; // 1MB chunk
 const getRealFileName = (responsePath = "") => {
   return responsePath;
 };
@@ -50,33 +50,52 @@ export default function FileUpload({
     setUploading(true);
     setLoading(true);
     setUploadError("");
+    const totalChunks: any = Math.ceil(rawFile.size / CHUNK_SIZE);
 
-    // Chunking, parallelism and retries all live in sendChunkedUpload so the
-    // three upload components cannot drift apart. It was previously a
-    // sequential loop here, one 1 MB request at a time, which is what made
-    // large videos take minutes of pure round-trip overhead.
-    try {
-      const { storedFilename } = await sendChunkedUpload({
-        file: rawFile,
-        baseUrl: VITE_BASE_URL,
-        token: Lib.getCookies("session-token"),
-        onProgress: setProgress,
-      });
+    for (let i: any = 0; i < totalChunks; i++) {
+      const start = i * CHUNK_SIZE;
+      const end = Math.min(rawFile.size, start + CHUNK_SIZE);
+      const chunk = rawFile.slice(start, end);
 
-      if (showFileValue) {
-        setFileName(getRealFileName(storedFilename));
+      const formData = new FormData();
+      formData.append("videofile", chunk);
+      formData.append("filename", rawFile.name);
+      formData.append("chunkIndex", i);
+      formData.append("totalChunks", totalChunks);
+
+      try {
+        let response = await fetch(
+          `${VITE_BASE_URL}upload`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${Lib.getCookies("session-token")}`,
+            },
+            body: formData,
+          }
+        );
+        const data = await response.json();
+        setProgress(Math.round(((i + 1) / totalChunks) * 100));
+
+        if (data.status === "merged") {
+          if (showFileValue) {
+            setFileName((prv) => getRealFileName(data.stored_filename));
+          }
+          onChange({
+            target: {
+              name,
+              value: data.stored_filename,
+            },
+          });
+        }
+      } catch (err) {
+        clearFile(false);
+        setUploadError("Upload failed please retry again");
       }
-      onChange({ target: { name, value: storedFilename } });
-    } catch (err) {
-      // The old loop caught per chunk and carried on, so a failed chunk left a
-      // half-uploaded file and no error the user could act on.
-      clearFile(false);
-      setUploadError("Upload failed please retry again");
-    } finally {
-      setUploaded(false);
-      setUploading(false);
-      setLoading(false);
     }
+    setUploaded(false);
+    setUploading(false);
+    setLoading(false);
   };
 
   const deleteAPI = async () => {
