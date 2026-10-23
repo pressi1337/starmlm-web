@@ -8,7 +8,7 @@ import {
 } from "@/constants/fileTypes";
 
 const VITE_BASE_URL = import.meta.env.VITE_BASE_URL ?? "";
-const CHUNK_SIZE = 2 * 1024 * 1024; // 2MB chunk
+const CHUNK_SIZE = 1 * 1024 * 1024; // 1MB, matching the single-file uploader
 
 export type UploadedFile = {
   /** Stored name on the server: "{uuid}_{original}". */
