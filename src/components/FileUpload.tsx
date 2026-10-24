@@ -39,7 +39,7 @@ export default function FileUpload({
     if (maxMb > 0 && rawFile.size / (1024 * 1024) > maxMb) {
       if (fileRef.current) fileRef.current.value = "";
       setUploadError(
-        `This ${kindLabel} is ${(rawFile.size / (1024 * 1024)).toFixed(0)} MB — too large (max ${maxMb} MB).`
+        `This ${kindLabel} is ${(rawFile.size / (1024 * 1024)).toFixed(0)} MB \u2014 too large (max ${maxMb} MB).`
       );
       return;
     }
