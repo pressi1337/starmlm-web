@@ -107,3 +107,30 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Rendered policy documents (Privacy, Refund, Shipping, Contact, Terms).
+   The content is admin-authored HTML; Tailwind's preflight strips heading and
+   list styling, so restore just enough for a readable legal page. The same
+   rules exist in the PWA so both surfaces render a document identically. */
+.policy-content h1,
+.policy-content h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 1.75rem 0 0.75rem;
+}
+.policy-content h2:first-child { margin-top: 0; }
+.policy-content h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 1.5rem 0 0.5rem;
+}
+.policy-content p { margin: 0.75rem 0; }
+.policy-content ul,
+.policy-content ol { margin: 0.75rem 0; padding-left: 1.5rem; }
+.policy-content ul { list-style: disc; }
+.policy-content ol { list-style: decimal; }
+.policy-content li { margin: 0.35rem 0; }
+.policy-content strong { font-weight: 600; color: #111827; }
+.policy-content a { color: #2563eb; text-decoration: underline; }

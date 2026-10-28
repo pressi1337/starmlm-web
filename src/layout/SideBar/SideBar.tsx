@@ -268,6 +268,13 @@ const Sidebar = ({
           icon: FileText,
           color: "from-slate-500 to-gray-600",
         });
+        baseItems.push({
+          id: "policies",
+          label: "Policies",
+          path: "/portal/admin/policies",
+          icon: ShieldCheck,
+          color: "from-emerald-500 to-teal-600",
+        });
         // Sits directly below Terms & Conditions, matching the user app.
         baseItems.push({
           id: "company-documents",
