@@ -67,6 +67,9 @@ const AppSettings = Loadable(
 const ProductPrices = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/ProductPrices/ProductPrices"))
 );
+const Policies = Loadable(
+  lazy(() => import("@/app/Panel/ADMIN/Policies/Policies"))
+);
 const PaymentGateway = Loadable(
   lazy(() => import("@/app/Panel/ADMIN/PaymentGateway/PaymentGateway"))
 );
@@ -237,6 +240,11 @@ const AdminRoutes = {
     {
       path: "bill-template",
       element: <SuperOnly><BillTemplate /></SuperOnly>,
+    },
+    {
+      // Public policy documents the payment gateway reviews.
+      path: "policies",
+      element: <SuperOnly><Policies /></SuperOnly>,
     },
     {
       path: "terms-and-conditions",

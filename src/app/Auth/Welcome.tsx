@@ -189,6 +189,15 @@ export default function WelcomePage() {
             <p className="text-gray-400">
               Empowering promoters worldwide with comprehensive training and opportunities
             </p>
+            {/* Policy links — public and crawlable. Payment gateways check
+                that these are reachable without signing in. */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+              <Link to="/privacy-policy" className="text-gray-400 hover:text-white">Privacy Policy</Link>
+              <Link to="/terms-and-conditions" className="text-gray-400 hover:text-white">Terms &amp; Conditions</Link>
+              <Link to="/refund-policy" className="text-gray-400 hover:text-white">Refund &amp; Cancellation</Link>
+              <Link to="/shipping-policy" className="text-gray-400 hover:text-white">Shipping &amp; Delivery</Link>
+              <Link to="/contact-us" className="text-gray-400 hover:text-white">Contact Us</Link>
+            </div>
             <div className="mt-8 pt-8 border-t border-gray-800">
               <p className="text-gray-400">
                 © 2025 Starup. All rights reserved.

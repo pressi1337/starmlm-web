@@ -2,6 +2,7 @@ import { Navigate, useRoutes } from "react-router-dom";
 import AuthRoutes from "./ROUTE-PATHS/AuthRoutes";
 import AdminRoutes from "./ROUTE-PATHS/AdminRoutes";
 import NormalUserRoutes from "./ROUTE-PATHS/NormalUserRoutes";
+import PolicyRoutes from "./ROUTE-PATHS/PolicyRoutes";
 import { useAuthRole } from "@/hooks/useAuthRole";
 import { useAuth } from "@/context/AuthContext";
 import { ROLE } from "@/constants/others";
@@ -16,6 +17,10 @@ export default function AllRoutes(): React.ReactElement | null {
   } else {
     routes.push(AuthRoutes);
   }
+
+  // Policies are public and role-independent: a payment gateway reviewer
+  // opens them signed out, a user opens them from inside the app.
+  routes.push(...PolicyRoutes);
 
   routes.push({
     path: "*",

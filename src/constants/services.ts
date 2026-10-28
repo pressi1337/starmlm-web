@@ -103,6 +103,8 @@ export const SERVICE: any = {
     BILL_TEMPLATE_UPSERT: "bill-template/upsert",
     TERMS_AND_CONDITIONS: "terms-and-conditions",
     TERMS_AND_CONDITIONS_UPSERT: "terms-and-conditions/upsert",
+    POLICIES_ADMIN: "policies-admin",
+    POLICIES_UPSERT: "policies/upsert",
 
     // Suggestions — admin read-only list + mark-as-read PATCH.
     ADMIN_SUGGESTIONS: "admin-suggestions",
