@@ -5,7 +5,7 @@ import { BASE_URL } from "@/constants/services";
 import logo from "@/assets/logo.png";
 
 /**
- * Public policy page — Privacy, Refund & Cancellation, Shipping, Terms.
+ * Public policy page — Privacy, Refund & Cancellation, Shipping, Contact.
  *
  * Deliberately reachable WITHOUT logging in: payment gateways check these
  * during onboarding, and users must be able to read them before registering.
@@ -14,14 +14,14 @@ import logo from "@/assets/logo.png";
 
 type Doc = { title: string; content: string; updated_at?: string };
 
-// Slug → API path. Terms lives in its own table (it is also the document the
-// promoter flow asks users to accept), the rest come from policy_pages.
+// Slug → API path. All four documents come from policy_pages. Terms &
+// Conditions is deliberately NOT published here — it is shown inside the
+// app only, where the promoter flow asks the user to accept it.
 const SOURCES: Record<string, { path: string; fallbackTitle: string }> = {
   "privacy-policy": { path: "policies/privacy-policy", fallbackTitle: "Privacy Policy" },
   "refund-policy": { path: "policies/refund-policy", fallbackTitle: "Refund & Cancellation Policy" },
   "shipping-policy": { path: "policies/shipping-policy", fallbackTitle: "Shipping & Delivery Policy" },
   "contact-us": { path: "policies/contact-us", fallbackTitle: "Contact Us" },
-  "terms-and-conditions": { path: "terms-and-conditions", fallbackTitle: "Terms & Conditions" },
 };
 
 export default function PolicyPage() {

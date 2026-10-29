@@ -193,7 +193,6 @@ export default function WelcomePage() {
                 that these are reachable without signing in. */}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
               <Link to="/privacy-policy" className="text-gray-400 hover:text-white">Privacy Policy</Link>
-              <Link to="/terms-and-conditions" className="text-gray-400 hover:text-white">Terms &amp; Conditions</Link>
               <Link to="/refund-policy" className="text-gray-400 hover:text-white">Refund &amp; Cancellation</Link>
               <Link to="/shipping-policy" className="text-gray-400 hover:text-white">Shipping &amp; Delivery</Link>
               <Link to="/contact-us" className="text-gray-400 hover:text-white">Contact Us</Link>
