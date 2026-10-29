@@ -143,10 +143,16 @@ const Sidebar = ({
           icon: IndianRupee,
           color: "from-emerald-500 to-green-600",
         });
-        // Payment Gateway (/portal/admin/payment-gateway) is deliberately NOT
-        // listed. It runs real test payments against Omniware, so it is kept
-        // out of the menu and reached by typing the URL. The route itself is
-        // still super-admin only (see AdminRoutes).
+        // Payments: the gateway configuration, every plan payment promoters
+        // have made, and a test payment an admin can run by hand. Super-admin
+        // only, since running a test payment moves real money in LIVE mode.
+        baseItems.push({
+          id: "payment-gateway",
+          label: "Payments",
+          path: "/portal/admin/payment-gateway",
+          icon: CreditCard,
+          color: "from-indigo-500 to-blue-600",
+        });
         baseItems.push({
           id: "bill-template",
           label: "Bill Template",

@@ -47,6 +47,9 @@ export const SERVICE: any = {
     ADMIN_PIN_REQUESTS: "user-promoters",
     RIASE_TERM: "term-raised",
     GENERATE_PIN: "generate-pin",
+    // Plan payment collected outside the gateway (cash / UPI / transfer).
+    // Recording it unblocks Generate Pin for that request.
+    PLAN_PAYMENT_OFFLINE: "promoter-payment/offline",
     REJECT_REQUEST: "pin-rejected",
     GET_PIN_REQUESTS: "user-promoters/list",
     ACTIVATE_PIN: "activate-pin",

@@ -7,6 +7,8 @@ import {
   Smartphone,
   CircleX,
   Download,
+  Banknote,
+  Lock,
 } from "lucide-react";
 import { useActionCall, useGetCall, useQueryParams } from "@/hooks";
 import { OPTIONS } from "@/constants/others";
@@ -16,7 +18,9 @@ import Swal from "sweetalert2";
 import FilterTab from "@/components/FilterTab";
 import CopyClipBoard from "@/components/CopyClip";
 import AdminPinFormModal from "@/components/FormModals/AdminGeneratePinModal/AdminPinFormModal";
+import OfflinePaymentFormModal from "@/components/FormModals/OfflinePaymentModal/OfflinePaymentFormModal";
 import UIHelpers from "@/utils/UIhelper";
+import Lib from "@/utils/Lib";
 
 export default function PROMOTIONVIDEOS() {
   const getStatusBadge = (status) => {
@@ -147,6 +151,48 @@ export default function PROMOTIONVIDEOS() {
       ),
     },
     {
+      // The plan payment behind this request. A pin cannot be generated until
+      // this says Paid — online payments issue the pin themselves, and a cash
+      // collection is recorded here first.
+      title: "Payment",
+      key: "payment",
+      render: (index: any, row: any) => (
+        <div className="whitespace-nowrap">
+          {row?.is_paid ? (
+            <>
+              <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                <CheckCircle className="w-3 h-3 mr-1" /> Paid
+              </span>
+              <div className="text-xs text-gray-700 mt-1">
+                {Lib.formatAmount(row?.payment?.amount ?? 0)}
+                {row?.payment?.is_offline ? (
+                  <span className="ml-1 text-[11px] text-amber-700">
+                    ({row?.payment?.payment_mode || "offline"})
+                  </span>
+                ) : null}
+              </div>
+              {row?.payment?.order_id && (
+                <div className="text-[11px] text-gray-400 font-mono">{row.payment.order_id}</div>
+              )}
+            </>
+          ) : (
+            <>
+              <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                <CircleX className="w-3 h-3 mr-1" /> Unpaid
+              </span>
+              {row?.plan_amount ? (
+                <div className="text-xs text-gray-500 mt-1">
+                  Due {Lib.formatAmount(row.plan_amount)}
+                </div>
+              ) : (
+                <div className="text-[11px] text-amber-700 mt-1">No price set</div>
+              )}
+            </>
+          )}
+        </div>
+      ),
+    },
+    {
       title: "Status",
       key: "status",
       render: (index: any, row: any) => (
@@ -185,12 +231,31 @@ export default function PROMOTIONVIDEOS() {
       render: (index: any, row: any) => (
         <div className="flex items-center justify-start space-x-2">
           {row?.user?.promoter_status === 2 && row?.status === 0 && (
-            <button
-              className="whitespace-nowrap inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              onClick={() => handleGeneratePin(row)}
-            >
-              Generate Pin
-            </button>
+            row?.is_paid ? (
+              <button
+                className="whitespace-nowrap inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                onClick={() => handleGeneratePin(row)}
+              >
+                Generate Pin
+              </button>
+            ) : (
+              <>
+                <span
+                  title="The plan has not been paid for yet"
+                  className="whitespace-nowrap inline-flex items-center px-3 py-1 text-xs font-medium rounded-full text-gray-500 bg-gray-100 cursor-not-allowed"
+                >
+                  <Lock className="w-3 h-3 mr-1" />
+                  Generate Pin
+                </span>
+                <button
+                  className="whitespace-nowrap inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-full text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+                  onClick={() => handleRecordPayment(row)}
+                >
+                  <Banknote className="w-3 h-3 mr-1" />
+                  Record Payment
+                </button>
+              </>
+            )
           )}
           {![3, 4].includes(row?.user?.promoter_status) &&
             row?.status === 0 && (
@@ -296,6 +361,18 @@ export default function PROMOTIONVIDEOS() {
     updateSearchParam({
       options: {
         Modal: "GeneratePin",
+        pinRequestId: rowData.id.toString(),
+        userData: JSON.stringify(rowData),
+      },
+    });
+  };
+
+  // Cash / transfer collections. Marking it paid unblocks Generate Pin but
+  // deliberately does not issue the pin on its own.
+  const handleRecordPayment = (rowData: any) => {
+    updateSearchParam({
+      options: {
+        Modal: "RecordPayment",
         pinRequestId: rowData.id.toString(),
         userData: JSON.stringify(rowData),
       },
@@ -455,6 +532,12 @@ export default function PROMOTIONVIDEOS() {
         />
       </div>
       {/* Modal Rendering */}
+      {Modal === "RecordPayment" && (
+        <OfflinePaymentFormModal
+          request={JSON.parse(searchParams.get("userData") || "{}")}
+          recoilApi={PinRequestApi}
+        />
+      )}
       {Modal === "GeneratePin" && (
         <AdminPinFormModal
           pinRequestId={parseInt(searchParams.get("pinRequestId") || "0")}

@@ -22,12 +22,15 @@ import Lib from "@/utils/Lib";
 import UIHelpers from "@/utils/UIhelper";
 
 /**
- * Payment Gateway — Worldline ePayments India (Paynimo).
+ * Payment Gateway — Omniware (Federal Bank).
  *
  * Shows the live gateway configuration and runs a REAL payment for any amount
  * so the full flow (hosted page → bank → return → verification) can be tried
  * by hand. The gateway sends the browser back here with ?order_id=…, and the
  * result of that attempt is shown at the top.
+ *
+ * The Transactions table below carries BOTH purposes: 'test' payments made
+ * here, and 'promoter' plan payments made by promoters in the app.
  */
 
 type Payment = {
@@ -56,11 +59,13 @@ type Payment = {
 
 const FORM_KEY = "pg-test-form";
 const DEFAULT_FORM = {
-  amount: "5",
+  amount: "10",
   name: "Rohith Test",
   email: "rsn7rohith@gmail.com",
   phone: "",
-  bank_code: "",
+  city: "Ambur",
+  state: "Tamil Nadu",
+  zip_code: "635802",
   description: "Starup gateway test payment",
 };
 
@@ -104,6 +109,9 @@ export default function PaymentGateway() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [checking, setChecking] = useState<string | null>(null);
   const [pageNo, setPageNo] = useState(1);
+  // 'promoter' = plan payments made by promoters in the app, 'test' = the
+  // payments started on this page.
+  const [purpose, setPurpose] = useState<"" | "promoter" | "test">("");
 
   const cfg = cfgData?.data;
   const txRows: Payment[] = txData?.data ?? [];
@@ -111,8 +119,8 @@ export default function PaymentGateway() {
   const result: Payment | undefined = resultData?.data?.payment;
 
   useEffect(() => {
-    loadTx({ pageSize: 20, pageNo });
-  }, [pageNo]);
+    loadTx({ pageSize: 20, pageNo, filter: purpose ? { purpose } : undefined });
+  }, [pageNo, purpose]);
 
   // Back from the gateway: fetch the verified outcome of that attempt.
   useEffect(() => {
@@ -149,7 +157,7 @@ export default function PaymentGateway() {
 
   const fetchStatusAndRefresh = async (orderId: string) => {
     await checkStatus({ key: orderId });
-    loadTx({ pageSize: 20, pageNo });
+    loadTx({ pageSize: 20, pageNo, filter: purpose ? { purpose } : undefined });
     reloadConfig({});
   };
 
@@ -258,38 +266,29 @@ export default function PaymentGateway() {
           <dl className="divide-y divide-gray-100 text-sm">
             <Row label="Provider" value={cfg?.provider} />
             <Row label="Mode" value={cfg?.mode} />
-            <Row label="Merchant code" value={cfg?.merchant_code} mono />
-            <Row label="Scheme code" value={cfg?.scheme_code} mono />
-            <Row label="Encryption key" value={cfg?.enc_key_masked} mono />
-            <Row label="Encryption IV" value={cfg?.enc_iv_masked} mono />
-            <Row label="Service URL" value={cfg?.service_url} />
+            <Row label="API key" value={cfg?.api_key_masked} mono />
+            <Row label="SALT" value={cfg?.salt_masked} mono />
+            <Row label="API URL" value={cfg?.api_url} />
             <Row label="Integration" value={cfg?.integration} />
-            <Row label="Default bank code" value={cfg?.bank_code} mono />
             <Row
-              label="Amount limits"
-              value={cfg ? `₹${cfg.min_amount}${cfg.max_amount ? ` – ₹${cfg.max_amount}` : " and above"}` : ""}
+              label="Minimum amount"
+              value={cfg ? `₹${cfg.min_amount} and above` : ""}
             />
-            {cfg?.test_bank_login && <Row label="Test bank login" value={cfg.test_bank_login} mono />}
             <Row label="Return URL" value={cfg?.return_url} copy />
-            <Row label="S2S URL" value={cfg?.s2s_url} copy />
+            <Row label="Callback URL" value={cfg?.callback_url} copy />
           </dl>
           <div className="px-5 py-4 bg-gray-50 text-xs text-gray-600 space-y-2">
             <p>
-              Give the <b>S2S URL</b> to Worldline as the server-to-server callback so payments are recorded even if the
-              browser never returns.
+              Set the <b>Callback URL</b> as the Payment Callback URL in the Omniware dashboard, so payments are
+              recorded even if the browser never returns.
             </p>
-            {cfg?.test_bank_login && (
-              <p>
-                On the gateway's test page, pay with the test bank login <b>{cfg.test_bank_login}</b>.
-              </p>
-            )}
             <a
               href={cfg?.dashboard_url}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium"
             >
-              Open Worldline portal <ExternalLink className="w-3.5 h-3.5" />
+              Open Omniware dashboard <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>
@@ -304,34 +303,34 @@ export default function PaymentGateway() {
             <p className="text-sm text-gray-600 mt-0.5">
               Creates a real payment page for this amount. You'll pick UPI / card / net banking on the gateway page and
               come back here with the result.
-              {cfg?.max_amount
-                ? ` The test merchant only accepts ₹${cfg.min_amount} to ₹${cfg.max_amount}.`
-                : ""}
             </p>
           </div>
           <div className="p-5 grid sm:grid-cols-2 gap-4">
             <Input
-              label={cfg?.max_amount ? `Amount (₹${cfg.min_amount}–₹${cfg.max_amount})` : "Amount (₹)"}
+              label={`Amount (₹)`}
               value={form.amount}
               onChange={set("amount")}
               error={errors.amount}
               type="number"
               min={cfg?.min_amount ?? 1}
-              max={cfg?.max_amount ?? undefined}
               step="0.01"
               required
             />
             <Input label="Customer name" value={form.name} onChange={set("name")} error={errors.name} required />
             <Input label="Email" value={form.email} onChange={set("email")} error={errors.email} type="email" required />
             <Input label="Phone (10 digits)" value={form.phone} onChange={set("phone")} error={errors.phone} inputMode="numeric" maxLength={10} required />
-            <Input label="Description" value={form.description} onChange={set("description")} error={errors.description} />
+            <Input label="City" value={form.city} onChange={set("city")} error={errors.city} required />
             <Input
-              label="Bank / payment code (optional)"
-              value={form.bank_code}
-              onChange={set("bank_code")}
-              error={errors.bank_code}
-              placeholder={cfg?.bank_code || "e.g. 470"}
+              label="Pincode (6 digits)"
+              value={form.zip_code}
+              onChange={set("zip_code")}
+              error={errors.zip_code}
+              inputMode="numeric"
+              maxLength={6}
+              required
             />
+            <Input label="State" value={form.state} onChange={set("state")} error={errors.state} />
+            <Input label="Description" value={form.description} onChange={set("description")} error={errors.description} />
           </div>
           {live && (
             <div className="mx-5 mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
@@ -353,10 +352,33 @@ export default function PaymentGateway() {
 
       {/* Transactions */}
       <div className="mt-6 bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="font-semibold text-gray-900">Transactions</h2>
+        <div className="px-5 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <h2 className="font-semibold text-gray-900">Transactions</h2>
+            <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden text-xs">
+              {([
+                ["", "All"],
+                ["promoter", "Plan payments"],
+                ["test", "Test"],
+              ] as const).map(([value, label]) => (
+                <button
+                  key={label}
+                  onClick={() => {
+                    setPageNo(1);
+                    setPurpose(value);
+                  }}
+                  className={Lib.cn(
+                    "px-3 py-1.5 font-medium",
+                    purpose === value ? "bg-blue-600 text-white" : "bg-white text-gray-600 hover:bg-gray-50"
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
           <button
-            onClick={() => loadTx({ pageSize: 20, pageNo })}
+            onClick={() => loadTx({ pageSize: 20, pageNo, filter: purpose ? { purpose } : undefined })}
             className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800"
           >
             <RefreshCw className={Lib.cn("w-4 h-4", txLoading && "animate-spin")} /> Refresh
@@ -380,7 +402,11 @@ export default function PaymentGateway() {
               {txRows.length === 0 && (
                 <tr>
                   <td colSpan={8} className="px-4 py-10 text-center text-gray-500">
-                    {txLoading ? "Loading…" : "No payments yet — run a test payment above."}
+                    {txLoading
+                      ? "Loading" + "…"
+                      : purpose === "promoter"
+                      ? "No plan payments yet."
+                      : "No payments yet " + "—" + " run a test payment above."}
                   </td>
                 </tr>
               )}
