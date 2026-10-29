@@ -11,7 +11,6 @@ const PolicyRoutes = [
   { path: "refund-policy", element: <PolicyPage /> },
   { path: "shipping-policy", element: <PolicyPage /> },
   { path: "contact-us", element: <PolicyPage /> },
-  { path: "terms-and-conditions", element: <PolicyPage /> },
 ];
 
 export default PolicyRoutes;
