@@ -1,7 +1,19 @@
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Btn from "@/components/ui/Btn";
+import { useGetCall } from "@/hooks";
+import { SERVICE } from "@/constants/services";
+import { splitTermsByLanguage } from "@/utils/terms";
 
+/**
+ * The terms a promoter accepts before paying.
+ *
+ * The text is NOT held here — it is read from the admin-editable Terms &
+ * Conditions record, so there is a single place to edit it.
+ * `splitTermsByLanguage` cuts that one field into its Tamil and English halves
+ * for the toggle. Accept stays disabled until the terms have loaded: nobody
+ * should be able to agree to a document the app failed to show them.
+ */
 const PinConfirmationForm = ({
   data = {},
   onAction = (values: any) => {},
@@ -10,7 +22,19 @@ const PinConfirmationForm = ({
 }: any) => {
   const [isTamil, setIsTamil] = useState(true);
 
-  const { values, handleChange, handleSubmit } = useFormik({
+  const { data: termsData, loading: termsLoading, fetchApi } = useGetCall(
+    SERVICE.TERMS_AND_CONDITIONS
+  );
+
+  const terms = useMemo(
+    () => splitTermsByLanguage(termsData?.data?.content),
+    [termsData]
+  );
+
+  const body = isTamil ? terms.tamil : terms.english;
+  const hasTerms = Boolean(body);
+
+  const { handleSubmit } = useFormik({
     initialValues: {
       current_level: data?.level ?? "",
     },
@@ -19,51 +43,55 @@ const PinConfirmationForm = ({
     },
   });
 
-  const tamilContent = [
-    "நமது நிறுவனம் Education and Promotion முறையில் Re-purchase and Re-selling மூலம் நடைபெறும்.",
-    "நமது நிறுவனத்தில் இணையும் பொழுது ஒருவர் எந்தவிதமான Investment and Purchase இல்லாமல் இலவசமாக தான் இணைய முடியும்.",
-    "நமது நிறுவனத்தில் இணைந்த பிறகு 3 நாட்கள் Training முடித்த பிறகு அவர்களின் சுய விருப்பத்தின் பெயரில் அவர்களின் ID - க்கு நிறுவனம் பரிந்துரை செய்யும் Product- யை Purchase செய்து மட்டுமே Upgrade செய்து கொள்ள முடியும்.",
-    "நமது நிறுவனத்தில் ID - யை Upgrade செய்த பிறகு நிறுவனத்தின் மூலம் ஈட்டிய பணத்தை நிறுவனத்தின் நிபந்தனைகளுக்கு உட்பட்டு 30 நாட்களுக்கு ஒரு முறை withdraw செய்து கொள்ளலாம்.",
-    "வருங்காலங்களில் நிறுவனத்தை தொடர்ந்து செயல்படுத்த நிறுவனத்தின் Plan - களை மாற்றியமைத்து நிறுவனத்தைத் தொடர்ந்து செயல்படுத்த நிறுவனத்தின் நிர்வாக இயக்குனருக்கு முழு உரிமை உண்டு.",
-    "மேலே உள்ள அனைத்து நிபந்தனைகளும் தெரிந்துகொண்டு எனது முழு சுய விருப்பத்தின் பெயரில் யாருடைய தூண்டுதல் இல்லாமலும் எனது ID - யை  Upgrade செய்து கொள்கிறேன்."
-  ];
-
-  const englishContent = [
-    "Our company operates through Education and Promotion through Re-purchase and Re-selling.",
-    "When joining our company, one can join for free without any investment or purchase.",
-    "After joining our company and completing 3 days of training, they can upgrade only by purchasing the product recommended by the company for their ID, at their own discretion.",
-    "The Managing Director of the Company has the full right to continue operating the Company in the future by amending the Company's Plans.",
-    "Knowing all the above conditions, I upgrade my ID of my own free will and without any inducement from anyone."
-  ];
-
-  const currentContent = isTamil ? tamilContent : englishContent;
-
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
-         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex justify-between items-center mb-2">
-              <h4 className="font-medium text-blue-900">Important Notes:</h4>
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="flex justify-between items-center mb-2">
+          <h4 className="font-medium text-blue-900">Terms &amp; Conditions</h4>
+          {terms.hasBoth && (
+            <button
+              type="button"
+              onClick={() => setIsTamil(!isTamil)}
+              className="text-sm px-3 py-1 bg-red-100 hover:bg-red-200 border border-red-500 text-red-800 rounded transition-colors"
+            >
+              {isTamil ? "English" : "தமிழ்"}
+            </button>
+          )}
+        </div>
+
+        <div className="max-h-72 overflow-y-auto">
+          {termsLoading && !hasTerms ? (
+            <p className="text-sm text-blue-800 py-4">Loading terms…</p>
+          ) : !hasTerms ? (
+            <div className="py-3">
+              <p className="text-sm text-blue-800">
+                Could not load the Terms &amp; Conditions. Please check your connection and try
+                again.
+              </p>
               <button
                 type="button"
-                onClick={() => setIsTamil(!isTamil)}
-                className="text-sm px-3 py-1 bg-red-100 hover:bg-red-200 border border-red-500 text-red-800 rounded transition-colors"
+                onClick={() => fetchApi()}
+                className="mt-2 text-sm px-3 py-1 bg-white border border-blue-300 text-blue-800 rounded"
               >
-                {isTamil ? "English" : "தமிழ்"}
+                Retry
               </button>
             </div>
-            <ul className="text-sm text-blue-800 space-y-1">
-              {currentContent.map((item, index) => {
-                const isLastItem = index === currentContent.length - 1;
-                return (
-                  <li key={index}>
-                    • {isLastItem ? <b>{item}</b> : item}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          ) : (
+            <div
+              className="text-sm text-blue-900 leading-relaxed [&_p]:mb-2 [&_strong]:font-semibold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+              dangerouslySetInnerHTML={{ __html: terms.header + body }}
+            />
+          )}
+        </div>
+      </div>
+
       <div className="flex justify-end space-x-3 pt-4">
-        <Btn title={"Accept"} isLoading={loading} onClick={handleSubmit} />
+        <Btn
+          title={"Accept"}
+          isLoading={loading}
+          isDisable={!hasTerms}
+          onClick={handleSubmit}
+        />
       </div>
     </form>
   );
