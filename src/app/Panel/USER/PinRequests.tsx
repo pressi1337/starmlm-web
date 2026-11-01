@@ -117,11 +117,10 @@ function PinRequestsPage() {
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
-          Pin Requests & Upgrades
+          Product Pins
         </h1>
         <p className="mt-2 text-gray-600">
-          Request level upgrades and activate approved pins to unlock new
-          features
+          Buy your product pack and activate your pin
         </p>
       </div>
 
@@ -130,7 +129,7 @@ function PinRequestsPage() {
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-medium text-gray-900 flex items-center">
             <Crown className="w-5 h-5 mr-2" />
-            Current Level & Upgrade Options
+            Current Level & Available Product Packs
           </h3>
         </div>
         <div className="p-6">
@@ -191,7 +190,7 @@ function PinRequestsPage() {
                           )}
                         </div>
                         <div className="text-sm text-gray-500">
-                          Unlock advanced features and higher earnings
+                          Product pack for this level — price shown before you pay
                         </div>
                       </div>
                     </div>
@@ -208,7 +207,7 @@ function PinRequestsPage() {
                         }
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                       >
-                        Request Level Upgrade
+                        Buy Product Pack
                       </button>
                     );
                   })()}
@@ -221,10 +220,10 @@ function PinRequestsPage() {
                   <ArrowUp className="w-5 h-5 text-green-600 mr-3" />
                   <div>
                     <div className="font-medium text-gray-900">
-                      Request Level Upgrade
+                      Buy Product Pack
                     </div>
                     <div className="text-sm text-gray-500">
-                      Unlock advanced features and higher earnings
+                      Product pack for this level — price shown before you pay
                     </div>
                   </div>
                 </div>
